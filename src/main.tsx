@@ -1,4 +1,5 @@
 // src/main.tsx
+import "./i18n/config"; // Must be imported first to initialize i18next
 import "./index.css";
 import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";

@@ -1,0 +1,49 @@
+{
+  "common": {
+    "appName": "Daily FI",
+    "appSubtitle": "P2P Financial Management",
+    "loading": "Loading...",
+    "error": "An error occurred",
+    "save": "Save",
+    "cancel": "Cancel",
+    "confirm": "Confirm",
+    "close": "Close",
+    "back": "Back"
+  },
+  "auth": {
+    "login": {
+      "title": "Daily FI",
+      "subtitle": "P2P Financial Management",
+      "usernameLabel": "Username",
+      "usernamePlaceholder": "you@email.com",
+      "passwordLabel": "Password",
+      "passwordPlaceholder": "••••••••",
+      "forgotPassword": "Forgot your password?",
+      "submit": "Sign In",
+      "noAccount": "Don't have an account?",
+      "signupLink": "Sign Up"
+    },
+    "signup": {
+      "title": "Sign Up",
+      "subtitle": "Sign up screen — under development."
+    }
+  },
+  "nav": {
+    "login": "Login",
+    "balance": "Balance",
+    "details": "Details",
+    "profile": "Profile"
+  },
+  "balance": {
+    "title": "Balance",
+    "placeholder": "Balance"
+  },
+  "details": {
+    "title": "Details",
+    "placeholder": "Details"
+  },
+  "profile": {
+    "title": "Profile",
+    "placeholder": "Profile"
+  }
+}

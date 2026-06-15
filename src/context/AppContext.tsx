@@ -1,4 +1,4 @@
-import { createContext, useContext, type ReactNode, type Dispatch } from "react";
+import { createContext, type ReactNode } from "react";
 
 interface IAppContext {}
 

@@ -1,0 +1,49 @@
+{
+  "common": {
+    "appName": "Daily FI",
+    "appSubtitle": "Gestión financiera P2P",
+    "loading": "Cargando...",
+    "error": "Ocurrió un error",
+    "save": "Guardar",
+    "cancel": "Cancelar",
+    "confirm": "Confirmar",
+    "close": "Cerrar",
+    "back": "Volver"
+  },
+  "auth": {
+    "login": {
+      "title": "Daily FI",
+      "subtitle": "Gestión financiera P2P",
+      "usernameLabel": "Usuario",
+      "usernamePlaceholder": "tu@correo.com",
+      "passwordLabel": "Contraseña",
+      "passwordPlaceholder": "••••••••",
+      "forgotPassword": "¿Olvidó su contraseña?",
+      "submit": "Ingresar",
+      "noAccount": "¿No tienes una cuenta?",
+      "signupLink": "Registrarse"
+    },
+    "signup": {
+      "title": "Registro",
+      "subtitle": "Pantalla de registro — en desarrollo."
+    }
+  },
+  "nav": {
+    "login": "Inicio",
+    "balance": "Balance",
+    "details": "Detalles",
+    "profile": "Perfil"
+  },
+  "balance": {
+    "title": "Balance",
+    "placeholder": "BALANCE"
+  },
+  "details": {
+    "title": "Detalles",
+    "placeholder": "DETALLES"
+  },
+  "profile": {
+    "title": "Perfil",
+    "placeholder": "PERFIL"
+  }
+}
