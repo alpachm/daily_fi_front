@@ -6,11 +6,6 @@ import resources from "./resources";
 import type { SupportedLanguage } from "./resources";
 
 /**
- * Default language used when the detector cannot determine the user's preference.
- */
-const DEFAULT_LANGUAGE: SupportedLanguage = "en";
-
-/**
  * Fallback language used when a translation key is missing in the current language.
  */
 const FALLBACK_LANGUAGE: SupportedLanguage = "en";
@@ -21,7 +16,7 @@ i18next
   .init({
     resources,
     fallbackLng: FALLBACK_LANGUAGE,
-    debug: import.meta.env.DEV,
+    debug: import.meta.env.DEV, // se coloca en false para no ver los logs
     interpolation: {
       escapeValue: false, // React already escapes by default
     },
@@ -32,9 +27,5 @@ i18next
     },
   });
 
-  console.log("🌐 Idioma detectado por i18next:", i18next.language);
-console.log("📦 Idioma guardado en localStorage:", localStorage.getItem("app_language"));
-console.log("🌍 Idioma del navegador:", navigator.language);
-
-export { DEFAULT_LANGUAGE, FALLBACK_LANGUAGE };
+export { FALLBACK_LANGUAGE };
 export default i18next;
