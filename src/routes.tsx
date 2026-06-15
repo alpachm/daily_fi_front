@@ -5,9 +5,11 @@ import LoginScreen from "./screens/LoginScreen";
 import BalanceScreen from "./screens/BalanceScreen";
 import DetailsScreen from "./screens/DetailsScreen";
 import ProfileScreen from "./screens/ProfileScreen";
+import SignupScreen from "./screens/SignupScreen";
 
 export const ROUTES = {
     LOGIN: "/",
+    SIGNUP: "/signup",
     BALANCE: "/balance",
     DETAILS: "/about",
     PROFILE: "/profile",
@@ -19,6 +21,12 @@ export const loginRoute = createRoute({
     getParentRoute: () => rootRoute,
     path: ROUTES.LOGIN,
     component: LoginScreen,
+});
+
+export const signupRoute = createRoute({
+    getParentRoute: () => rootRoute,
+    path: ROUTES.SIGNUP,
+    component: SignupScreen,
 });
 
 export const balanceRoute = createRoute({
@@ -40,7 +48,13 @@ export const profileRoute = createRoute({
 });
 
 // ---- Árbol de rutas ----
-const routeTree = rootRoute.addChildren([loginRoute, balanceRoute, detailsRoute, profileRoute]);
+const routeTree = rootRoute.addChildren([
+    loginRoute,
+    signupRoute,
+    balanceRoute,
+    detailsRoute,
+    profileRoute,
+]);
 
 // ---- Router ----
 export const router = createRouter({ routeTree });
