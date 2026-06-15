@@ -1,0 +1,68 @@
+/* ============================================================
+   src/index.css — Global Theme Configuration
+   Light Mode (default) + Dark Mode (.dark on <html> or <body>)
+   ============================================================ */
+
+/* ---------- CSS RESET (minimal) ---------- */
+*,
+*::before,
+*::after {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+html {
+    font-family:
+        system-ui,
+        -apple-system,
+        BlinkMacSystemFont,
+        "Segoe UI",
+        Roboto,
+        Oxygen,
+        Ubuntu,
+        Cantarell,
+        "Helvetica Neue",
+        sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+    background-color: var(--background);
+    color: var(--text-primary);
+    min-height: 100vh;
+    line-height: 1.5;
+    transition:
+        background-color 0.3s ease,
+        color 0.3s ease;
+}
+
+/* ============================================================
+   LIGHT MODE (Default)
+   ============================================================ */
+:root {
+    --background: #f8fafc;
+    --card-background: #ffffff;
+    --btn-primary: #0f172a;
+    --btn-text: #ffffff;
+    --text-primary: #334155;
+    --text-secondary: #94a3b8;
+    --status-success: #10b981;
+    --status-error: #e11d48;
+}
+
+/* ============================================================
+   DARK MODE — Triggered by .dark on <html> or <body>
+   ============================================================ */
+body.dark,
+html.dark {
+    --background: #0b0f19;
+    --card-background: #1e293b;
+    --btn-primary: #38bdf8;
+    --btn-text: #0f172a;
+    --text-primary: #f8fafc;
+    --text-secondary: #94a3b8;
+    --status-success: #34d399;
+    --status-error: #fb7185;
+}
