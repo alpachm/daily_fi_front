@@ -1,49 +1,49 @@
 {
-  "common": {
-    "appName": "Daily FI",
-    "appSubtitle": "P2P Financial Management",
-    "loading": "Loading...",
-    "error": "An error occurred",
+  "Actions": {
+    "enter": "Sign In",
     "save": "Save",
     "cancel": "Cancel",
     "confirm": "Confirm",
     "close": "Close",
     "back": "Back"
   },
-  "auth": {
-    "login": {
-      "title": "Daily FI",
-      "subtitle": "P2P Financial Management",
-      "usernameLabel": "Username",
-      "usernamePlaceholder": "you@email.com",
-      "passwordLabel": "Password",
-      "passwordPlaceholder": "••••••••",
-      "forgotPassword": "Forgot your password?",
-      "submit": "Sign In",
-      "noAccount": "Don't have an account?",
-      "signupLink": "Sign Up"
-    },
-    "signup": {
-      "title": "Sign Up",
-      "subtitle": "Sign up screen — under development."
-    }
+  "LoginScreen": {
+    "title": "Daily FI",
+    "subtitle": "P2P Financial Management",
+    "usernameLabel": "Username",
+    "usernamePlaceholder": "you@email.com",
+    "passwordLabel": "Password",
+    "passwordPlaceholder": "••••••••",
+    "forgotPassword": "Forgot your password?",
+    "noAccount": "Don't have an account?",
+    "signupLink": "Sign Up"
   },
-  "nav": {
+  "SignupScreen": {
+    "title": "Sign Up",
+    "subtitle": "Sign up screen — under development."
+  },
+  "Navbar": {
     "login": "Login",
     "balance": "Balance",
     "details": "Details",
     "profile": "Profile"
   },
-  "balance": {
+  "BalanceScreen": {
     "title": "Balance",
     "placeholder": "Balance"
   },
-  "details": {
+  "DetailsScreen": {
     "title": "Details",
     "placeholder": "Details"
   },
-  "profile": {
+  "ProfileScreen": {
     "title": "Profile",
     "placeholder": "Profile"
+  },
+  "Common": {
+    "appName": "Daily FI",
+    "appSubtitle": "P2P Financial Management",
+    "loading": "Loading...",
+    "error": "An error occurred"
   }
 }

@@ -46,3 +46,59 @@
 - **Código Primero:** Proporciona soluciones de código directas, limpias y listas para producción. Reduce las explicaciones teóricas al mínimo necesario.
 - **Rutas de Archivos Claras:** Añade siempre un comentario con la ruta exacta del archivo al principio de cada bloque de código (ej. `// src/components/Dashboard.tsx`).
 - **Scripts Completos:** No utilices marcadores de posición perezosos como `// ... resto del código aquí ...` a menos que sea una edición menor explícitamente solicitada. Proporciona las estructuras completas para evitar errores de copia.
+
+## 🌐 Reglas de Internacionalización (i18n)
+
+Para mantener una arquitectura multiidioma altamente escalable y prevenir errores en tiempo de compilación, el Agente de IA debe cumplir estrictamente con las siguientes reglas:
+
+1. **Seguridad de Tipos Estricta (Type-Safe Keys):**
+    - El proyecto utiliza `i18next` con definiciones de tipos de módulo personalizadas mapeadas directamente a `src/locales/es.json` y `src/locales/en.json`.
+    - Queda prohibido hardcodear o adivinar una llave de traducción. Cada llave pasada a la función `t()` DEBE ser verificada contra la estructura del JSON para garantizar que la compilación de TypeScript sea exitosa.
+    - Ejemplo de llamada válida: `{t('LoginScreen.title')}`
+
+2. **Absolutamente Cero Texto Plano:**
+    - No se permite escribir ninguna cadena de texto visible para el usuario, etiqueta, placeholder, título, texto de botón o mensaje de error como texto plano dentro de los archivos TSX.
+    - Cada texto debe ser extraído obligatoriamente a los archivos `src/locales/es.json` y `src/locales/en.json` bajo estructuras de objetos idénticas antes de modificar la vista.
+
+3. **Separación de Intereses (TSX Limpio):**
+    - El hook `useTranslation` debe inicializarse de forma limpia en la parte superior del componente o dentro de los custom hooks: `const { t } = useTranslation('global');`.
+    - No se deben incrustar manipulaciones de cadenas complejas, condicionales o concatenaciones en línea dentro del TSX. Si se necesita texto dinámico, se deben usar las funciones nativas de interpolación o pluralización del motor de traducción.
+
+4. **Protección contra Discrepancias Regionales:**
+    - Asegurar siempre que se respete la propiedad `load: 'languageOnly'` en la configuración central para que las variantes regionales (ej. `es-VE`, `es-US`, `en-US`) sean manejadas limpiamente por los diccionarios base `es` o `en`.
+
+    ### 🗂️ Estructura y Jerarquía Estricta de los JSON (es.json / en.json)
+
+El Agente de IA debe organizar los archivos `src/locales/es.json` y `src/locales/en.json` siguiendo rigurosamente esta arquitectura limpia, sin elementos raíz adicionales:
+
+1. **Jerarquía Principal (Nivel Raíz):**
+    - El primer nivel del JSON debe corresponder únicamente al nombre del componente o pantalla en **PascalCase** (ej. `"LoginScreen"`, `"Navbar"`). No se permiten objetos genéricos intermedios.
+    - Dentro de cada componente, las llaves de texto plano directo (como `"title"`, `"subtitle"`) se escribirán en **camelCase**.
+
+### 🗂️ Estructura y Jerarquía Global de los JSON (es.json / en.json)
+
+El Agente de IA debe organizar los archivos `src/locales/es.json` y `src/locales/en.json` de forma estrictamente plana en su raíz, bajo las siguientes directrices de nomenclatura y reutilización:
+
+1. **Módulos de Pantalla / Componentes (Nivel Raíz):**
+    - Cada pantalla o componente complejo se declarará en el primer nivel utilizando **PascalCase** (ej. `"LoginScreen"`, `"DashboardScreen"`).
+    - Las llaves internas de texto plano directo (como `"title"`, `"subtitle"`) deben escribirse en **camelCase**.
+
+2. **Módulo Global de Acciones Reutilizables (`Actions`):**
+    - Al mismo nivel raíz de las pantallas, existirá un único objeto global llamado `"Actions"` (en **PascalCase**).
+    - Este objeto agrupará todos los textos de llamados a la acción (CTA) reutilizables en la app, como etiquetas de botones (`"enter"`, `"cancel"`, `"save"`), enlaces o interacciones comunes, evitando la duplicación de código en los diccionarios.
+
+#### 📝 Ejemplo de Estructura Requerida:
+
+```json
+{
+    "Actions": {
+        "enter": "Ingresar",
+        "cancel": "Cancelar",
+        "save": "Guardar"
+    },
+    "LoginScreen": {
+        "title": "Daily FI",
+        "subtitle": "P2P Financial Management"
+    }
+}
+```

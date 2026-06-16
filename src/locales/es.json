@@ -1,49 +1,49 @@
 {
-  "common": {
-    "appName": "Daily FI",
-    "appSubtitle": "Gestión financiera P2P",
-    "loading": "Cargando...",
-    "error": "Ocurrió un error",
+  "Actions": {
+    "enter": "Ingresar",
     "save": "Guardar",
     "cancel": "Cancelar",
     "confirm": "Confirmar",
     "close": "Cerrar",
     "back": "Volver"
   },
-  "auth": {
-    "login": {
-      "title": "Daily FI",
-      "subtitle": "Gestión financiera P2P",
-      "usernameLabel": "Usuario",
-      "usernamePlaceholder": "tu@correo.com",
-      "passwordLabel": "Contraseña",
-      "passwordPlaceholder": "••••••••",
-      "forgotPassword": "¿Olvidó su contraseña?",
-      "submit": "Ingresar",
-      "noAccount": "¿No tienes una cuenta?",
-      "signupLink": "Registrarse"
-    },
-    "signup": {
-      "title": "Registro",
-      "subtitle": "Pantalla de registro — en desarrollo."
-    }
+  "LoginScreen": {
+    "title": "Daily FI",
+    "subtitle": "Gestión financiera P2P",
+    "usernameLabel": "Usuario",
+    "usernamePlaceholder": "tu@correo.com",
+    "passwordLabel": "Contraseña",
+    "passwordPlaceholder": "••••••••",
+    "forgotPassword": "¿Olvidó su contraseña?",
+    "noAccount": "¿No tienes una cuenta?",
+    "signupLink": "Registrarse"
   },
-  "nav": {
+  "SignupScreen": {
+    "title": "Registro",
+    "subtitle": "Pantalla de registro — en desarrollo."
+  },
+  "Navbar": {
     "login": "Inicio",
     "balance": "Balance",
     "details": "Detalles",
     "profile": "Perfil"
   },
-  "balance": {
+  "BalanceScreen": {
     "title": "Balance",
     "placeholder": "BALANCE"
   },
-  "details": {
+  "DetailsScreen": {
     "title": "Detalles",
     "placeholder": "DETALLES"
   },
-  "profile": {
+  "ProfileScreen": {
     "title": "Perfil",
     "placeholder": "PERFIL"
+  },
+  "Common": {
+    "appName": "Daily FI",
+    "appSubtitle": "Gestión financiera P2P",
+    "loading": "Cargando...",
+    "error": "Ocurrió un error"
   }
 }

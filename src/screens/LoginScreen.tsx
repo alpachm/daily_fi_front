@@ -1,5 +1,6 @@
 // src/screens/LoginScreen.tsx
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 import { Link, useNavigate } from "@tanstack/react-router";
 import { ROUTES } from "../routes";
 import "../styles/LoginScreen.css";
@@ -10,6 +11,7 @@ const handleLogin = (navigate: ReturnType<typeof useNavigate>): void => {
 };
 
 const LoginScreen = () => {
+    const { t } = useTranslation();
     const navigate = useNavigate();
     const [usuario, setUsuario] = useState("");
     const [contrasena, setContrasena] = useState("");
@@ -24,15 +26,15 @@ const LoginScreen = () => {
             <div className="login-card">
                 {/* Header */}
                 <header className="login-header">
-                    <h1 className="login-title">Daily FI</h1>
-                    <p className="login-subtitle">Gestión financiera P2P</p>
+                    <h1 className="login-title">{t("LoginScreen.title")}</h1>
+                    <p className="login-subtitle">{t("LoginScreen.subtitle")}</p>
                 </header>
 
                 {/* Form */}
                 <form className="login-form" onSubmit={onSubmit} noValidate>
                     <div className="login-field">
                         <label htmlFor="login-usuario" className="login-label">
-                            Usuario
+                            {t("LoginScreen.usernameLabel")}
                         </label>
                         <input
                             id="login-usuario"
@@ -40,7 +42,7 @@ const LoginScreen = () => {
                             type="text"
                             inputMode="email"
                             autoComplete="username"
-                            placeholder="tu@correo.com"
+                            placeholder={t("LoginScreen.usernamePlaceholder")}
                             value={usuario}
                             onChange={(e) => setUsuario(e.target.value)}
                             required
@@ -49,14 +51,14 @@ const LoginScreen = () => {
 
                     <div className="login-field">
                         <label htmlFor="login-contrasena" className="login-label">
-                            Contraseña
+                            {t("LoginScreen.passwordLabel")}
                         </label>
                         <input
                             id="login-contrasena"
                             className="login-input"
                             type="password"
                             autoComplete="current-password"
-                            placeholder="••••••••"
+                            placeholder={t("LoginScreen.passwordPlaceholder")}
                             value={contrasena}
                             onChange={(e) => setContrasena(e.target.value)}
                             required
@@ -65,20 +67,20 @@ const LoginScreen = () => {
 
                     <div className="login-forgot">
                         <button type="button" className="login-forgot-btn">
-                            Olvidó su contraseña
+                            {t("LoginScreen.forgotPassword")}
                         </button>
                     </div>
 
                     <button type="submit" className="login-submit">
-                        Ingresar
+                        {t("Actions.enter")}
                     </button>
                 </form>
 
                 {/* Footer */}
                 <footer className="login-footer">
-                    <span className="login-footer-text">¿No tienes una cuenta?</span>
+                    <span className="login-footer-text">{t("LoginScreen.noAccount")}</span>
                     <Link to={ROUTES.SIGNUP} className="login-signup-link">
-                        Registrarse
+                        {t("LoginScreen.signupLink")}
                     </Link>
                 </footer>
             </div>
