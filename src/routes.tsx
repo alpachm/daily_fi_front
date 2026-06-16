@@ -3,7 +3,7 @@ import { createRootRoute, createRoute, createRouter } from "@tanstack/react-rout
 
 import LoginScreen from "./screens/LoginScreen";
 import SignupScreen from "./screens/SignupScreen";
-import DashboardLayout from "./components/DashboardLayout";
+import DashboardLayout from "./layouts/DashboardLayout";
 import BalanceScreen from "./screens/BalanceScreen";
 import DetailsScreen from "./screens/DetailsScreen";
 import ProfileScreen from "./screens/ProfileScreen";

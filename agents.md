@@ -35,7 +35,15 @@
     - **Estados Financieros:**
         - **Ganancias (Éxito/Capital Positivo):** `var(--status-success)`
         - **Pérdidas (Alerta/Capital Negativo):** `var(--status-error)`
-- **Estilos:** No se utilizarán librerías externas como Tailwind ni nada similar, todos los estilos se basarán en CSS puro manteniendo las mejores prácticas. Los archivos CSS correspondientes a las Screens se almacenarán en la carpeta `src/styles` con el mismo nombre del archivo `.tsx` al que correspondan. Los archivos CSS de los componentes se almacenarán en la carpeta `src/components/styles` con el mismo nombre del componente al que corresponden.
+- **Estilos y Coherencia de Rutas CSS (Estricto):** Queda totalmente prohibido el uso de librerías externas (Tailwind, Bootstrap, etc.); todo el diseño se basará en CSS puro. La ubicación de los archivos `.css` debe ser un espejo exacto y mandatorio de la ubicación de su archivo `.tsx`, respetando rigurosamente las siguientes tres rutas raíz:
+    1. **Para Vistas/Pantallas (Screens):** Si el archivo `.tsx` está en `src/screens/NombreScreen.tsx`, su CSS DEBE guardarse exclusivamente en `src/styles/NombreScreen.css`.
+    2. **Para Contenedores Estructurales (Layouts):** Si el archivo `.tsx` está en `src/layouts/NombreLayout.tsx`, su CSS DEBE guardarse exclusivamente en `src/layouts/styles/NombreLayout.css`.
+    3. **Para Bloques Reutilizables (Components):** Si el archivo `.tsx` está en `src/components/NombreComponente.tsx` (o cualquier subcarpeta interna de componentes), su CSS DEBE guardarse exclusivamente en `src/components/styles/NombreComponente.css`.
+- **Aislamiento de Estilos (Cero Contaminación):** Cada componente funcional, layout o screen debe tener su propio archivo CSS individual e independiente. Queda estrictamente PROHIBIDO agrupar, combinar o escribir estilos de un componente (ej. `Navbar` o `Header`) dentro del archivo CSS de otro componente o layout (ej. `DashboardLayout.css`), incluso si actúan como elementos hijos temporales o permanentes. Si un componente requiere estilos, se le crea su propio archivo CSS en su respectiva carpeta de estilos (`/styles/`) de manera obligatoria.
+- **Estructura de Directorios Estricta:** El proyecto se divide rigurosamente en tres conceptos arquitectónicos:
+    1. `src/layouts/`: Aloja exclusivamente los cascarones estructurales (ej. `DashboardLayout.tsx`). Sus estilos van en `src/layouts/styles/`.
+    2. `src/screens/`: Aloja las páginas o vistas finales de la app (ej. `LoginScreen.tsx`, `BalanceScreen.tsx`). Sus estilos van en `src/styles/`.
+    3. `src/components/`: Aloja componentes interactivos reutilizables (ej. `Navbar.tsx`, `Header.tsx`). Sus estilos van en `src/components/styles/`.
 
 ---
 

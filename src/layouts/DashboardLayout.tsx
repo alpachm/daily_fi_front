@@ -1,8 +1,8 @@
-// src/components/DashboardLayout.tsx
-import "../styles/DashboardLayout.css";
+// src/layouts/DashboardLayout.tsx
+import "./styles/DashboardLayout.css";
 import { Outlet } from "@tanstack/react-router";
-import { Header } from "./Header";
-import Navbar from "./Navbar";
+import { Header } from "../components/Header";
+import Navbar from "../components/Navbar";
 
 export const DashboardLayout = () => {
     return (
