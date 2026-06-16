@@ -40,6 +40,9 @@
     "title": "Profile",
     "placeholder": "Profile"
   },
+  "DashboardLayout": {
+    "headerTitle": "Daily FI"
+  },
   "Common": {
     "appName": "Daily FI",
     "appSubtitle": "P2P Financial Management",

@@ -7,7 +7,7 @@ import "../styles/LoginScreen.css";
 
 const handleLogin = (navigate: ReturnType<typeof useNavigate>): void => {
     // Simulate successful login and redirect to protected /balance route
-    navigate({ to: ROUTES.BALANCE });
+    navigate({ to: ROUTES.DASHBOARD });
 };
 
 const LoginScreen = () => {

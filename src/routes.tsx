@@ -1,22 +1,25 @@
-// src/routes.tsx — Configuración de rutas por código (code-based routing)
+// src/routes.tsx — Nested route configuration with DashboardLayout
 import { createRootRoute, createRoute, createRouter } from "@tanstack/react-router";
 
 import LoginScreen from "./screens/LoginScreen";
+import SignupScreen from "./screens/SignupScreen";
+import DashboardLayout from "./components/DashboardLayout";
 import BalanceScreen from "./screens/BalanceScreen";
 import DetailsScreen from "./screens/DetailsScreen";
 import ProfileScreen from "./screens/ProfileScreen";
-import SignupScreen from "./screens/SignupScreen";
 
 export const ROUTES = {
     LOGIN: "/",
     SIGNUP: "/signup",
-    BALANCE: "/balance",
-    DETAILS: "/about",
-    PROFILE: "/profile",
-};
+    DASHBOARD: "/dashboard",
+    DETAILS: "/dashboard/details",
+    PROFILE: "/dashboard/profile",
+} as const;
 
+// ---- Root ----
 const rootRoute = createRootRoute();
 
+// ---- Public routes (no layout) ----
 export const loginRoute = createRoute({
     getParentRoute: () => rootRoute,
     path: ROUTES.LOGIN,
@@ -29,31 +32,37 @@ export const signupRoute = createRoute({
     component: SignupScreen,
 });
 
-export const balanceRoute = createRoute({
+// ---- Authenticated layout route ----
+export const dashboardRoute = createRoute({
     getParentRoute: () => rootRoute,
-    path: ROUTES.BALANCE,
+    path: "/dashboard",
+    component: DashboardLayout,
+});
+
+// ---- Dashboard child routes ----
+export const balanceIndexRoute = createRoute({
+    getParentRoute: () => dashboardRoute,
+    path: "/",
     component: BalanceScreen,
 });
 
 export const detailsRoute = createRoute({
-    getParentRoute: () => rootRoute,
-    path: ROUTES.DETAILS,
+    getParentRoute: () => dashboardRoute,
+    path: "details",
     component: DetailsScreen,
 });
 
 export const profileRoute = createRoute({
-    getParentRoute: () => rootRoute,
-    path: ROUTES.PROFILE,
+    getParentRoute: () => dashboardRoute,
+    path: "profile",
     component: ProfileScreen,
 });
 
-// ---- Árbol de rutas ----
+// ---- Route tree ----
 const routeTree = rootRoute.addChildren([
     loginRoute,
     signupRoute,
-    balanceRoute,
-    detailsRoute,
-    profileRoute,
+    dashboardRoute.addChildren([balanceIndexRoute, detailsRoute, profileRoute]),
 ]);
 
 // ---- Router ----
