@@ -1,0 +1,47 @@
+/* ============================================================
+   src/components/styles/Header.css — Top Header Bar
+   ============================================================ */
+
+.dashboard-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 64px;
+    padding: 0 1.5rem;
+    background-color: var(--card-background);
+    border-bottom: 1px solid var(--text-secondary);
+    flex-shrink: 0;
+}
+
+.dashboard-header__brand {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.dashboard-header__logo {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 36px;
+    border-radius: 8px;
+    background-color: var(--btn-primary);
+    color: var(--btn-text);
+    font-weight: 700;
+    font-size: 0.875rem;
+    letter-spacing: 0.5px;
+}
+
+.dashboard-header__app-name {
+    font-size: 1.125rem;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin: 0;
+}
+
+.dashboard-header__actions {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}

@@ -35,111 +35,7 @@
     background-color: var(--background);
 }
 
-/* ============================================================
-   HEADER
-   ============================================================ */
-.dashboard-header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    height: 64px;
-    padding: 0 1.5rem;
-    background-color: var(--card-background);
-    border-bottom: 1px solid var(--text-secondary);
-    flex-shrink: 0;
-}
-
-.dashboard-header__brand {
-    display: flex;
-    align-items: center;
-    gap: 0.75rem;
-}
-
-.dashboard-header__logo {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    width: 36px;
-    height: 36px;
-    border-radius: 8px;
-    background-color: var(--btn-primary);
-    color: var(--btn-text);
-    font-weight: 700;
-    font-size: 0.875rem;
-    letter-spacing: 0.5px;
-}
-
-.dashboard-header__app-name {
-    font-size: 1.125rem;
-    font-weight: 600;
-    color: var(--text-primary);
-    margin: 0;
-}
-
-.dashboard-header__actions {
-    display: flex;
-    align-items: center;
-    gap: 1rem;
-}
-
-/* ============================================================
-   NAVIGATION BAR (Sidebar)
-   ============================================================ */
-.dashboard-nav {
-    padding: 1rem 0.75rem;
-}
-
-.dashboard-nav__list {
-    list-style: none;
-    margin: 0;
-    padding: 0;
-    display: flex;
-    flex-direction: column;
-    gap: 0.25rem;
-}
-
-.dashboard-nav__item {
-    margin: 0;
-}
-
-.dashboard-nav__link {
-    display: flex;
-    align-items: center;
-    gap: 0.75rem;
-    padding: 0.75rem 1rem;
-    border-radius: 8px;
-    text-decoration: none;
-    color: var(--text-primary);
-    font-size: 0.9375rem;
-    font-weight: 500;
-    transition:
-        background-color 0.15s ease,
-        color 0.15s ease;
-}
-
-.dashboard-nav__link:hover {
-    background-color: var(--text-secondary);
-    color: var(--btn-text);
-}
-
-.dashboard-nav__link--active {
-    background-color: var(--btn-primary);
-    color: var(--btn-text);
-}
-
-.dashboard-nav__icon {
-    font-size: 1.25rem;
-    line-height: 1;
-    flex-shrink: 0;
-}
-
-.dashboard-nav__label {
-    white-space: nowrap;
-}
-
-/* ============================================================
-   RESPONSIVE — Mobile (max-width: 768px)
-   ============================================================ */
+/* ---------- Responsive (max-width: 768px) ---------- */
 @media (max-width: 768px) {
     .dashboard-layout__body {
         flex-direction: column;
@@ -151,23 +47,6 @@
         border-right: none;
         border-bottom: 1px solid var(--text-secondary);
         flex-shrink: 0;
-    }
-
-    .dashboard-nav__list {
-        flex-direction: row;
-        justify-content: space-around;
-        gap: 0;
-    }
-
-    .dashboard-nav__link {
-        flex-direction: column;
-        gap: 0.25rem;
-        padding: 0.5rem 0.75rem;
-        font-size: 0.75rem;
-    }
-
-    .dashboard-nav__icon {
-        font-size: 1.5rem;
     }
 
     .dashboard-layout__main {

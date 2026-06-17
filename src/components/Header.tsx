@@ -1,8 +1,9 @@
 // src/components/Header.tsx
 import { useTranslation } from "react-i18next";
+import "./styles/Header.css";
 
 export const Header = () => {
-    const { t } = useTranslation("");
+    const { t } = useTranslation();
 
     return (
         <header className="dashboard-header">

@@ -1,9 +1,10 @@
 // src/components/Navbar.tsx
 import { Link } from "@tanstack/react-router";
 import { useTranslation } from "react-i18next";
+import "./styles/Navbar.css";
 
 export const Navbar = () => {
-    const { t } = useTranslation("");
+    const { t } = useTranslation();
 
     return (
         <nav className="dashboard-nav">
