@@ -2,8 +2,8 @@
 import "./styles/DashboardLayout.css";
 import { useEffect, useState } from "react";
 import { Outlet, useLocation } from "@tanstack/react-router";
-import { Header } from "../components/Header";
-import Navbar from "../components/Navbar";
+import { Header } from "../components/layout/Header";
+import Navbar from "../components/layout/Navbar";
 
 export const DashboardLayout = () => {
     const [isMenuOpen, setIsMenuOpen] = useState(false);
