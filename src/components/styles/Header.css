@@ -45,3 +45,38 @@
     align-items: center;
     gap: 1rem;
 }
+
+/* ---------- Hamburger menu trigger (mobile only) ---------- */
+.dashboard-header__hamburger {
+    display: none;
+}
+
+@media (max-width: 768px) {
+    .dashboard-header__hamburger {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        gap: 4px;
+        width: 40px;
+        height: 40px;
+        border: none;
+        border-radius: 8px;
+        background-color: transparent;
+        cursor: pointer;
+        padding: 8px;
+        transition: background-color 0.15s ease;
+    }
+
+    .dashboard-header__hamburger:hover {
+        background-color: var(--text-secondary);
+    }
+
+    .dashboard-header__hamburger-bar {
+        display: block;
+        width: 20px;
+        height: 2px;
+        border-radius: 1px;
+        background-color: var(--text-primary);
+    }
+}

@@ -41,7 +41,8 @@
     "placeholder": "Profile"
   },
   "DashboardLayout": {
-    "headerTitle": "Daily FI"
+    "headerTitle": "Daily FI",
+    "menuToggle": "Open menu"
   },
   "Common": {
     "appName": "Daily FI",
