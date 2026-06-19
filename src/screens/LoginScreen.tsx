@@ -3,11 +3,11 @@ import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Link, useNavigate } from "@tanstack/react-router";
 import "../styles/LoginScreen.css";
-import { ROUTES } from "../constants/routes";
+import { DASHBOARD_ROUTES, ROUTES } from "../constants/routes";
 
 const handleLogin = (navigate: ReturnType<typeof useNavigate>): void => {
     // Simulate successful login and redirect to protected /balance route
-    navigate({ to: ROUTES.DASHBOARD });
+    navigate({ to: DASHBOARD_ROUTES.DASHBOARD });
 };
 
 const LoginScreen = () => {

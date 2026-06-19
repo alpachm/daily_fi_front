@@ -7,7 +7,7 @@ import DashboardLayout from "./layouts/DashboardLayout";
 import BalanceScreen from "./screens/BalanceScreen";
 import DetailsScreen from "./screens/DetailsScreen";
 import ProfileScreen from "./screens/ProfileScreen";
-import { ROUTES } from "./constants/routes";
+import { DASHBOARD_ROUTES, ROUTES } from "./constants/routes";
 
 // ---- Root ----
 const rootRoute = createRootRoute();
@@ -28,26 +28,26 @@ export const signupRoute = createRoute({
 // ---- Authenticated layout route ----
 export const dashboardRoute = createRoute({
     getParentRoute: () => rootRoute,
-    path: "/dashboard",
+    path: DASHBOARD_ROUTES.DASHBOARD,
     component: DashboardLayout,
 });
 
 // ---- Dashboard child routes ----
 export const balanceIndexRoute = createRoute({
     getParentRoute: () => dashboardRoute,
-    path: "/",
+    path: DASHBOARD_ROUTES.BALANCE,
     component: BalanceScreen,
 });
 
 export const detailsRoute = createRoute({
     getParentRoute: () => dashboardRoute,
-    path: "details",
+    path: DASHBOARD_ROUTES.DETAILS,
     component: DetailsScreen,
 });
 
 export const profileRoute = createRoute({
     getParentRoute: () => dashboardRoute,
-    path: "profile",
+    path: DASHBOARD_ROUTES.PROFILE,
     component: ProfileScreen,
 });
 

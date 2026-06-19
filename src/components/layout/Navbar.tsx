@@ -44,7 +44,6 @@ export const Navbar = ({ isOpen, onClose }: NavbarProps) => {
     return (
         <nav
             className={`dashboard-nav ${isOpen ? "dashboard-nav--open" : "dashboard-nav--closed"}`}
-            aria-hidden={!isOpen}
         >
             {/* Overlay backdrop */}
             <div className="dashboard-nav__backdrop" onClick={onClose} aria-hidden="true" />

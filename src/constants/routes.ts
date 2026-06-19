@@ -1,7 +1,12 @@
 export const ROUTES = {
     LOGIN: "/",
     SIGNUP: "/signup",
+
+} as const;
+
+export const DASHBOARD_ROUTES = {
     DASHBOARD: "/dashboard",
-    DETAILS: "/dashboard/details",
-    PROFILE: "/dashboard/profile",
+    BALANCE: "/",
+    DETAILS: "/details",
+    PROFILE: "/profile",
 } as const;
