@@ -52,10 +52,16 @@
     color: var(--btn-text);
 }
 
+.dashboard-nav__link--active .dashboard-nav__icon {
+    stroke: var(--btn-text);
+}
+
 .dashboard-nav__icon {
     font-size: 1.25rem;
     line-height: 1;
     flex-shrink: 0;
+    stroke: var(--text-secondary);
+    transition: stroke 0.2s ease;
 }
 
 .dashboard-nav__label {
@@ -200,5 +206,7 @@
 
     .dashboard-nav__icon {
         font-size: 1.25rem;
+        stroke: var(--text-secondary);
+        transition: stroke 0.2s ease;
     }
 }
