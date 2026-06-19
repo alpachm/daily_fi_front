@@ -1,4 +1,4 @@
-// src/components/Navbar.tsx
+// src/components/layout/Navbar.tsx
 import { Link } from "@tanstack/react-router";
 import { useTranslation } from "react-i18next";
 import "./styles/Navbar.css";
@@ -7,6 +7,34 @@ interface NavbarProps {
     isOpen: boolean;
     onClose: () => void;
 }
+
+interface NavLinkConfig {
+    id: string;
+    to: string;
+    labelKey: string;
+    emoji: string;
+}
+
+const NAV_LINKS: NavLinkConfig[] = [
+    {
+        id: "dashboard-balance",
+        to: "/dashboard",
+        labelKey: "Navbar.balance",
+        emoji: "💰",
+    },
+    {
+        id: "dashboard-details",
+        to: "/dashboard/details",
+        labelKey: "Navbar.details",
+        emoji: "📋",
+    },
+    {
+        id: "dashboard-profile",
+        to: "/dashboard/profile",
+        labelKey: "Navbar.profile",
+        emoji: "👤",
+    },
+];
 
 export const Navbar = ({ isOpen, onClose }: NavbarProps) => {
     const { t } = useTranslation();
@@ -33,45 +61,21 @@ export const Navbar = ({ isOpen, onClose }: NavbarProps) => {
                 </button>
 
                 <ul className="dashboard-nav__list">
-                    <li className="dashboard-nav__item">
-                        <Link
-                            to="/dashboard"
-                            className="dashboard-nav__link"
-                            activeProps={{ className: "dashboard-nav__link--active" }}
-                            onClick={onClose}
-                        >
-                            <span className="dashboard-nav__icon" aria-hidden="true">
-                                💰
-                            </span>
-                            <span className="dashboard-nav__label">{t("Navbar.balance")}</span>
-                        </Link>
-                    </li>
-                    <li className="dashboard-nav__item">
-                        <Link
-                            to="/dashboard/details"
-                            className="dashboard-nav__link"
-                            activeProps={{ className: "dashboard-nav__link--active" }}
-                            onClick={onClose}
-                        >
-                            <span className="dashboard-nav__icon" aria-hidden="true">
-                                📋
-                            </span>
-                            <span className="dashboard-nav__label">{t("Navbar.details")}</span>
-                        </Link>
-                    </li>
-                    <li className="dashboard-nav__item">
-                        <Link
-                            to="/dashboard/profile"
-                            className="dashboard-nav__link"
-                            activeProps={{ className: "dashboard-nav__link--active" }}
-                            onClick={onClose}
-                        >
-                            <span className="dashboard-nav__icon" aria-hidden="true">
-                                👤
-                            </span>
-                            <span className="dashboard-nav__label">{t("Navbar.profile")}</span>
-                        </Link>
-                    </li>
+                    {NAV_LINKS.map(({ id, to, labelKey, emoji }) => (
+                        <li key={id} className="dashboard-nav__item">
+                            <Link
+                                to={to}
+                                className="dashboard-nav__link"
+                                activeProps={{ className: "dashboard-nav__link--active" }}
+                                onClick={onClose}
+                            >
+                                <span className="dashboard-nav__icon" aria-hidden="true">
+                                    {emoji}
+                                </span>
+                                <span className="dashboard-nav__label">{t(labelKey)}</span>
+                            </Link>
+                        </li>
+                    ))}
                 </ul>
             </div>
         </nav>

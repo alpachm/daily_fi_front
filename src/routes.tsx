@@ -7,14 +7,7 @@ import DashboardLayout from "./layouts/DashboardLayout";
 import BalanceScreen from "./screens/BalanceScreen";
 import DetailsScreen from "./screens/DetailsScreen";
 import ProfileScreen from "./screens/ProfileScreen";
-
-export const ROUTES = {
-    LOGIN: "/",
-    SIGNUP: "/signup",
-    DASHBOARD: "/dashboard",
-    DETAILS: "/dashboard/details",
-    PROFILE: "/dashboard/profile",
-} as const;
+import { ROUTES } from "./constants/routes";
 
 // ---- Root ----
 const rootRoute = createRootRoute();
