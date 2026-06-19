@@ -66,6 +66,7 @@ export const Navbar = ({ isOpen, onClose }: NavbarProps) => {
                                 to={to}
                                 className="dashboard-nav__link"
                                 activeProps={{ className: "dashboard-nav__link--active" }}
+                                activeOptions={{ exact: true }}
                                 onClick={onClose}
                             >
                                 <span className="dashboard-nav__icon" aria-hidden="true">
