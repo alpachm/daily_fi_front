@@ -177,6 +177,42 @@ const formatSignedCurrency = (value: number, locale: string): string => {
     return absolute;
 };
 
+type PaginationRangeItem = number | "ellipsis";
+
+const getPaginationRange = (
+    currentPageIndex: number,
+    totalPages: number,
+): PaginationRangeItem[] => {
+    if (totalPages <= 5) {
+        return Array.from({ length: totalPages }, (_, index) => index + 1);
+    }
+
+    const currentPage = currentPageIndex + 1;
+    const candidatePages = new Set<number>([
+        1,
+        totalPages,
+        currentPage,
+        currentPage - 1,
+        currentPage + 1,
+    ]);
+
+    const range: PaginationRangeItem[] = [];
+    let previousPage = 0;
+
+    Array.from(candidatePages)
+        .filter((page) => page >= 1 && page <= totalPages)
+        .sort((a, b) => a - b)
+        .forEach((page) => {
+            if (page - previousPage > 1) {
+                range.push("ellipsis");
+            }
+            range.push(page);
+            previousPage = page;
+        });
+
+    return range;
+};
+
 const handleShowPurchaseVouchers: ActionMenuHandler = (record) => {
     console.log("HistoryTable: show purchase vouchers", record.id);
 };
@@ -358,7 +394,7 @@ export const HistoryTable = ({ filter }: HistoryTableProps) => {
     const rows = table.getRowModel().rows;
     const pageCount = table.getPageCount();
     const currentPageIndex = table.getState().pagination.pageIndex;
-    const pageIndexes = Array.from({ length: pageCount }, (_, index) => index);
+    const paginationRange = getPaginationRange(currentPageIndex, pageCount);
 
     return (
         <section className="history-table" aria-labelledby="history-table-title">
@@ -455,24 +491,41 @@ export const HistoryTable = ({ filter }: HistoryTableProps) => {
                         <ChevronLeft size={18} aria-hidden="true" />
                     </button>
 
-                    {pageIndexes.map((pageIndex) => (
-                        <button
-                            key={pageIndex}
-                            type="button"
-                            className={
-                                pageIndex === currentPageIndex
-                                    ? "history-table__page-btn history-table__page-btn--active"
-                                    : "history-table__page-btn"
-                            }
-                            onClick={() => table.setPageIndex(pageIndex)}
-                            aria-label={t("DetailsScreen.tableGoToPageLabel", {
-                                page: pageIndex + 1,
-                            })}
-                            aria-current={pageIndex === currentPageIndex ? "page" : undefined}
-                        >
-                            {pageIndex + 1}
-                        </button>
-                    ))}
+                    {paginationRange.map((item, index) => {
+                        if (item === "ellipsis") {
+                            return (
+                                <span
+                                    key={`history-table__pagination-ellipsis-${index}`}
+                                    className="history-table__pagination-ellipsis"
+                                    aria-hidden="true"
+                                >
+                                    …
+                                </span>
+                            );
+                        }
+
+                        const pageNumber = item;
+                        const pageIndex = pageNumber - 1;
+
+                        return (
+                            <button
+                                key={pageNumber}
+                                type="button"
+                                className={
+                                    pageIndex === currentPageIndex
+                                        ? "history-table__page-btn history-table__page-btn--active"
+                                        : "history-table__page-btn"
+                                }
+                                onClick={() => table.setPageIndex(pageIndex)}
+                                aria-label={t("DetailsScreen.tableGoToPageLabel", {
+                                    page: pageNumber,
+                                })}
+                                aria-current={pageIndex === currentPageIndex ? "page" : undefined}
+                            >
+                                {pageNumber}
+                            </button>
+                        );
+                    })}
 
                     <button
                         type="button"
