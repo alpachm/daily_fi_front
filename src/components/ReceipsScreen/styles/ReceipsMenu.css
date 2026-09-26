@@ -1,0 +1,143 @@
+/* ============================================================
+   src/components/ReceipsScreen/styles/ReceipsMenu.css
+   Receipts day selector + voucher type toggle menu
+   ============================================================ */
+
+.receips-menu {
+    width: 100%;
+}
+
+.receips-menu__header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1.5rem;
+    flex-wrap: wrap;
+    padding: 1.25rem;
+    background-color: var(--card-background);
+    border: 1px solid var(--text-secondary);
+    border-radius: 12px;
+    transition: background-color 0.3s ease, border-color 0.3s ease;
+}
+
+.receips-menu__controls {
+    display: flex;
+    flex-direction: column;
+    gap: 0.875rem;
+    flex: 1;
+    min-width: 0;
+}
+
+.receips-menu__title {
+    margin: 0;
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--text-primary);
+    letter-spacing: -0.01em;
+    transition: color 0.3s ease;
+}
+
+.receips-menu__filters {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+}
+
+.receips-menu__date-input {
+    padding: 0.625rem 0.75rem;
+    font-size: 0.875rem;
+    font-family: inherit;
+    color: var(--text-primary);
+    background-color: var(--background);
+    border: 2px solid var(--text-secondary);
+    border-radius: 10px;
+    outline: none;
+    transition:
+        border-color 0.2s ease,
+        background-color 0.3s ease,
+        color 0.3s ease;
+}
+
+.receips-menu__date-input:focus {
+    border-color: var(--btn-primary);
+}
+
+.receips-menu__type-group {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.receips-menu__type-btn {
+    padding: 0.625rem 1.25rem;
+    font-size: 0.875rem;
+    font-weight: 600;
+    font-family: inherit;
+    color: var(--text-secondary);
+    background-color: var(--background);
+    border: 1px solid var(--text-secondary);
+    border-radius: 999px;
+    cursor: pointer;
+    transition:
+        background-color 0.15s ease,
+        border-color 0.15s ease,
+        color 0.15s ease,
+        opacity 0.15s ease;
+}
+
+.receips-menu__type-btn:hover:not(:disabled) {
+    border-color: var(--btn-primary);
+    color: var(--btn-primary);
+}
+
+.receips-menu__type-btn:focus-visible {
+    outline: 2px solid var(--btn-primary);
+    outline-offset: 2px;
+}
+
+.receips-menu__type-btn--active {
+    background-color: var(--btn-primary);
+    border-color: var(--btn-primary);
+    color: var(--btn-text);
+}
+
+.receips-menu__type-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    pointer-events: none;
+}
+
+.receips-menu__actions {
+    display: flex;
+    align-items: center;
+    flex-shrink: 0;
+}
+
+.receips-menu__upload-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    padding: 0.75rem 1.25rem;
+    font-size: 0.875rem;
+    font-weight: 600;
+    font-family: inherit;
+    color: var(--btn-text);
+    background-color: var(--btn-primary);
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    transition:
+        opacity 0.15s ease,
+        transform 0.15s ease;
+}
+
+.receips-menu__upload-btn:hover {
+    opacity: 0.9;
+}
+
+.receips-menu__upload-btn:focus-visible {
+    outline: 2px solid var(--btn-primary);
+    outline-offset: 2px;
+}

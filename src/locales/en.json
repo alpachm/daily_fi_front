@@ -89,7 +89,14 @@
   },
   "ReceipsScreen": {
     "title": "Receipts",
-    "placeholder": "Receipt management — under development."
+    "placeholder": "Receipt management — under development.",
+    "menuDefaultTitle": "Select the day you want to view the vouchers",
+    "menuTitleWithDate": "Vouchers for {{date}}",
+    "menuDateLabel": "Select date",
+    "menuTypeGroupLabel": "Voucher type",
+    "saleLabel": "Sale",
+    "purchaseLabel": "Purchase",
+    "uploadLabel": "Upload vouchers"
   },
   "DashboardLayout": {
     "headerTitle": "Daily FI",

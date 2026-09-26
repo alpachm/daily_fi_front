@@ -89,7 +89,14 @@
   },
   "ReceipsScreen": {
     "title": "Comprobantes",
-    "placeholder": "Gestión de comprobantes — en desarrollo."
+    "placeholder": "Gestión de comprobantes — en desarrollo.",
+    "menuDefaultTitle": "Selecciona el día que desea consultar los comprobantes",
+    "menuTitleWithDate": "Comprobantes día {{date}}",
+    "menuDateLabel": "Seleccionar fecha",
+    "menuTypeGroupLabel": "Tipo de comprobante",
+    "saleLabel": "Venta",
+    "purchaseLabel": "Compra",
+    "uploadLabel": "Cargar comprobantes"
   },
   "DashboardLayout": {
     "headerTitle": "Daily FI",
