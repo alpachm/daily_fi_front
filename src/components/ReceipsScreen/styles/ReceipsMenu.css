@@ -13,11 +13,15 @@
     justify-content: space-between;
     gap: 1.5rem;
     flex-wrap: wrap;
-    padding: 1.25rem;
+    padding: 1.5rem;
     background-color: var(--card-background);
-    border: 1px solid var(--text-secondary);
-    border-radius: 12px;
-    transition: background-color 0.3s ease, border-color 0.3s ease;
+    border-radius: 16px;
+    box-shadow:
+        0 4px 6px -1px rgba(0, 0, 0, 0.08),
+        0 2px 4px -2px rgba(0, 0, 0, 0.05);
+    transition:
+        background-color 0.3s ease,
+        box-shadow 0.3s ease;
 }
 
 .receips-menu__controls {
