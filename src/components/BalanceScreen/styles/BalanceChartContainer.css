@@ -1,0 +1,59 @@
+/* ============================================================
+   src/components/BalanceScreen/styles/BalanceChartContainer.css — Chart card
+   ============================================================ */
+
+.balance-chart {
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
+    background-color: var(--card-background);
+    border-radius: 16px;
+    padding: 1.5rem;
+    box-shadow:
+        0 4px 6px -1px rgba(0, 0, 0, 0.08),
+        0 2px 4px -2px rgba(0, 0, 0, 0.05);
+    transition:
+        background-color 0.3s ease,
+        box-shadow 0.3s ease;
+}
+
+.balance-chart__summary {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 1.5rem 2.5rem;
+}
+
+.balance-chart__metric {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+}
+
+.balance-chart__metric-label {
+    font-size: 0.8125rem;
+    color: var(--text-secondary);
+    transition: color 0.3s ease;
+}
+
+.balance-chart__metric-value {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 1.5rem;
+    font-weight: 700;
+    line-height: 1.2;
+    word-break: break-word;
+}
+
+.balance-chart__metric-value--positive {
+    color: var(--status-success);
+}
+
+.balance-chart__metric-value--negative {
+    color: var(--status-error);
+}
+
+.balance-chart__metric-value--neutral {
+    color: var(--text-secondary);
+}

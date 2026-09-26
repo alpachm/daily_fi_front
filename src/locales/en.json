@@ -30,7 +30,19 @@
   },
   "BalanceScreen": {
     "title": "Balance",
-    "placeholder": "Balance"
+    "placeholder": "Balance",
+    "chartSeriesName": "Balance",
+    "chartAriaLabel": "Historical balance chart",
+    "totalNetLabel": "Total Net Balance",
+    "percentageChangeLabel": "Percentage Change",
+    "previousDayTitle": "Previous Day",
+    "previousDaySubtitle": "Historical data",
+    "todayTitle": "Today",
+    "todaySubtitle": "Today's entry",
+    "startedLabel": "Started",
+    "finishedLabel": "Finished",
+    "netLabel": "Net",
+    "editLabel": "Edit"
   },
   "DetailsScreen": {
     "title": "Details",

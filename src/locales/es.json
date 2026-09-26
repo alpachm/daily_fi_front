@@ -30,7 +30,19 @@
   },
   "BalanceScreen": {
     "title": "Balance",
-    "placeholder": "BALANCE"
+    "placeholder": "BALANCE",
+    "chartSeriesName": "Capital",
+    "chartAriaLabel": "Gráfica de balance histórico",
+    "totalNetLabel": "Balance Neto Total",
+    "percentageChangeLabel": "Cambio Porcentual",
+    "previousDayTitle": "Día Anterior",
+    "previousDaySubtitle": "Datos históricos",
+    "todayTitle": "Día de Hoy",
+    "todaySubtitle": "Registro de hoy",
+    "startedLabel": "Empecé",
+    "finishedLabel": "Terminé",
+    "netLabel": "Neto",
+    "editLabel": "Editar"
   },
   "DetailsScreen": {
     "title": "Detalles",
