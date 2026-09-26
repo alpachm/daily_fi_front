@@ -80,7 +80,21 @@
   },
   "ProfileScreen": {
     "title": "Profile",
-    "placeholder": "Profile"
+    "placeholder": "Profile",
+    "securityTitle": "Security & Access",
+    "securityCurrentPasswordLabel": "Current password",
+    "securityNewPasswordLabel": "New password",
+    "securityConfirmPasswordLabel": "Confirm new password",
+    "securityShowPassword": "Show password",
+    "securityHidePassword": "Hide password",
+    "securityUpdatePasswordButton": "Update password",
+    "securitySessionsTitle": "Active sessions",
+    "securityCurrentDeviceLabel": "Current device",
+    "securityActiveSessionLabel": "Active session",
+    "securityLastActivityLabel": "Last activity",
+    "securityLastActivityValue": "Just now",
+    "securityCloseSessionsButton": "Close all sessions",
+    "securityLogoutButton": "Log out"
   },
   "ReceiptsScreen": {
     "title": "Receipts",
