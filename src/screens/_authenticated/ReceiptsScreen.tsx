@@ -1,10 +1,10 @@
-// src/screens/_authenticated/ReceipsScreen.tsx
-import "../../styles/ReceipsScreen.css";
-import { ReceipsMenu } from "../../components/ReceipsScreen/ReceipsMenu";
-import { ReceiptsTable } from "../../components/ReceipsScreen/ReceiptsTable";
-import { useReceipsMenu } from "../../hooks/useReceipsMenu";
+// src/screens/_authenticated/ReceiptsScreen.tsx
+import "../../styles/ReceiptsScreen.css";
+import { ReceiptsMenu } from "../../components/ReceiptsScreen/ReceiptsMenu";
+import { ReceiptsTable } from "../../components/ReceiptsScreen/ReceiptsTable";
+import { useReceiptsMenu } from "../../hooks/useReceiptsMenu";
 
-export const ReceipsScreen = () => {
+export const ReceiptsScreen = () => {
     const {
         selectedDate,
         receiptType,
@@ -12,11 +12,11 @@ export const ReceipsScreen = () => {
         formattedDate,
         handleDateChange,
         handleReceiptTypeChange,
-    } = useReceipsMenu();
+    } = useReceiptsMenu();
 
     return (
-        <div className="receips-screen">
-            <ReceipsMenu
+        <div className="receipts-screen">
+            <ReceiptsMenu
                 selectedDate={selectedDate}
                 receiptType={receiptType}
                 today={today}
@@ -29,4 +29,4 @@ export const ReceipsScreen = () => {
     );
 };
 
-export default ReceipsScreen;
+export default ReceiptsScreen;

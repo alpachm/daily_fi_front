@@ -1,7 +1,7 @@
-// src/components/ReceipsScreen/ReceiptsTable.tsx
+// src/components/ReceiptsScreen/ReceiptsTable.tsx
 import { useTranslation } from "react-i18next";
 import { MoreHorizontal } from "lucide-react";
-import type { ReceiptType } from "../../hooks/useReceipsMenu";
+import type { ReceiptType } from "../../hooks/useReceiptsMenu";
 import "./styles/ReceiptsTable.css";
 
 export interface ReceiptItem {
@@ -78,7 +78,7 @@ export const ReceiptsTable = ({
             {selectedDate === null ? (
                 <div className="receipts-table__empty">
                     <p className="receipts-table__empty-text">
-                        {t("ReceipsScreen.tableEmptySelectDate")}
+                        {t("ReceiptsScreen.tableEmptySelectDate")}
                     </p>
                 </div>
             ) : (
@@ -87,19 +87,19 @@ export const ReceiptsTable = ({
                         <thead>
                             <tr className="receipts-table__row">
                                 <th scope="col" className="receipts-table__header-cell">
-                                    {t("ReceipsScreen.tableHeaderDate")}
+                                    {t("ReceiptsScreen.tableHeaderDate")}
                                 </th>
                                 <th scope="col" className="receipts-table__header-cell">
-                                    {t("ReceipsScreen.tableHeaderTime")}
+                                    {t("ReceiptsScreen.tableHeaderTime")}
                                 </th>
                                 <th scope="col" className="receipts-table__header-cell">
-                                    {t("ReceipsScreen.tableHeaderName")}
+                                    {t("ReceiptsScreen.tableHeaderName")}
                                 </th>
                                 <th
                                     scope="col"
                                     className="receipts-table__header-cell receipts-table__header-cell--options"
                                 >
-                                    {t("ReceipsScreen.tableHeaderOptions")}
+                                    {t("ReceiptsScreen.tableHeaderOptions")}
                                 </th>
                             </tr>
                         </thead>
@@ -115,7 +115,7 @@ export const ReceiptsTable = ({
                                         <button
                                             type="button"
                                             className="receipts-table__options-btn"
-                                            aria-label={t("ReceipsScreen.tableOptionsMenuLabel")}
+                                            aria-label={t("ReceiptsScreen.tableOptionsMenuLabel")}
                                         >
                                             <MoreHorizontal size={18} aria-hidden="true" />
                                         </button>

@@ -7,7 +7,7 @@ import DashboardLayout from "./layouts/DashboardLayout";
 import BalanceScreen from "./screens/_authenticated/BalanceScreen";
 import DetailsScreen from "./screens/_authenticated/DetailsScreen";
 import ProfileScreen from "./screens/_authenticated/ProfileScreen";
-import ReceipsScreen from "./screens/_authenticated/ReceipsScreen";
+import ReceiptsScreen from "./screens/_authenticated/ReceiptsScreen";
 import { DASHBOARD_ROUTES, ROUTES } from "./constants/routes";
 
 // ---- Root ----
@@ -72,7 +72,7 @@ export const profileRoute = createRoute({
 export const receiptsRoute = createRoute({
     getParentRoute: () => dashboardRoute,
     path: DASHBOARD_ROUTES.RECEIPTS,
-    component: ReceipsScreen,
+    component: ReceiptsScreen,
 });
 
 // ---- Route tree ----

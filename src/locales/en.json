@@ -87,7 +87,7 @@
     "title": "Profile",
     "placeholder": "Profile"
   },
-  "ReceipsScreen": {
+  "ReceiptsScreen": {
     "title": "Receipts",
     "placeholder": "Receipt management — under development.",
     "menuDefaultTitle": "Select the day you want to view the vouchers",

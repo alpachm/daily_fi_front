@@ -1,13 +1,13 @@
 /* ============================================================
-   src/components/ReceipsScreen/styles/ReceipsMenu.css
+   src/components/ReceiptsScreen/styles/ReceiptsMenu.css
    Receipts day selector + voucher type toggle menu
    ============================================================ */
 
-.receips-menu {
+.receipts-menu {
     width: 100%;
 }
 
-.receips-menu__header {
+.receipts-menu__header {
     display: flex;
     flex-direction: column;
     align-items: stretch;
@@ -23,7 +23,7 @@
         box-shadow 0.3s ease;
 }
 
-.receips-menu__controls {
+.receipts-menu__controls {
     display: flex;
     flex-direction: column;
     flex-wrap: wrap;
@@ -31,7 +31,7 @@
     min-width: 0;
 }
 
-.receips-menu__title {
+.receipts-menu__title {
     margin: 0;
     width: 100%;
     font-size: 1rem;
@@ -41,14 +41,14 @@
     transition: color 0.3s ease;
 }
 
-.receips-menu__filters {
+.receipts-menu__filters {
     display: flex;
     align-items: center;
     flex-wrap: wrap;
     gap: 0.75rem;
 }
 
-.receips-menu__date-input {
+.receipts-menu__date-input {
     padding: 0.625rem 0.75rem;
     font-size: 0.875rem;
     font-family: inherit;
@@ -63,17 +63,17 @@
         color 0.3s ease;
 }
 
-.receips-menu__date-input:focus {
+.receipts-menu__date-input:focus {
     border-color: var(--btn-primary);
 }
 
-.receips-menu__type-group {
+.receipts-menu__type-group {
     display: inline-flex;
     align-items: center;
     gap: 0.5rem;
 }
 
-.receips-menu__type-btn {
+.receipts-menu__type-btn {
     padding: 0.625rem 1.25rem;
     font-size: 0.875rem;
     font-weight: 600;
@@ -90,35 +90,35 @@
         opacity 0.15s ease;
 }
 
-.receips-menu__type-btn:hover:not(:disabled) {
+.receipts-menu__type-btn:hover:not(:disabled) {
     border-color: var(--btn-primary);
     color: var(--btn-primary);
 }
 
-.receips-menu__type-btn:focus-visible {
+.receipts-menu__type-btn:focus-visible {
     outline: 2px solid var(--btn-primary);
     outline-offset: 2px;
 }
 
-.receips-menu__type-btn--active {
+.receipts-menu__type-btn--active {
     background-color: var(--btn-primary);
     border-color: var(--btn-primary);
     color: var(--btn-text);
 }
 
-.receips-menu__type-btn:disabled {
+.receipts-menu__type-btn:disabled {
     opacity: 0.5;
     cursor: not-allowed;
     pointer-events: none;
 }
 
-.receips-menu__actions {
+.receipts-menu__actions {
     display: flex;
     align-items: center;
     width: 100%;
 }
 
-.receips-menu__upload-btn {
+.receipts-menu__upload-btn {
     display: inline-flex;
     align-items: center;
     justify-content: center;
@@ -138,11 +138,11 @@
         transform 0.15s ease;
 }
 
-.receips-menu__upload-btn:hover {
+.receipts-menu__upload-btn:hover {
     opacity: 0.9;
 }
 
-.receips-menu__upload-btn:focus-visible {
+.receipts-menu__upload-btn:focus-visible {
     outline: 2px solid var(--btn-primary);
     outline-offset: 2px;
 }
@@ -151,7 +151,7 @@
    Desktop: restore side-by-side horizontal alignment
    ------------------------------------------------------------ */
 @media (min-width: 769px) {
-    .receips-menu__header {
+    .receipts-menu__header {
         flex-direction: row;
         justify-content: space-between;
         align-items: center;
@@ -159,22 +159,22 @@
         flex-wrap: wrap;
     }
 
-    .receips-menu__controls {
+    .receipts-menu__controls {
         flex: 1;
         flex-wrap: nowrap;
         gap: 0.875rem;
     }
 
-    .receips-menu__title {
+    .receipts-menu__title {
         width: auto;
     }
 
-    .receips-menu__actions {
+    .receipts-menu__actions {
         width: auto;
         flex-shrink: 0;
     }
 
-    .receips-menu__upload-btn {
+    .receipts-menu__upload-btn {
         width: auto;
     }
 }

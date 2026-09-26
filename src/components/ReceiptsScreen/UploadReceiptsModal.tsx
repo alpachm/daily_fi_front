@@ -1,4 +1,4 @@
-// src/components/ReceipsScreen/UploadReceiptsModal.tsx
+// src/components/ReceiptsScreen/UploadReceiptsModal.tsx
 import { useEffect, useMemo, useRef, useState } from "react";
 import type {
     ChangeEvent,
@@ -118,7 +118,7 @@ export const UploadReceiptsModal = ({
             >
                 <header className="upload-receipts-modal__header">
                     <h2 id="upload-receipts-modal-title" className="upload-receipts-modal__title">
-                        {t("ReceipsScreen.uploadLabel")}
+                        {t("ReceiptsScreen.uploadLabel")}
                     </h2>
                     <button
                         type="button"
@@ -136,7 +136,7 @@ export const UploadReceiptsModal = ({
                             className="upload-receipts-modal__date-label"
                             htmlFor="upload-receipts-modal-date"
                         >
-                            {t("ReceipsScreen.uploadModalDateLabel")}
+                            {t("ReceiptsScreen.uploadModalDateLabel")}
                         </label>
                         <input
                             id="upload-receipts-modal-date"
@@ -167,12 +167,12 @@ export const UploadReceiptsModal = ({
                                 className="upload-receipts-modal__dropzone-icon"
                             />
                             <p className="upload-receipts-modal__dropzone-title">
-                                {t("ReceipsScreen.uploadLabel")}
+                                {t("ReceiptsScreen.uploadLabel")}
                             </p>
                             <p className="upload-receipts-modal__dropzone-hint">
                                 {selectedFiles.length === 0
-                                    ? t("ReceipsScreen.uploadModalSelectFiles")
-                                    : t("ReceipsScreen.uploadModalFilesSelected", {
+                                    ? t("ReceiptsScreen.uploadModalSelectFiles")
+                                    : t("ReceiptsScreen.uploadModalFilesSelected", {
                                           count: selectedFiles.length,
                                       })}
                             </p>
@@ -215,7 +215,7 @@ export const UploadReceiptsModal = ({
                         disabled={!canUpload}
                         onClick={handleUpload}
                     >
-                        {t("ReceipsScreen.uploadModalUploadButton")}
+                        {t("ReceiptsScreen.uploadModalUploadButton")}
                     </button>
                 </footer>
             </div>

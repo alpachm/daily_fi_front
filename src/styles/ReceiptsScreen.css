@@ -1,14 +1,14 @@
 /* ============================================================
-   src/styles/ReceipsScreen.css — Receipts (Comprobantes) screen layout
+   src/styles/ReceiptsScreen.css — Receipts (Comprobantes) screen layout
    ============================================================ */
 
-.receips-screen {
+.receipts-screen {
     display: flex;
     flex-direction: column;
     gap: 1.5rem;
 }
 
-.receips-screen__title {
+.receipts-screen__title {
     margin: 0;
     font-size: 1.5rem;
     font-weight: 700;
@@ -17,7 +17,7 @@
     transition: color 0.3s ease;
 }
 
-.receips-screen__placeholder {
+.receipts-screen__placeholder {
     display: flex;
     align-items: center;
     justify-content: center;
@@ -27,7 +27,7 @@
     border-radius: 8px;
 }
 
-.receips-screen__placeholder-text {
+.receipts-screen__placeholder-text {
     margin: 0;
     font-size: 1rem;
     color: var(--text-secondary);

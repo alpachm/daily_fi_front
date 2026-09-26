@@ -1,12 +1,12 @@
-// src/components/ReceipsScreen/ReceipsMenu.tsx
+// src/components/ReceiptsScreen/ReceiptsMenu.tsx
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Upload } from "lucide-react";
-import type { ReceiptType } from "../../hooks/useReceipsMenu";
+import type { ReceiptType } from "../../hooks/useReceiptsMenu";
 import { UploadReceiptsModal } from "./UploadReceiptsModal";
-import "./styles/ReceipsMenu.css";
+import "./styles/ReceiptsMenu.css";
 
-interface ReceipsMenuProps {
+interface ReceiptsMenuProps {
     selectedDate: string | null;
     receiptType: ReceiptType;
     today: string;
@@ -15,14 +15,14 @@ interface ReceipsMenuProps {
     onTypeChange: (type: ReceiptType) => void;
 }
 
-export const ReceipsMenu = ({
+export const ReceiptsMenu = ({
     selectedDate,
     receiptType,
     today,
     formattedDate,
     onDateChange,
     onTypeChange,
-}: ReceipsMenuProps) => {
+}: ReceiptsMenuProps) => {
     const { t } = useTranslation("");
     const [isUploadModalOpen, setIsUploadModalOpen] = useState(false);
 
@@ -30,69 +30,69 @@ export const ReceipsMenu = ({
 
     const title =
         hasSelectedDate && formattedDate
-            ? t("ReceipsScreen.menuTitleWithDate", { date: formattedDate })
-            : t("ReceipsScreen.menuDefaultTitle");
+            ? t("ReceiptsScreen.menuTitleWithDate", { date: formattedDate })
+            : t("ReceiptsScreen.menuDefaultTitle");
 
     return (
-        <div className="receips-menu">
-            <div className="receips-menu__header">
-                <div className="receips-menu__controls">
-                    <h2 className="receips-menu__title">{title}</h2>
+        <div className="receipts-menu">
+            <div className="receipts-menu__header">
+                <div className="receipts-menu__controls">
+                    <h2 className="receipts-menu__title">{title}</h2>
 
-                    <div className="receips-menu__filters">
+                    <div className="receipts-menu__filters">
                         <input
                             type="date"
-                            className="receips-menu__date-input"
+                            className="receipts-menu__date-input"
                             value={selectedDate ?? ""}
                             max={today}
                             onChange={(event) => onDateChange(event.target.value)}
-                            aria-label={t("ReceipsScreen.menuDateLabel")}
+                            aria-label={t("ReceiptsScreen.menuDateLabel")}
                         />
 
                         <div
-                            className="receips-menu__type-group"
+                            className="receipts-menu__type-group"
                             role="group"
-                            aria-label={t("ReceipsScreen.menuTypeGroupLabel")}
+                            aria-label={t("ReceiptsScreen.menuTypeGroupLabel")}
                         >
                             <button
                                 type="button"
-                                className={`receips-menu__type-btn${
+                                className={`receipts-menu__type-btn${
                                     receiptType === "sell"
-                                        ? " receips-menu__type-btn--active"
+                                        ? " receipts-menu__type-btn--active"
                                         : ""
                                 }`}
                                 disabled={!hasSelectedDate}
                                 aria-pressed={receiptType === "sell"}
                                 onClick={() => onTypeChange("sell")}
                             >
-                                {t("ReceipsScreen.saleLabel")}
+                                {t("ReceiptsScreen.saleLabel")}
                             </button>
 
                             <button
                                 type="button"
-                                className={`receips-menu__type-btn${
+                                className={`receipts-menu__type-btn${
                                     receiptType === "buy"
-                                        ? " receips-menu__type-btn--active"
+                                        ? " receipts-menu__type-btn--active"
                                         : ""
                                 }`}
                                 disabled={!hasSelectedDate}
                                 aria-pressed={receiptType === "buy"}
                                 onClick={() => onTypeChange("buy")}
                             >
-                                {t("ReceipsScreen.purchaseLabel")}
+                                {t("ReceiptsScreen.purchaseLabel")}
                             </button>
                         </div>
                     </div>
                 </div>
 
-                <div className="receips-menu__actions">
+                <div className="receipts-menu__actions">
                     <button
                         type="button"
-                        className="receips-menu__upload-btn"
+                        className="receipts-menu__upload-btn"
                         onClick={() => setIsUploadModalOpen(true)}
                     >
                         <Upload size={18} aria-hidden="true" />
-                        <span>{t("ReceipsScreen.uploadLabel")}</span>
+                        <span>{t("ReceiptsScreen.uploadLabel")}</span>
                     </button>
                 </div>
             </div>
@@ -105,4 +105,4 @@ export const ReceipsMenu = ({
     );
 };
 
-export default ReceipsMenu;
+export default ReceiptsMenu;

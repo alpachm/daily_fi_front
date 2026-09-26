@@ -1,4 +1,4 @@
-// src/hooks/useReceipsMenu.ts
+// src/hooks/useReceiptsMenu.ts
 import { useCallback, useMemo, useState } from "react";
 
 export type ReceiptType = "sell" | "buy";
@@ -17,7 +17,7 @@ const formatDisplayDate = (isoDate: string): string => {
     return `${day}-${month}-${year.slice(-2)}`;
 };
 
-interface UseReceipsMenuResult {
+interface UseReceiptsMenuResult {
     selectedDate: string | null;
     receiptType: ReceiptType;
     today: string;
@@ -26,7 +26,7 @@ interface UseReceipsMenuResult {
     handleReceiptTypeChange: (type: ReceiptType) => void;
 }
 
-export const useReceipsMenu = (): UseReceipsMenuResult => {
+export const useReceiptsMenu = (): UseReceiptsMenuResult => {
     const [selectedDate, setSelectedDate] = useState<string | null>(null);
     const [receiptType, setReceiptType] = useState<ReceiptType>("sell");
 
@@ -60,4 +60,4 @@ export const useReceipsMenu = (): UseReceipsMenuResult => {
     };
 };
 
-export default useReceipsMenu;
+export default useReceiptsMenu;
