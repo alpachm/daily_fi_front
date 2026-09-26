@@ -100,7 +100,13 @@
     "uploadModalDateLabel": "Selecciona el día de los comprobantes",
     "uploadModalSelectFiles": "Seleccionar archivos",
     "uploadModalFilesSelected": "{{count}} archivos seleccionados",
-    "uploadModalUploadButton": "Cargar"
+    "uploadModalUploadButton": "Cargar",
+    "tableHeaderDate": "Fecha",
+    "tableHeaderTime": "Hora",
+    "tableHeaderName": "Nombre",
+    "tableHeaderOptions": "Opciones",
+    "tableOptionsMenuLabel": "Opciones de la fila",
+    "tableEmptySelectDate": "Selecciona una fecha para ver los comprobantes"
   },
   "DashboardLayout": {
     "headerTitle": "Daily FI",

@@ -100,7 +100,13 @@
     "uploadModalDateLabel": "Select the day of the vouchers",
     "uploadModalSelectFiles": "Select files",
     "uploadModalFilesSelected": "{{count}} files selected",
-    "uploadModalUploadButton": "Upload"
+    "uploadModalUploadButton": "Upload",
+    "tableHeaderDate": "Date",
+    "tableHeaderTime": "Time",
+    "tableHeaderName": "Name",
+    "tableHeaderOptions": "Options",
+    "tableOptionsMenuLabel": "Row options",
+    "tableEmptySelectDate": "Select a date to view the vouchers"
   },
   "DashboardLayout": {
     "headerTitle": "Daily FI",

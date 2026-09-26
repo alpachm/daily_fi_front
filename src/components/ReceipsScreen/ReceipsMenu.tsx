@@ -2,21 +2,29 @@
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Upload } from "lucide-react";
-import { useReceipsMenu } from "../../hooks/useReceipsMenu";
+import type { ReceiptType } from "../../hooks/useReceipsMenu";
 import { UploadReceiptsModal } from "./UploadReceiptsModal";
 import "./styles/ReceipsMenu.css";
 
-export const ReceipsMenu = () => {
+interface ReceipsMenuProps {
+    selectedDate: string | null;
+    receiptType: ReceiptType;
+    today: string;
+    formattedDate: string | null;
+    onDateChange: (raw: string) => void;
+    onTypeChange: (type: ReceiptType) => void;
+}
+
+export const ReceipsMenu = ({
+    selectedDate,
+    receiptType,
+    today,
+    formattedDate,
+    onDateChange,
+    onTypeChange,
+}: ReceipsMenuProps) => {
     const { t } = useTranslation("");
     const [isUploadModalOpen, setIsUploadModalOpen] = useState(false);
-    const {
-        selectedDate,
-        receiptType,
-        today,
-        formattedDate,
-        handleDateChange,
-        handleReceiptTypeChange,
-    } = useReceipsMenu();
 
     const hasSelectedDate = selectedDate !== null;
 
@@ -37,7 +45,7 @@ export const ReceipsMenu = () => {
                             className="receips-menu__date-input"
                             value={selectedDate ?? ""}
                             max={today}
-                            onChange={(event) => handleDateChange(event.target.value)}
+                            onChange={(event) => onDateChange(event.target.value)}
                             aria-label={t("ReceipsScreen.menuDateLabel")}
                         />
 
@@ -55,7 +63,7 @@ export const ReceipsMenu = () => {
                                 }`}
                                 disabled={!hasSelectedDate}
                                 aria-pressed={receiptType === "sell"}
-                                onClick={() => handleReceiptTypeChange("sell")}
+                                onClick={() => onTypeChange("sell")}
                             >
                                 {t("ReceipsScreen.saleLabel")}
                             </button>
@@ -69,7 +77,7 @@ export const ReceipsMenu = () => {
                                 }`}
                                 disabled={!hasSelectedDate}
                                 aria-pressed={receiptType === "buy"}
-                                onClick={() => handleReceiptTypeChange("buy")}
+                                onClick={() => onTypeChange("buy")}
                             >
                                 {t("ReceipsScreen.purchaseLabel")}
                             </button>

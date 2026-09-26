@@ -1,9 +1,7 @@
 // src/hooks/useReceipsMenu.ts
 import { useCallback, useMemo, useState } from "react";
 
-export type ReceiptType = "buy" | "sell" | null;
-
-export type SelectableReceiptType = Exclude<ReceiptType, null>;
+export type ReceiptType = "sell" | "buy";
 
 const getTodayIsoDate = (): string => {
     const now = new Date();
@@ -25,12 +23,12 @@ interface UseReceipsMenuResult {
     today: string;
     formattedDate: string | null;
     handleDateChange: (raw: string) => void;
-    handleReceiptTypeChange: (type: SelectableReceiptType) => void;
+    handleReceiptTypeChange: (type: ReceiptType) => void;
 }
 
 export const useReceipsMenu = (): UseReceipsMenuResult => {
     const [selectedDate, setSelectedDate] = useState<string | null>(null);
-    const [receiptType, setReceiptType] = useState<ReceiptType>(null);
+    const [receiptType, setReceiptType] = useState<ReceiptType>("sell");
 
     const today = useMemo(() => getTodayIsoDate(), []);
 
@@ -42,14 +40,14 @@ export const useReceipsMenu = (): UseReceipsMenuResult => {
     const handleDateChange = useCallback((raw: string): void => {
         if (raw === "") {
             setSelectedDate(null);
-            setReceiptType(null);
+            setReceiptType("sell");
             return;
         }
         setSelectedDate(raw);
     }, []);
 
-    const handleReceiptTypeChange = useCallback((type: SelectableReceiptType): void => {
-        setReceiptType((current) => (current === type ? null : type));
+    const handleReceiptTypeChange = useCallback((type: ReceiptType): void => {
+        setReceiptType(type);
     }, []);
 
     return {
