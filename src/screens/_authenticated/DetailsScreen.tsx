@@ -1,4 +1,4 @@
-// src/screens/DetailsScreen.tsx
+// src/screens/_authenticated/DetailsScreen.tsx
 import { useTranslation } from "react-i18next";
 
 export const DetailsScreen = () => {
