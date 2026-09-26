@@ -5,12 +5,13 @@
 /* ---------- Desktop Sidebar ---------- */
 .dashboard-nav {
     width: 240px;
+    height: 100%;
     flex-shrink: 0;
     background-color: var(--card-background);
     border-right: 1px solid var(--text-secondary);
     display: flex;
     flex-direction: column;
-    overflow-y: auto;
+    overflow: hidden;
     padding: 1rem 0.75rem;
 }
 
@@ -19,6 +20,12 @@
     flex-direction: column;
     flex: 1;
     min-height: 0;
+}
+
+.dashboard-nav__main {
+    flex: 1;
+    min-height: 0;
+    overflow-y: auto;
 }
 
 .dashboard-nav__list {
@@ -35,7 +42,7 @@
 }
 
 .dashboard-nav__footer {
-    margin-top: auto;
+    flex-shrink: 0;
     padding-top: 1rem;
     border-top: 1px solid var(--text-secondary);
 }

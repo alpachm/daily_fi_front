@@ -86,9 +86,11 @@ export const Navbar = ({ isOpen, onClose }: NavbarProps) => {
                     <span className="dashboard-nav__close-icon" aria-hidden="true" />
                 </button>
 
-                <ul className="dashboard-nav__list">
-                    {NAV_LINKS.map(renderNavLink)}
-                </ul>
+                <div className="dashboard-nav__main">
+                    <ul className="dashboard-nav__list">
+                        {NAV_LINKS.map(renderNavLink)}
+                    </ul>
+                </div>
 
                 <div className="dashboard-nav__footer">
                     <ul className="dashboard-nav__list">
