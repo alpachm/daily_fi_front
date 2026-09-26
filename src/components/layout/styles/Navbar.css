@@ -14,6 +14,13 @@
     padding: 1rem 0.75rem;
 }
 
+.dashboard-nav__panel {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    min-height: 0;
+}
+
 .dashboard-nav__list {
     list-style: none;
     margin: 0;
@@ -25,6 +32,12 @@
 
 .dashboard-nav__item {
     margin: 0;
+}
+
+.dashboard-nav__footer {
+    margin-top: auto;
+    padding-top: 1rem;
+    border-top: 1px solid var(--text-secondary);
 }
 
 .dashboard-nav__link {

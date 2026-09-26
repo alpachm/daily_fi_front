@@ -26,6 +26,7 @@
     "login": "Inicio",
     "balance": "Balance",
     "details": "Detalles",
+    "receipts": "Comprobantes",
     "profile": "Perfil"
   },
   "BalanceScreen": {
@@ -85,6 +86,10 @@
   "ProfileScreen": {
     "title": "Perfil",
     "placeholder": "PERFIL"
+  },
+  "ReceipsScreen": {
+    "title": "Comprobantes",
+    "placeholder": "Gestión de comprobantes — en desarrollo."
   },
   "DashboardLayout": {
     "headerTitle": "Daily FI",

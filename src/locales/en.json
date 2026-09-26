@@ -26,6 +26,7 @@
     "login": "Login",
     "balance": "Balance",
     "details": "Details",
+    "receipts": "Receipts",
     "profile": "Profile"
   },
   "BalanceScreen": {
@@ -85,6 +86,10 @@
   "ProfileScreen": {
     "title": "Profile",
     "placeholder": "Profile"
+  },
+  "ReceipsScreen": {
+    "title": "Receipts",
+    "placeholder": "Receipt management — under development."
   },
   "DashboardLayout": {
     "headerTitle": "Daily FI",
