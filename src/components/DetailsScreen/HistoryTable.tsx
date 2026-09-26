@@ -21,6 +21,7 @@ import {
     ShoppingCart,
 } from "lucide-react";
 import type { FilterPeriod } from "./Balance";
+import { useLocalStorage } from "../../hooks/useLocalStorage";
 import "./styles/HistoryTable.css";
 
 export interface HistoryRecord {
@@ -31,7 +32,6 @@ export interface HistoryRecord {
 
 export interface HistoryTableProps {
     filter: FilterPeriod;
-    pageSize?: number;
 }
 
 type ActionMenuHandler = (record: HistoryRecord) => void;
@@ -46,6 +46,8 @@ interface ActionMenuItem {
 type AmountTone = "positive" | "negative" | "neutral";
 
 const columnHelper = createColumnHelper<HistoryRecord>();
+
+const PAGE_SIZE_STORAGE_KEY = "daily_fi_history_page_size" as const;
 
 const PERIOD_HEADER_KEYS: Record<FilterPeriod, string> = {
     day: "DetailsScreen.tableHeaderDate",
@@ -191,8 +193,9 @@ const handleViewYearDetails: ActionMenuHandler = (record) => {
     console.log("HistoryTable: view year details", record.id);
 };
 
-export const HistoryTable = ({ filter, pageSize = 5 }: HistoryTableProps) => {
+export const HistoryTable = ({ filter }: HistoryTableProps) => {
     const { t, i18n } = useTranslation("");
+    const [pageSize, setPageSize] = useLocalStorage<number>(PAGE_SIZE_STORAGE_KEY, 10);
     const [openMenuRowId, setOpenMenuRowId] = useState<string | null>(null);
     const popoverRef = useRef<HTMLDivElement | null>(null);
 
@@ -423,8 +426,10 @@ export const HistoryTable = ({ filter, pageSize = 5 }: HistoryTableProps) => {
                             className="history-table__select"
                             value={table.getState().pagination.pageSize}
                             onChange={(event: ChangeEvent<HTMLSelectElement>) => {
-                                table.setPageSize(Number(event.target.value));
+                                const nextPageSize = Number(event.target.value);
+                                table.setPageSize(nextPageSize);
                                 table.setPageIndex(0);
+                                setPageSize(nextPageSize);
                             }}
                         >
                             <option value={10}>10</option>
