@@ -96,7 +96,11 @@
     "menuTypeGroupLabel": "Voucher type",
     "saleLabel": "Sale",
     "purchaseLabel": "Purchase",
-    "uploadLabel": "Upload vouchers"
+    "uploadLabel": "Upload vouchers",
+    "uploadModalDateLabel": "Select the day of the vouchers",
+    "uploadModalSelectFiles": "Select files",
+    "uploadModalFilesSelected": "{{count}} files selected",
+    "uploadModalUploadButton": "Upload"
   },
   "DashboardLayout": {
     "headerTitle": "Daily FI",

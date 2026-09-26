@@ -1,11 +1,14 @@
 // src/components/ReceipsScreen/ReceipsMenu.tsx
+import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Upload } from "lucide-react";
 import { useReceipsMenu } from "../../hooks/useReceipsMenu";
+import { UploadReceiptsModal } from "./UploadReceiptsModal";
 import "./styles/ReceipsMenu.css";
 
 export const ReceipsMenu = () => {
     const { t } = useTranslation("");
+    const [isUploadModalOpen, setIsUploadModalOpen] = useState(false);
     const {
         selectedDate,
         receiptType,
@@ -75,12 +78,21 @@ export const ReceipsMenu = () => {
                 </div>
 
                 <div className="receips-menu__actions">
-                    <button type="button" className="receips-menu__upload-btn">
+                    <button
+                        type="button"
+                        className="receips-menu__upload-btn"
+                        onClick={() => setIsUploadModalOpen(true)}
+                    >
                         <Upload size={18} aria-hidden="true" />
                         <span>{t("ReceipsScreen.uploadLabel")}</span>
                     </button>
                 </div>
             </div>
+
+            <UploadReceiptsModal
+                isOpen={isUploadModalOpen}
+                onClose={() => setIsUploadModalOpen(false)}
+            />
         </div>
     );
 };

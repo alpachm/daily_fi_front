@@ -96,7 +96,11 @@
     "menuTypeGroupLabel": "Tipo de comprobante",
     "saleLabel": "Venta",
     "purchaseLabel": "Compra",
-    "uploadLabel": "Cargar comprobantes"
+    "uploadLabel": "Cargar comprobantes",
+    "uploadModalDateLabel": "Selecciona el día de los comprobantes",
+    "uploadModalSelectFiles": "Seleccionar archivos",
+    "uploadModalFilesSelected": "{{count}} archivos seleccionados",
+    "uploadModalUploadButton": "Cargar"
   },
   "DashboardLayout": {
     "headerTitle": "Daily FI",
