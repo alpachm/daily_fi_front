@@ -63,7 +63,7 @@ export const HistoryTable = ({ records, pageSize = 5, onRowOptions }: HistoryTab
 
                     return (
                         <span
-                            className={`daily-history-table__amount daily-history-table__amount--${tone}`}
+                            className={`history-table__amount history-table__amount--${tone}`}
                         >
                             {formatSignedCurrency(value, i18n.language)}
                         </span>
@@ -76,7 +76,7 @@ export const HistoryTable = ({ records, pageSize = 5, onRowOptions }: HistoryTab
                 cell: (info) => (
                     <button
                         type="button"
-                        className="daily-history-table__options-button"
+                        className="history-table__options-button"
                         aria-label={t("DetailsScreen.tableOptionsMenuLabel")}
                         onClick={() => onRowOptions?.(info.row.original)}
                     >
@@ -102,20 +102,20 @@ export const HistoryTable = ({ records, pageSize = 5, onRowOptions }: HistoryTab
     const currentPage = table.getState().pagination.pageIndex + 1;
 
     return (
-        <section className="daily-history-table" aria-labelledby="daily-history-table-title">
-            <h2 id="daily-history-table-title" className="daily-history-table__title">
+        <section className="history-table" aria-labelledby="history-table-title">
+            <h2 id="history-table-title" className="history-table__title">
                 {t("DetailsScreen.historyTitle")}
             </h2>
 
-            <div className="daily-history-table__container">
-                <table className="daily-history-table__table">
+            <div className="history-table__container">
+                <table className="history-table__table">
                     <thead>
                         {table.getHeaderGroups().map((headerGroup) => (
                             <tr key={headerGroup.id}>
                                 {headerGroup.headers.map((header) => (
                                     <th
                                         key={header.id}
-                                        className="daily-history-table__header-cell"
+                                        className="history-table__header-cell"
                                     >
                                         {header.isPlaceholder
                                             ? null
@@ -132,7 +132,7 @@ export const HistoryTable = ({ records, pageSize = 5, onRowOptions }: HistoryTab
                         {rows.length === 0 ? (
                             <tr>
                                 <td
-                                    className="daily-history-table__empty"
+                                    className="history-table__empty"
                                     colSpan={table.getAllLeafColumns().length}
                                 >
                                     {t("DetailsScreen.tableEmptyState")}
@@ -140,9 +140,9 @@ export const HistoryTable = ({ records, pageSize = 5, onRowOptions }: HistoryTab
                             </tr>
                         ) : (
                             rows.map((row) => (
-                                <tr key={row.id} className="daily-history-table__row">
+                                <tr key={row.id} className="history-table__row">
                                     {row.getVisibleCells().map((cell) => (
-                                        <td key={cell.id} className="daily-history-table__cell">
+                                        <td key={cell.id} className="history-table__cell">
                                             {flexRender(
                                                 cell.column.columnDef.cell,
                                                 cell.getContext(),
@@ -156,18 +156,18 @@ export const HistoryTable = ({ records, pageSize = 5, onRowOptions }: HistoryTab
                 </table>
             </div>
 
-            <footer className="daily-history-table__footer">
-                <span className="daily-history-table__page-info">
+            <footer className="history-table__footer">
+                <span className="history-table__page-info">
                     {t("DetailsScreen.tablePageInfo", {
                         current: currentPage,
                         total: pageCount,
                     })}
                 </span>
 
-                <div className="daily-history-table__pagination">
+                <div className="history-table__pagination">
                     <button
                         type="button"
-                        className="daily-history-table__page-button"
+                        className="history-table__page-button"
                         onClick={() => table.previousPage()}
                         disabled={!table.getCanPreviousPage()}
                         aria-label={t("DetailsScreen.tablePrevPageLabel")}
@@ -176,7 +176,7 @@ export const HistoryTable = ({ records, pageSize = 5, onRowOptions }: HistoryTab
                     </button>
                     <button
                         type="button"
-                        className="daily-history-table__page-button"
+                        className="history-table__page-button"
                         onClick={() => table.nextPage()}
                         disabled={!table.getCanNextPage()}
                         aria-label={t("DetailsScreen.tableNextPageLabel")}

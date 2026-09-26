@@ -1,7 +1,7 @@
 // src/hooks/useDailyHistory.ts
-import type { DailyHistoryRecord } from "../components/DetailsScreen/HistoryTable";
+import type { HistoryRecord } from "../components/DetailsScreen/HistoryTable";
 
-const MOCK_HISTORY_RECORDS: DailyHistoryRecord[] = [
+const MOCK_HISTORY_RECORDS: HistoryRecord[] = [
     { id: "hist-026", date: "26-06-26", amount: 35.7 },
     { id: "hist-025", date: "25-06-26", amount: -12.4 },
     { id: "hist-024", date: "24-06-26", amount: 119.2 },
@@ -17,7 +17,7 @@ const MOCK_HISTORY_RECORDS: DailyHistoryRecord[] = [
  * TODO: replace the mock data with a Supabase query once the backend
  * endpoint for daily balances is available.
  */
-export const useDailyHistory = (): { records: DailyHistoryRecord[] } => {
+export const useDailyHistory = (): { records: HistoryRecord[] } => {
     return { records: MOCK_HISTORY_RECORDS };
 };
 
