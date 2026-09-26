@@ -66,6 +66,8 @@
     "chartAriaLabel": "Gráfica de balance por período",
     "historyTitle": "Historial de Balances Diarios",
     "tableHeaderDate": "Fecha",
+    "tableHeaderMonth": "Mes",
+    "tableHeaderYear": "Año",
     "tableHeaderAmount": "Ganancias / Pérdidas",
     "tableHeaderOptions": "Opciones",
     "tableOptionsMenuLabel": "Opciones de la fila",

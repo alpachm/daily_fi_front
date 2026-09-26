@@ -22,8 +22,8 @@ export type SummaryMetricsByPeriod = Record<FilterPeriod, SummaryMetrics>;
 
 interface BalanceProps {
     metrics?: SummaryMetricsByPeriod;
-    initialPeriod?: FilterPeriod;
-    onFilterChange?: (period: FilterPeriod) => void;
+    currentFilter: FilterPeriod;
+    onFilterChange: (period: FilterPeriod) => void;
 }
 
 interface MetricItem {
@@ -74,11 +74,11 @@ const formatSignedCurrency = (value: number, locale: string): string => {
 
 export const Balance = ({
     metrics = MOCK_SUMMARY_METRICS,
-    initialPeriod = "month",
+    currentFilter,
     onFilterChange,
 }: BalanceProps) => {
     const { t, i18n } = useTranslation("");
-    const { period, isOpen, containerRef, toggle, select } = useBalanceFilter(initialPeriod);
+    const { period, isOpen, containerRef, toggle, select } = useBalanceFilter(currentFilter, onFilterChange);
     const [isChartModalOpen, setIsChartModalOpen] = useState(false);
 
     const currentMetrics = metrics[period];
@@ -115,11 +115,6 @@ export const Balance = ({
         },
     ];
 
-    const handleSelect = (next: FilterPeriod): void => {
-        select(next);
-        onFilterChange?.(next);
-    };
-
     const openChartModal = (): void => setIsChartModalOpen(true);
     const closeChartModal = (): void => setIsChartModalOpen(false);
 
@@ -152,7 +147,7 @@ export const Balance = ({
                         triggerLabel={t("DetailsScreen.balanceFilterLabel")}
                         note={t("DetailsScreen.filterNote")}
                         onToggle={toggle}
-                        onSelect={handleSelect}
+                        onSelect={select}
                     />
                 </div>
             </header>
@@ -175,7 +170,7 @@ export const Balance = ({
                 isOpen={isChartModalOpen}
                 onClose={closeChartModal}
                 currentFilter={period}
-                onFilterChange={handleSelect}
+                onFilterChange={select}
             />
         </section>
     );

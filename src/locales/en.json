@@ -66,6 +66,8 @@
     "chartAriaLabel": "Balance chart by period",
     "historyTitle": "Daily Balance History",
     "tableHeaderDate": "Date",
+    "tableHeaderMonth": "Month",
+    "tableHeaderYear": "Year",
     "tableHeaderAmount": "Profit / Loss",
     "tableHeaderOptions": "Options",
     "tableOptionsMenuLabel": "Row options",

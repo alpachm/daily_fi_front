@@ -17,9 +17,9 @@ interface UseBalanceFilterResult {
 }
 
 export const useBalanceFilter = (
-    initialPeriod: FilterPeriod = "month",
+    period: FilterPeriod,
+    onSelect: (period: FilterPeriod) => void,
 ): UseBalanceFilterResult => {
-    const [period, setPeriod] = useState<FilterPeriod>(initialPeriod);
     const [isOpen, setIsOpen] = useState(false);
     const containerRef = useRef<HTMLDivElement | null>(null);
 
@@ -27,10 +27,13 @@ export const useBalanceFilter = (
         setIsOpen((open) => !open);
     }, []);
 
-    const select = useCallback((next: FilterPeriod): void => {
-        setPeriod(next);
-        setIsOpen(false);
-    }, []);
+    const select = useCallback(
+        (next: FilterPeriod): void => {
+            onSelect(next);
+            setIsOpen(false);
+        },
+        [onSelect],
+    );
 
     useEffect(() => {
         if (!isOpen) return;
