@@ -106,7 +106,10 @@
     "tableHeaderName": "Name",
     "tableHeaderOptions": "Options",
     "tableOptionsMenuLabel": "Row options",
-    "tableEmptySelectDate": "Select a date to view the vouchers"
+    "tableEmptySelectDate": "Select a date to view the vouchers",
+    "optionViewReceipt": "View receipt",
+    "optionDownloadReceipt": "Download receipt",
+    "optionDeleteReceipt": "Delete receipt"
   },
   "DashboardLayout": {
     "headerTitle": "Daily FI",

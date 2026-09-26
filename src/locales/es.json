@@ -106,7 +106,10 @@
     "tableHeaderName": "Nombre",
     "tableHeaderOptions": "Opciones",
     "tableOptionsMenuLabel": "Opciones de la fila",
-    "tableEmptySelectDate": "Selecciona una fecha para ver los comprobantes"
+    "tableEmptySelectDate": "Selecciona una fecha para ver los comprobantes",
+    "optionViewReceipt": "Visualizar comprobante",
+    "optionDownloadReceipt": "Descargar comprobante",
+    "optionDeleteReceipt": "Eliminar comprobante"
   },
   "DashboardLayout": {
     "headerTitle": "Daily FI",

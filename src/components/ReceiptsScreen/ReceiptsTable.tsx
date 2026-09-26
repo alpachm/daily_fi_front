@@ -1,6 +1,8 @@
 // src/components/ReceiptsScreen/ReceiptsTable.tsx
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { MoreHorizontal } from "lucide-react";
+import type { LucideIcon } from "lucide-react";
+import { Download, Eye, MoreHorizontal, Trash2 } from "lucide-react";
 import type { ReceiptType } from "../../hooks/useReceiptsMenu";
 import "./styles/ReceiptsTable.css";
 
@@ -60,6 +62,28 @@ const MOCK_BUY_RECEIPTS: ReceiptItem[] = [
     },
 ];
 
+type ReceiptMenuAction = (record: ReceiptItem) => void;
+
+interface ReceiptMenuOption {
+    id: string;
+    label: string;
+    icon: LucideIcon;
+    danger?: boolean;
+    onSelect: ReceiptMenuAction;
+}
+
+const handleViewReceipt: ReceiptMenuAction = (record) => {
+    console.log("ReceiptsTable: view receipt", record.id);
+};
+
+const handleDownloadReceipt: ReceiptMenuAction = (record) => {
+    console.log("ReceiptsTable: download receipt", record.id);
+};
+
+const handleDeleteReceipt: ReceiptMenuAction = (record) => {
+    console.log("ReceiptsTable: delete receipt", record.id);
+};
+
 interface ReceiptsTableProps {
     selectedDate: string | null;
     receiptType: ReceiptType;
@@ -70,8 +94,59 @@ export const ReceiptsTable = ({
     receiptType,
 }: ReceiptsTableProps) => {
     const { t } = useTranslation("");
+    const [activeMenuId, setActiveMenuId] = useState<string | null>(null);
+    const popoverRef = useRef<HTMLDivElement | null>(null);
 
     const records = receiptType === "sell" ? MOCK_SELL_RECEIPTS : MOCK_BUY_RECEIPTS;
+
+    const menuOptions = useMemo<ReceiptMenuOption[]>(
+        () => [
+            {
+                id: "view-receipt",
+                label: t("ReceiptsScreen.optionViewReceipt"),
+                icon: Eye,
+                onSelect: handleViewReceipt,
+            },
+            {
+                id: "download-receipt",
+                label: t("ReceiptsScreen.optionDownloadReceipt"),
+                icon: Download,
+                onSelect: handleDownloadReceipt,
+            },
+            {
+                id: "delete-receipt",
+                label: t("ReceiptsScreen.optionDeleteReceipt"),
+                icon: Trash2,
+                danger: true,
+                onSelect: handleDeleteReceipt,
+            },
+        ],
+        [t],
+    );
+
+    useEffect(() => {
+        if (activeMenuId === null) return;
+
+        const handleOutsidePointerDown = (event: MouseEvent): void => {
+            if (popoverRef.current && !popoverRef.current.contains(event.target as Node)) {
+                setActiveMenuId(null);
+            }
+        };
+
+        const handleEscapeKeyDown = (event: KeyboardEvent): void => {
+            if (event.key === "Escape") {
+                setActiveMenuId(null);
+            }
+        };
+
+        document.addEventListener("mousedown", handleOutsidePointerDown);
+        document.addEventListener("keydown", handleEscapeKeyDown);
+
+        return () => {
+            document.removeEventListener("mousedown", handleOutsidePointerDown);
+            document.removeEventListener("keydown", handleEscapeKeyDown);
+        };
+    }, [activeMenuId]);
 
     return (
         <section className="receipts-table">
@@ -104,24 +179,68 @@ export const ReceiptsTable = ({
                             </tr>
                         </thead>
                         <tbody>
-                            {records.map((record) => (
-                                <tr key={record.id} className="receipts-table__row">
-                                    <td className="receipts-table__cell">{record.date}</td>
-                                    <td className="receipts-table__cell">{record.time}</td>
-                                    <td className="receipts-table__cell receipts-table__cell--file">
-                                        {record.fileName}
-                                    </td>
-                                    <td className="receipts-table__cell receipts-table__cell--options">
-                                        <button
-                                            type="button"
-                                            className="receipts-table__options-btn"
-                                            aria-label={t("ReceiptsScreen.tableOptionsMenuLabel")}
-                                        >
-                                            <MoreHorizontal size={18} aria-hidden="true" />
-                                        </button>
-                                    </td>
-                                </tr>
-                            ))}
+                            {records.map((record) => {
+                                const isOpen = activeMenuId === record.id;
+
+                                return (
+                                    <tr key={record.id} className="receipts-table__row">
+                                        <td className="receipts-table__cell">{record.date}</td>
+                                        <td className="receipts-table__cell">{record.time}</td>
+                                        <td className="receipts-table__cell receipts-table__cell--file">
+                                            {record.fileName}
+                                        </td>
+                                        <td className="receipts-table__cell receipts-table__cell--options">
+                                            <div
+                                                className="receipts-table__options-cell"
+                                                ref={isOpen ? popoverRef : undefined}
+                                            >
+                                                <button
+                                                    type="button"
+                                                    className="receipts-table__options-btn"
+                                                    aria-label={t("ReceiptsScreen.tableOptionsMenuLabel")}
+                                                    aria-haspopup="menu"
+                                                    aria-expanded={isOpen}
+                                                    onClick={() =>
+                                                        setActiveMenuId((current) =>
+                                                            current === record.id ? null : record.id,
+                                                        )
+                                                    }
+                                                >
+                                                    <MoreHorizontal size={18} aria-hidden="true" />
+                                                </button>
+
+                                                {isOpen ? (
+                                                    <div
+                                                        className="receipts-table__popover"
+                                                        role="menu"
+                                                        aria-label={t("ReceiptsScreen.tableOptionsMenuLabel")}
+                                                    >
+                                                        {menuOptions.map((option) => (
+                                                            <button
+                                                                key={option.id}
+                                                                type="button"
+                                                                className={`receipts-table__popover-item${
+                                                                    option.danger
+                                                                        ? " receipts-table__popover-item--danger"
+                                                                        : ""
+                                                                }`}
+                                                                role="menuitem"
+                                                                onClick={() => {
+                                                                    option.onSelect(record);
+                                                                    setActiveMenuId(null);
+                                                                }}
+                                                            >
+                                                                <option.icon size={16} aria-hidden="true" />
+                                                                <span>{option.label}</span>
+                                                            </button>
+                                                        ))}
+                                                    </div>
+                                                ) : null}
+                                            </div>
+                                        </td>
+                                    </tr>
+                                );
+                            })}
                         </tbody>
                     </table>
                 </div>
