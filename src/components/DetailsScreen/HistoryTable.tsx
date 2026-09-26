@@ -1,5 +1,5 @@
 // src/components/DetailsScreen/HistoryTable.tsx
-import { useEffect, useMemo } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import type { ChangeEvent } from "react";
 import { useTranslation } from "react-i18next";
 import {
@@ -9,7 +9,17 @@ import {
     getPaginationRowModel,
     useReactTable,
 } from "@tanstack/react-table";
-import { ChevronDown, ChevronLeft, ChevronRight, MoreHorizontal } from "lucide-react";
+import type { LucideIcon } from "lucide-react";
+import {
+    BadgeDollarSign,
+    BarChart3,
+    CalendarDays,
+    ChevronDown,
+    ChevronLeft,
+    ChevronRight,
+    MoreHorizontal,
+    ShoppingCart,
+} from "lucide-react";
 import type { FilterPeriod } from "./Balance";
 import "./styles/HistoryTable.css";
 
@@ -22,7 +32,15 @@ export interface HistoryRecord {
 export interface HistoryTableProps {
     filter: FilterPeriod;
     pageSize?: number;
-    onRowOptions?: (record: HistoryRecord) => void;
+}
+
+type ActionMenuHandler = (record: HistoryRecord) => void;
+
+interface ActionMenuItem {
+    id: string;
+    label: string;
+    icon: LucideIcon;
+    onSelect: ActionMenuHandler;
 }
 
 type AmountTone = "positive" | "negative" | "neutral";
@@ -157,10 +175,91 @@ const formatSignedCurrency = (value: number, locale: string): string => {
     return absolute;
 };
 
-export const HistoryTable = ({ filter, pageSize = 5, onRowOptions }: HistoryTableProps) => {
+const handleShowPurchaseVouchers: ActionMenuHandler = (record) => {
+    console.log("HistoryTable: show purchase vouchers", record.id);
+};
+
+const handleShowSaleVouchers: ActionMenuHandler = (record) => {
+    console.log("HistoryTable: show sale vouchers", record.id);
+};
+
+const handleViewMonthDetails: ActionMenuHandler = (record) => {
+    console.log("HistoryTable: view month details", record.id);
+};
+
+const handleViewYearDetails: ActionMenuHandler = (record) => {
+    console.log("HistoryTable: view year details", record.id);
+};
+
+export const HistoryTable = ({ filter, pageSize = 5 }: HistoryTableProps) => {
     const { t, i18n } = useTranslation("");
+    const [openMenuRowId, setOpenMenuRowId] = useState<string | null>(null);
+    const popoverRef = useRef<HTMLDivElement | null>(null);
 
     const records = useMemo<HistoryRecord[]>(() => HISTORY_RECORDS_BY_PERIOD[filter], [filter]);
+
+    const actionItems = useMemo<ActionMenuItem[]>(() => {
+        if (filter === "day") {
+            return [
+                {
+                    id: "purchase-vouchers",
+                    label: t("DetailsScreen.optionShowPurchaseVouchers"),
+                    icon: ShoppingCart,
+                    onSelect: handleShowPurchaseVouchers,
+                },
+                {
+                    id: "sale-vouchers",
+                    label: t("DetailsScreen.optionShowSaleVouchers"),
+                    icon: BadgeDollarSign,
+                    onSelect: handleShowSaleVouchers,
+                },
+            ];
+        }
+
+        if (filter === "month") {
+            return [
+                {
+                    id: "month-details",
+                    label: t("DetailsScreen.optionViewMonthDetails"),
+                    icon: CalendarDays,
+                    onSelect: handleViewMonthDetails,
+                },
+            ];
+        }
+
+        return [
+            {
+                id: "year-details",
+                label: t("DetailsScreen.optionViewYearDetails"),
+                icon: BarChart3,
+                onSelect: handleViewYearDetails,
+            },
+        ];
+    }, [filter, t]);
+
+    useEffect(() => {
+        if (openMenuRowId === null) return;
+
+        const handleOutsidePointerDown = (event: MouseEvent): void => {
+            if (popoverRef.current && !popoverRef.current.contains(event.target as Node)) {
+                setOpenMenuRowId(null);
+            }
+        };
+
+        const handleEscapeKeyDown = (event: KeyboardEvent): void => {
+            if (event.key === "Escape") {
+                setOpenMenuRowId(null);
+            }
+        };
+
+        document.addEventListener("mousedown", handleOutsidePointerDown);
+        document.addEventListener("keydown", handleEscapeKeyDown);
+
+        return () => {
+            document.removeEventListener("mousedown", handleOutsidePointerDown);
+            document.removeEventListener("keydown", handleEscapeKeyDown);
+        };
+    }, [openMenuRowId]);
 
     const columns = useMemo(
         () => [
@@ -184,19 +283,59 @@ export const HistoryTable = ({ filter, pageSize = 5, onRowOptions }: HistoryTabl
             columnHelper.display({
                 id: "options",
                 header: t("DetailsScreen.tableHeaderOptions"),
-                cell: (info) => (
-                    <button
-                        type="button"
-                        className="history-table__options-button"
-                        aria-label={t("DetailsScreen.tableOptionsMenuLabel")}
-                        onClick={() => onRowOptions?.(info.row.original)}
-                    >
-                        <MoreHorizontal size={18} aria-hidden="true" />
-                    </button>
-                ),
+                cell: (info) => {
+                    const record = info.row.original;
+                    const isOpen = openMenuRowId === record.id;
+
+                    return (
+                        <div
+                            className="history-table__options-cell"
+                            ref={isOpen ? popoverRef : undefined}
+                        >
+                            <button
+                                type="button"
+                                className="history-table__options-button"
+                                aria-label={t("DetailsScreen.tableOptionsMenuLabel")}
+                                aria-haspopup="menu"
+                                aria-expanded={isOpen}
+                                onClick={() =>
+                                    setOpenMenuRowId((current) =>
+                                        current === record.id ? null : record.id,
+                                    )
+                                }
+                            >
+                                <MoreHorizontal size={18} aria-hidden="true" />
+                            </button>
+
+                            {isOpen ? (
+                                <div
+                                    className="history-table__action-popover"
+                                    role="menu"
+                                    aria-label={t("DetailsScreen.tableOptionsMenuLabel")}
+                                >
+                                    {actionItems.map((item) => (
+                                        <button
+                                            key={item.id}
+                                            type="button"
+                                            className="history-table__action-item"
+                                            role="menuitem"
+                                            onClick={() => {
+                                                item.onSelect(record);
+                                                setOpenMenuRowId(null);
+                                            }}
+                                        >
+                                            <item.icon size={16} aria-hidden="true" />
+                                            <span>{item.label}</span>
+                                        </button>
+                                    ))}
+                                </div>
+                            ) : null}
+                        </div>
+                    );
+                },
             }),
         ],
-        [t, i18n.language, onRowOptions, filter],
+        [t, i18n.language, filter, actionItems, openMenuRowId],
     );
     const table = useReactTable({
         data: records,
