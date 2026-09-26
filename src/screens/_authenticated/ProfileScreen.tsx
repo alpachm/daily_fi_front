@@ -1,4 +1,4 @@
-// src/screens/ProfileScreen.tsx
+// src/screens/_authenticated/ProfileScreen.tsx
 import { useTranslation } from "react-i18next";
 
 export const ProfileScreen = () => {

@@ -1,12 +1,12 @@
-// src/routes.tsx — Nested route configuration with DashboardLayout
-import { createRootRoute, createRoute, createRouter } from "@tanstack/react-router";
+// src/routes.tsx — Nested route configuration with protected layout route
+import { createRootRoute, createRoute, createRouter, redirect } from "@tanstack/react-router";
 
 import LoginScreen from "./screens/LoginScreen";
 import SignupScreen from "./screens/SignupScreen";
 import DashboardLayout from "./layouts/DashboardLayout";
-import BalanceScreen from "./screens/BalanceScreen";
-import DetailsScreen from "./screens/DetailsScreen";
-import ProfileScreen from "./screens/ProfileScreen";
+import BalanceScreen from "./screens/_authenticated/BalanceScreen";
+import DetailsScreen from "./screens/_authenticated/DetailsScreen";
+import ProfileScreen from "./screens/_authenticated/ProfileScreen";
 import { DASHBOARD_ROUTES, ROUTES } from "./constants/routes";
 
 // ---- Root ----
@@ -25,9 +25,26 @@ export const signupRoute = createRoute({
     component: SignupScreen,
 });
 
-// ---- Authenticated layout route ----
-export const dashboardRoute = createRoute({
+// ---- Protected layout route (pathless guard) ----
+// Wraps every private route and enforces authentication via `beforeLoad`.
+export const authenticatedRoute = createRoute({
     getParentRoute: () => rootRoute,
+    id: "_authenticated",
+    beforeLoad: async () => {
+        // Mock authentication flag for development
+        const isAuthenticated = true; // Toggle to false to test redirect to signup
+
+        if (!isAuthenticated) {
+            throw redirect({
+                to: ROUTES.SIGNUP,
+            });
+        }
+    },
+});
+
+// ---- Dashboard layout route (private) ----
+export const dashboardRoute = createRoute({
+    getParentRoute: () => authenticatedRoute,
     path: DASHBOARD_ROUTES.DASHBOARD,
     component: DashboardLayout,
 });
@@ -55,7 +72,9 @@ export const profileRoute = createRoute({
 const routeTree = rootRoute.addChildren([
     loginRoute,
     signupRoute,
-    dashboardRoute.addChildren([balanceIndexRoute, detailsRoute, profileRoute]),
+    authenticatedRoute.addChildren([
+        dashboardRoute.addChildren([balanceIndexRoute, detailsRoute, profileRoute]),
+    ]),
 ]);
 
 // ---- Router ----

@@ -1,9 +1,9 @@
-// src/screens/BalanceScreen.tsx
+// src/screens/_authenticated/BalanceScreen.tsx
 import { useTranslation } from "react-i18next";
-import "../styles/BalanceScreen.css";
-import { useBalanceDiario } from "../hooks/useBalanceDiario";
-import { BalanceChartContainer } from "../components/BalanceScreen/BalanceChartContainer";
-import { DayEntryBlock } from "../components/BalanceScreen/DayEntryBlock";
+import "../../styles/BalanceScreen.css";
+import { useBalanceDiario } from "../../hooks/useBalanceDiario";
+import { BalanceChartContainer } from "../../components/BalanceScreen/BalanceChartContainer";
+import { DayEntryBlock } from "../../components/BalanceScreen/DayEntryBlock";
 
 export const BalanceScreen = () => {
     const { t } = useTranslation("");
