@@ -1,6 +1,5 @@
 // src/components/DetailsScreen/HistoryTable.tsx
 import { useEffect, useMemo, useRef, useState } from "react";
-import type { ChangeEvent } from "react";
 import { useTranslation } from "react-i18next";
 import {
     createColumnHelper,
@@ -14,14 +13,12 @@ import {
     BadgeDollarSign,
     BarChart3,
     CalendarDays,
-    ChevronDown,
-    ChevronLeft,
-    ChevronRight,
     MoreHorizontal,
     ShoppingCart,
 } from "lucide-react";
 import type { FilterPeriod } from "./Balance";
 import { useLocalStorage } from "../../hooks/useLocalStorage";
+import { TablePagination } from "../shared/TablePagination";
 import "./styles/HistoryTable.css";
 
 export interface HistoryRecord {
@@ -175,42 +172,6 @@ const formatSignedCurrency = (value: number, locale: string): string => {
     if (value > 0) return `+${absolute}`;
     if (value < 0) return `-${absolute}`;
     return absolute;
-};
-
-type PaginationRangeItem = number | "ellipsis";
-
-const getPaginationRange = (
-    currentPageIndex: number,
-    totalPages: number,
-): PaginationRangeItem[] => {
-    if (totalPages <= 5) {
-        return Array.from({ length: totalPages }, (_, index) => index + 1);
-    }
-
-    const currentPage = currentPageIndex + 1;
-    const candidatePages = new Set<number>([
-        1,
-        totalPages,
-        currentPage,
-        currentPage - 1,
-        currentPage + 1,
-    ]);
-
-    const range: PaginationRangeItem[] = [];
-    let previousPage = 0;
-
-    Array.from(candidatePages)
-        .filter((page) => page >= 1 && page <= totalPages)
-        .sort((a, b) => a - b)
-        .forEach((page) => {
-            if (page - previousPage > 1) {
-                range.push("ellipsis");
-            }
-            range.push(page);
-            previousPage = page;
-        });
-
-    return range;
 };
 
 const handleShowPurchaseVouchers: ActionMenuHandler = (record) => {
@@ -392,9 +353,6 @@ export const HistoryTable = ({ filter }: HistoryTableProps) => {
     }, [filter]);
 
     const rows = table.getRowModel().rows;
-    const pageCount = table.getPageCount();
-    const currentPageIndex = table.getState().pagination.pageIndex;
-    const paginationRange = getPaginationRange(currentPageIndex, pageCount);
 
     return (
         <section className="history-table" aria-labelledby="history-table-title">
@@ -448,96 +406,19 @@ export const HistoryTable = ({ filter }: HistoryTableProps) => {
                 </table>
             </div>
 
-            <footer className="history-table__footer">
-                <div className="history-table__page-size">
-                    <label
-                        className="history-table__page-size-label"
-                        htmlFor="history-table-page-size"
-                    >
-                        {t("DetailsScreen.tableRowsPerPageLabel")}
-                    </label>
-                    <div className="history-table__select-wrapper">
-                        <select
-                            id="history-table-page-size"
-                            className="history-table__select"
-                            value={table.getState().pagination.pageSize}
-                            onChange={(event: ChangeEvent<HTMLSelectElement>) => {
-                                const nextPageSize = Number(event.target.value);
-                                table.setPageSize(nextPageSize);
-                                table.setPageIndex(0);
-                                setPageSize(nextPageSize);
-                            }}
-                        >
-                            <option value={10}>10</option>
-                            <option value={50}>50</option>
-                            <option value={100}>100</option>
-                        </select>
-                        <ChevronDown
-                            size={16}
-                            className="history-table__select-chevron"
-                            aria-hidden="true"
-                        />
-                    </div>
-                </div>
-
-                <div className="history-table__pagination">
-                    <button
-                        type="button"
-                        className="history-table__page-btn"
-                        onClick={() => table.previousPage()}
-                        disabled={!table.getCanPreviousPage()}
-                        aria-label={t("DetailsScreen.tablePrevPageLabel")}
-                    >
-                        <ChevronLeft size={18} aria-hidden="true" />
-                    </button>
-
-                    {paginationRange.map((item, index) => {
-                        if (item === "ellipsis") {
-                            return (
-                                <span
-                                    key={`history-table__pagination-ellipsis-${index}`}
-                                    className="history-table__pagination-ellipsis"
-                                    aria-hidden="true"
-                                >
-                                    …
-                                </span>
-                            );
-                        }
-
-                        const pageNumber = item;
-                        const pageIndex = pageNumber - 1;
-
-                        return (
-                            <button
-                                key={pageNumber}
-                                type="button"
-                                className={
-                                    pageIndex === currentPageIndex
-                                        ? "history-table__page-btn history-table__page-btn--active"
-                                        : "history-table__page-btn"
-                                }
-                                onClick={() => table.setPageIndex(pageIndex)}
-                                aria-label={t("DetailsScreen.tableGoToPageLabel", {
-                                    page: pageNumber,
-                                })}
-                                aria-current={pageIndex === currentPageIndex ? "page" : undefined}
-                            >
-                                {pageNumber}
-                            </button>
-                        );
-                    })}
-
-                    <button
-                        type="button"
-                        className="history-table__page-btn"
-                        onClick={() => table.nextPage()}
-                        disabled={!table.getCanNextPage()}
-                        aria-label={t("DetailsScreen.tableNextPageLabel")}
-                    >
-                        <ChevronRight size={18} aria-hidden="true" />
-                    </button>
-                </div>
-            </footer>
+            <TablePagination
+                currentPage={table.getState().pagination.pageIndex + 1}
+                totalPages={table.getPageCount()}
+                pageSize={table.getState().pagination.pageSize}
+                canPreviousPage={table.getCanPreviousPage()}
+                canNextPage={table.getCanNextPage()}
+                onPageChange={(page) => table.setPageIndex(page - 1)}
+                onPageSizeChange={(size) => {
+                    table.setPageSize(size);
+                    table.setPageIndex(0);
+                    setPageSize(size);
+                }}
+            />
         </section>
     );
 };

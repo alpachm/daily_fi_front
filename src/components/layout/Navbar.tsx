@@ -2,7 +2,7 @@
 import { Link } from "@tanstack/react-router";
 import { useTranslation } from "react-i18next";
 import type { LucideProps } from "lucide-react";
-import { Wallet, FileText, User } from "lucide-react";
+import { Wallet, FileText, Receipt, User } from "lucide-react";
 import "./styles/Navbar.css";
 
 interface NavbarProps {
@@ -31,17 +31,42 @@ const NAV_LINKS: NavLinkConfig[] = [
         icon: FileText,
     },
     {
-        id: "dashboard-profile",
-        to: "/dashboard/profile",
-        labelKey: "Navbar.profile",
-        icon: User,
+        id: "dashboard-receipts",
+        to: "/dashboard/receipts",
+        labelKey: "Navbar.receipts",
+        icon: Receipt,
     },
 ];
+
+const PROFILE_LINK: NavLinkConfig = {
+    id: "dashboard-profile",
+    to: "/dashboard/profile",
+    labelKey: "Navbar.profile",
+    icon: User,
+};
 
 export const Navbar = ({ isOpen, onClose }: NavbarProps) => {
     const { t } = useTranslation();
 
     const closeButtonAriaLabel = t("Actions.close");
+
+    const renderNavLink = ({ id, to, labelKey, icon }: NavLinkConfig) => {
+        const IconComponent = icon;
+        return (
+            <li key={id} className="dashboard-nav__item">
+                <Link
+                    to={to}
+                    className="dashboard-nav__link"
+                    activeProps={{ className: "dashboard-nav__link--active" }}
+                    activeOptions={{ exact: true }}
+                    onClick={onClose}
+                >
+                    <IconComponent size={20} className="dashboard-nav__icon" />
+                    <span className="dashboard-nav__label">{t(labelKey)}</span>
+                </Link>
+            </li>
+        );
+    };
 
     return (
         <nav
@@ -61,25 +86,17 @@ export const Navbar = ({ isOpen, onClose }: NavbarProps) => {
                     <span className="dashboard-nav__close-icon" aria-hidden="true" />
                 </button>
 
-                <ul className="dashboard-nav__list">
-                    {NAV_LINKS.map(({ id, to, labelKey, icon }) => {
-                        const IconComponent = icon;
-                        return (
-                            <li key={id} className="dashboard-nav__item">
-                                <Link
-                                    to={to}
-                                    className="dashboard-nav__link"
-                                    activeProps={{ className: "dashboard-nav__link--active" }}
-                                    activeOptions={{ exact: true }}
-                                    onClick={onClose}
-                                >
-                                    <IconComponent size={20} className="dashboard-nav__icon" />
-                                    <span className="dashboard-nav__label">{t(labelKey)}</span>
-                                </Link>
-                            </li>
-                        );
-                    })}
-                </ul>
+                <div className="dashboard-nav__main">
+                    <ul className="dashboard-nav__list">
+                        {NAV_LINKS.map(renderNavLink)}
+                    </ul>
+                </div>
+
+                <div className="dashboard-nav__footer">
+                    <ul className="dashboard-nav__list">
+                        {renderNavLink(PROFILE_LINK)}
+                    </ul>
+                </div>
             </div>
         </nav>
     );

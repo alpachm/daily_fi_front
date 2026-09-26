@@ -26,6 +26,7 @@
     "login": "Login",
     "balance": "Balance",
     "details": "Details",
+    "receipts": "Receipts",
     "profile": "Profile"
   },
   "BalanceScreen": {
@@ -75,16 +76,43 @@
     "optionShowSaleVouchers": "Show sale vouchers",
     "optionViewMonthDetails": "View month details",
     "optionViewYearDetails": "Show year details",
-    "tablePrevPageLabel": "Previous page",
-    "tableNextPageLabel": "Next page",
-    "tablePageInfo": "Page {{current}} of {{total}}",
-    "tableRowsPerPageLabel": "Rows per page",
-    "tableGoToPageLabel": "Go to page {{page}}",
     "tableEmptyState": "No records available"
   },
   "ProfileScreen": {
     "title": "Profile",
     "placeholder": "Profile"
+  },
+  "ReceiptsScreen": {
+    "title": "Receipts",
+    "placeholder": "Receipt management — under development.",
+    "menuDefaultTitle": "Select the day you want to view the vouchers",
+    "menuTitleWithDate": "Vouchers for {{date}}",
+    "menuDateLabel": "Select date",
+    "menuTypeGroupLabel": "Voucher type",
+    "saleLabel": "Sale",
+    "purchaseLabel": "Purchase",
+    "uploadLabel": "Upload vouchers",
+    "uploadModalDateLabel": "Select the day of the vouchers",
+    "uploadModalSelectFiles": "Select files",
+    "uploadModalFilesSelected": "{{count}} files selected",
+    "uploadModalUploadButton": "Upload",
+    "tableHeaderDate": "Date",
+    "tableHeaderTime": "Time",
+    "tableHeaderName": "Name",
+    "tableHeaderOptions": "Options",
+    "tableOptionsMenuLabel": "Row options",
+    "tableEmptySelectDate": "Select a date to view the vouchers",
+    "optionViewReceipt": "View receipt",
+    "optionDownloadReceipt": "Download receipt",
+    "optionDeleteReceipt": "Delete receipt"
+  },
+  "TablePagination": {
+    "rowsPerPageLabel": "Rows per page",
+    "firstPageLabel": "First page",
+    "prevPageLabel": "Previous page",
+    "nextPageLabel": "Next page",
+    "lastPageLabel": "Last page",
+    "goToPageLabel": "Go to page {{page}}"
   },
   "DashboardLayout": {
     "headerTitle": "Daily FI",
