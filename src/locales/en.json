@@ -57,7 +57,13 @@
     "periodYear": "Last year",
     "totalBalance": "Total Balance",
     "bestDay": "Best Day",
-    "worstDay": "Worst Day"
+    "worstDay": "Worst Day",
+    "viewChart": "View chart",
+    "chartModalTitle": "Balance Chart",
+    "chartModalDescription": "Balance evolution for the selected period.",
+    "chartPeriodLabel": "Select period",
+    "chartSeriesName": "Balance",
+    "chartAriaLabel": "Balance chart by period"
   },
   "ProfileScreen": {
     "title": "Profile",

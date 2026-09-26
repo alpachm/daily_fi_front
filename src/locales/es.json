@@ -57,7 +57,13 @@
     "periodYear": "Último año",
     "totalBalance": "Balance Total",
     "bestDay": "Mejor Día",
-    "worstDay": "Peor Día"
+    "worstDay": "Peor Día",
+    "viewChart": "Ver gráfica",
+    "chartModalTitle": "Gráfica de Balance",
+    "chartModalDescription": "Evolución del capital según el período seleccionado.",
+    "chartPeriodLabel": "Seleccionar período",
+    "chartSeriesName": "Capital",
+    "chartAriaLabel": "Gráfica de balance por período"
   },
   "ProfileScreen": {
     "title": "Perfil",

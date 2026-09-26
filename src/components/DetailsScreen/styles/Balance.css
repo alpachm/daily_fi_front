@@ -95,3 +95,43 @@
         grid-template-columns: repeat(3, 1fr);
     }
 }
+
+/* Header actions (chart button + filter menu) */
+.balance-summary__actions {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    flex-shrink: 0;
+}
+
+.balance-summary__chart-button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    height: 40px;
+    padding: 0 0.875rem;
+    border: 1px solid var(--btn-primary);
+    border-radius: 10px;
+    background-color: var(--btn-primary);
+    color: var(--btn-text);
+    font-size: 0.875rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition:
+        opacity 0.15s ease,
+        transform 0.15s ease;
+}
+
+.balance-summary__chart-button:hover {
+    opacity: 0.9;
+}
+
+.balance-summary__chart-button:active {
+    transform: translateY(1px);
+}
+
+.balance-summary__chart-button:focus-visible {
+    outline: 2px solid var(--btn-primary);
+    outline-offset: 2px;
+}

@@ -1,12 +1,13 @@
 // src/components/DetailsScreen/Balance.tsx
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import type { LucideIcon } from "lucide-react";
-import { TrendingDown, TrendingUp } from "lucide-react";
+import { ChartLine, TrendingDown, TrendingUp } from "lucide-react";
 import type { BalanceTone } from "../../hooks/useBalanceDiario";
 import { useBalanceFilter } from "../../hooks/useBalanceFilter";
 import type { FilterOption } from "../../hooks/useBalanceFilter";
 import { BalanceFilterMenu } from "./BalanceFilterMenu";
+import { DetailsChartModal } from "./DetailsChartModal";
 import "./styles/Balance.css";
 
 export type FilterPeriod = "day" | "month" | "year";
@@ -78,6 +79,7 @@ export const Balance = ({
 }: BalanceProps) => {
     const { t, i18n } = useTranslation("");
     const { period, isOpen, containerRef, toggle, select } = useBalanceFilter(initialPeriod);
+    const [isChartModalOpen, setIsChartModalOpen] = useState(false);
 
     const currentMetrics = metrics[period];
 
@@ -118,6 +120,9 @@ export const Balance = ({
         onFilterChange?.(next);
     };
 
+    const openChartModal = (): void => setIsChartModalOpen(true);
+    const closeChartModal = (): void => setIsChartModalOpen(false);
+
     return (
         <section className="balance-summary" aria-labelledby="balance-summary-title">
             <header className="balance-summary__header">
@@ -128,17 +133,28 @@ export const Balance = ({
                     <p className="balance-summary__period">{t(PERIOD_LABEL_KEYS[period])}</p>
                 </div>
 
-                <BalanceFilterMenu
-                    options={filterOptions}
-                    selected={period}
-                    isOpen={isOpen}
-                    containerRef={containerRef}
-                    menuId="balance-summary-filter-menu"
-                    triggerLabel={t("DetailsScreen.balanceFilterLabel")}
-                    note={t("DetailsScreen.filterNote")}
-                    onToggle={toggle}
-                    onSelect={handleSelect}
-                />
+                <div className="balance-summary__actions">
+                    <button
+                        type="button"
+                        className="balance-summary__chart-button"
+                        onClick={openChartModal}
+                    >
+                        <ChartLine size={18} aria-hidden="true" />
+                        <span>{t("DetailsScreen.viewChart")}</span>
+                    </button>
+
+                    <BalanceFilterMenu
+                        options={filterOptions}
+                        selected={period}
+                        isOpen={isOpen}
+                        containerRef={containerRef}
+                        menuId="balance-summary-filter-menu"
+                        triggerLabel={t("DetailsScreen.balanceFilterLabel")}
+                        note={t("DetailsScreen.filterNote")}
+                        onToggle={toggle}
+                        onSelect={handleSelect}
+                    />
+                </div>
             </header>
 
             <div className="balance-summary__metrics">
@@ -154,6 +170,13 @@ export const Balance = ({
                     </div>
                 ))}
             </div>
+
+            <DetailsChartModal
+                isOpen={isChartModalOpen}
+                onClose={closeChartModal}
+                currentFilter={period}
+                onFilterChange={handleSelect}
+            />
         </section>
     );
 };
