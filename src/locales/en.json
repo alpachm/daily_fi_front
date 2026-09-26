@@ -46,7 +46,12 @@
   },
   "DetailsScreen": {
     "title": "Details",
-    "placeholder": "Details"
+    "balanceSummaryTitle": "Balance Summary",
+    "balancePeriod": "Last 30 days",
+    "balanceFilterLabel": "Filter period",
+    "totalBalance": "Total Balance",
+    "bestDay": "Best Day",
+    "worstDay": "Worst Day"
   },
   "ProfileScreen": {
     "title": "Profile",

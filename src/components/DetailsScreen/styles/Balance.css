@@ -1,0 +1,126 @@
+/* ============================================================
+   src/components/styles/DetailsScreen/Balance.css — 30-day summary card
+   ============================================================ */
+
+.balance-summary {
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
+    background-color: var(--card-background);
+    border-radius: 16px;
+    padding: 1.5rem;
+    box-shadow:
+        0 4px 6px -1px rgba(0, 0, 0, 0.08),
+        0 2px 4px -2px rgba(0, 0, 0, 0.05);
+    transition:
+        background-color 0.3s ease,
+        box-shadow 0.3s ease;
+}
+
+.balance-summary__header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 1rem;
+}
+
+.balance-summary__heading {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+}
+
+.balance-summary__title {
+    margin: 0;
+    font-size: 1.125rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    transition: color 0.3s ease;
+}
+
+.balance-summary__period {
+    margin: 0;
+    font-size: 0.8125rem;
+    color: var(--text-secondary);
+    transition: color 0.3s ease;
+}
+
+.balance-summary__filter {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    flex-shrink: 0;
+    border: 1px solid var(--text-secondary);
+    border-radius: 10px;
+    background-color: transparent;
+    color: var(--text-secondary);
+    cursor: pointer;
+    transition:
+        background-color 0.15s ease,
+        border-color 0.15s ease,
+        color 0.15s ease;
+}
+
+.balance-summary__filter:hover {
+    background-color: var(--btn-primary);
+    border-color: var(--btn-primary);
+    color: var(--btn-text);
+}
+
+.balance-summary__filter:focus-visible {
+    outline: 2px solid var(--btn-primary);
+    outline-offset: 2px;
+}
+
+.balance-summary__metrics {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 1rem;
+}
+
+.balance-summary__metric {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+    padding: 1rem;
+    border-radius: 12px;
+    background-color: var(--background);
+    transition: background-color 0.3s ease;
+}
+
+.balance-summary__metric-label {
+    font-size: 0.8125rem;
+    color: var(--text-secondary);
+    transition: color 0.3s ease;
+}
+
+.balance-summary__metric-value {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 1.5rem;
+    font-weight: 700;
+    line-height: 1.2;
+    word-break: break-word;
+}
+
+.balance-summary__metric-value--positive {
+    color: var(--status-success);
+}
+
+.balance-summary__metric-value--negative {
+    color: var(--status-error);
+}
+
+.balance-summary__metric-value--neutral {
+    color: var(--text-secondary);
+}
+
+/* Desktop: three side-by-side metric tiles */
+@media (min-width: 768px) {
+    .balance-summary__metrics {
+        grid-template-columns: repeat(3, 1fr);
+    }
+}
