@@ -47,8 +47,14 @@
   "DetailsScreen": {
     "title": "Details",
     "balanceSummaryTitle": "Balance Summary",
-    "balancePeriod": "Last 30 days",
     "balanceFilterLabel": "Filter period",
+    "filterDay": "Day",
+    "filterMonth": "Month",
+    "filterYear": "Year",
+    "filterNote": "Select a period to update the summary.",
+    "periodDay": "Last day",
+    "periodMonth": "Last 30 days",
+    "periodYear": "Last year",
     "totalBalance": "Total Balance",
     "bestDay": "Best Day",
     "worstDay": "Worst Day"

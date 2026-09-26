@@ -1,19 +1,28 @@
 // src/components/DetailsScreen/Balance.tsx
+import { useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import type { LucideIcon } from "lucide-react";
-import { Filter, TrendingDown, TrendingUp } from "lucide-react";
+import { TrendingDown, TrendingUp } from "lucide-react";
 import type { BalanceTone } from "../../hooks/useBalanceDiario";
-import "../styles/DetailsScreen/Balance.css";
+import { useBalanceFilter } from "../../hooks/useBalanceFilter";
+import type { FilterOption } from "../../hooks/useBalanceFilter";
+import { BalanceFilterMenu } from "./BalanceFilterMenu";
+import "./styles/Balance.css";
+
+export type FilterPeriod = "day" | "month" | "year";
 
 export interface SummaryMetrics {
-    totalBalance: number; // e.g., 345.2
-    bestDay: number; // e.g., 119.2
-    worstDay: number; // e.g., -35.7
+    totalBalance: number;
+    bestDay: number;
+    worstDay: number;
 }
 
+export type SummaryMetricsByPeriod = Record<FilterPeriod, SummaryMetrics>;
+
 interface BalanceProps {
-    metrics?: SummaryMetrics;
-    onFilter?: () => void;
+    metrics?: SummaryMetricsByPeriod;
+    initialPeriod?: FilterPeriod;
+    onFilterChange?: (period: FilterPeriod) => void;
 }
 
 interface MetricItem {
@@ -24,10 +33,16 @@ interface MetricItem {
     icon?: LucideIcon;
 }
 
-const MOCK_SUMMARY_METRICS: SummaryMetrics = {
-    totalBalance: 345.2,
-    bestDay: 119.2,
-    worstDay: -35.7,
+const MOCK_SUMMARY_METRICS: SummaryMetricsByPeriod = {
+    day: { totalBalance: 345.2, bestDay: 119.2, worstDay: -35.7 },
+    month: { totalBalance: 4210.45, bestDay: 320.8, worstDay: -112.4 },
+    year: { totalBalance: 48250.15, bestDay: 980, worstDay: -450.25 },
+};
+
+const PERIOD_LABEL_KEYS: Record<FilterPeriod, string> = {
+    day: "DetailsScreen.periodDay",
+    month: "DetailsScreen.periodMonth",
+    year: "DetailsScreen.periodYear",
 };
 
 const getTone = (value: number): BalanceTone => {
@@ -56,31 +71,52 @@ const formatSignedCurrency = (value: number, locale: string): string => {
     return absolute;
 };
 
-export const Balance = ({ metrics = MOCK_SUMMARY_METRICS, onFilter }: BalanceProps) => {
+export const Balance = ({
+    metrics = MOCK_SUMMARY_METRICS,
+    initialPeriod = "month",
+    onFilterChange,
+}: BalanceProps) => {
     const { t, i18n } = useTranslation("");
+    const { period, isOpen, containerRef, toggle, select } = useBalanceFilter(initialPeriod);
+
+    const currentMetrics = metrics[period];
+
+    const filterOptions: FilterOption[] = useMemo(
+        () => [
+            { value: "day", label: t("DetailsScreen.filterDay") },
+            { value: "month", label: t("DetailsScreen.filterMonth") },
+            { value: "year", label: t("DetailsScreen.filterYear") },
+        ],
+        [t],
+    );
 
     const metricItems: MetricItem[] = [
         {
             key: "total",
             label: t("DetailsScreen.totalBalance"),
-            value: formatCurrency(metrics.totalBalance, i18n.language),
-            tone: getTone(metrics.totalBalance),
+            value: formatCurrency(currentMetrics.totalBalance, i18n.language),
+            tone: getTone(currentMetrics.totalBalance),
         },
         {
             key: "best",
             label: t("DetailsScreen.bestDay"),
-            value: formatSignedCurrency(metrics.bestDay, i18n.language),
+            value: formatSignedCurrency(currentMetrics.bestDay, i18n.language),
             tone: "positive",
             icon: TrendingUp,
         },
         {
             key: "worst",
             label: t("DetailsScreen.worstDay"),
-            value: formatSignedCurrency(metrics.worstDay, i18n.language),
+            value: formatSignedCurrency(currentMetrics.worstDay, i18n.language),
             tone: "negative",
             icon: TrendingDown,
         },
     ];
+
+    const handleSelect = (next: FilterPeriod): void => {
+        select(next);
+        onFilterChange?.(next);
+    };
 
     return (
         <section className="balance-summary" aria-labelledby="balance-summary-title">
@@ -89,17 +125,20 @@ export const Balance = ({ metrics = MOCK_SUMMARY_METRICS, onFilter }: BalancePro
                     <h2 id="balance-summary-title" className="balance-summary__title">
                         {t("DetailsScreen.balanceSummaryTitle")}
                     </h2>
-                    <p className="balance-summary__period">{t("DetailsScreen.balancePeriod")}</p>
+                    <p className="balance-summary__period">{t(PERIOD_LABEL_KEYS[period])}</p>
                 </div>
 
-                <button
-                    type="button"
-                    className="balance-summary__filter"
-                    onClick={onFilter}
-                    aria-label={t("DetailsScreen.balanceFilterLabel")}
-                >
-                    <Filter size={18} aria-hidden="true" />
-                </button>
+                <BalanceFilterMenu
+                    options={filterOptions}
+                    selected={period}
+                    isOpen={isOpen}
+                    containerRef={containerRef}
+                    menuId="balance-summary-filter-menu"
+                    triggerLabel={t("DetailsScreen.balanceFilterLabel")}
+                    note={t("DetailsScreen.filterNote")}
+                    onToggle={toggle}
+                    onSelect={handleSelect}
+                />
             </header>
 
             <div className="balance-summary__metrics">
