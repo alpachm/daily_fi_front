@@ -1,11 +1,22 @@
 // src/components/ReceiptsScreen/ReceiptsTable.tsx
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
+import {
+    createColumnHelper,
+    flexRender,
+    getCoreRowModel,
+    getPaginationRowModel,
+    useReactTable,
+} from "@tanstack/react-table";
+import type { OnChangeFn, PaginationState } from "@tanstack/react-table";
 import type { LucideIcon } from "lucide-react";
 import { Download, Eye, MoreHorizontal, Trash2 } from "lucide-react";
 import type { ReceiptType } from "../../hooks/useReceiptsMenu";
+import { useLocalStorage } from "../../hooks/useLocalStorage";
 import { TablePagination } from "../shared/TablePagination";
 import "./styles/ReceiptsTable.css";
+
+const RECEIPTS_PAGE_SIZE_KEY = "daily_fi_receipts_page_size" as const;
 
 export interface ReceiptItem {
     id: string;
@@ -14,6 +25,8 @@ export interface ReceiptItem {
     fileName: string;
     type: ReceiptType;
 }
+
+const columnHelper = createColumnHelper<ReceiptItem>();
 
 const MOCK_SELL_RECEIPTS: ReceiptItem[] = [
     {
@@ -208,6 +221,657 @@ const MOCK_BUY_RECEIPTS: ReceiptItem[] = [
         fileName: "compra-btc-0912.jpg",
         type: "buy",
     },
+    {
+        id: "buy-001",
+        date: "01-06-26",
+        time: "15:10",
+        fileName: "comprobante-compra-01.jpg",
+        type: "buy",
+    },
+    {
+        id: "buy-002",
+        date: "01-06-26",
+        time: "15:32",
+        fileName: "comprobante-compra-02.jpg",
+        type: "buy",
+    },
+    {
+        id: "buy-003",
+        date: "01-06-26",
+        time: "16:18",
+        fileName: "compra-btc-0912.jpg",
+        type: "buy",
+    },
+    {
+        id: "buy-001",
+        date: "01-06-26",
+        time: "15:10",
+        fileName: "comprobante-compra-01.jpg",
+        type: "buy",
+    },
+    {
+        id: "buy-002",
+        date: "01-06-26",
+        time: "15:32",
+        fileName: "comprobante-compra-02.jpg",
+        type: "buy",
+    },
+    {
+        id: "buy-003",
+        date: "01-06-26",
+        time: "16:18",
+        fileName: "compra-btc-0912.jpg",
+        type: "buy",
+    },
+    {
+        id: "buy-001",
+        date: "01-06-26",
+        time: "15:10",
+        fileName: "comprobante-compra-01.jpg",
+        type: "buy",
+    },
+    {
+        id: "buy-002",
+        date: "01-06-26",
+        time: "15:32",
+        fileName: "comprobante-compra-02.jpg",
+        type: "buy",
+    },
+    {
+        id: "buy-003",
+        date: "01-06-26",
+        time: "16:18",
+        fileName: "compra-btc-0912.jpg",
+        type: "buy",
+    },
+    {
+        id: "buy-001",
+        date: "01-06-26",
+        time: "15:10",
+        fileName: "comprobante-compra-01.jpg",
+        type: "buy",
+    },
+    {
+        id: "buy-002",
+        date: "01-06-26",
+        time: "15:32",
+        fileName: "comprobante-compra-02.jpg",
+        type: "buy",
+    },
+    {
+        id: "buy-003",
+        date: "01-06-26",
+        time: "16:18",
+        fileName: "compra-btc-0912.jpg",
+        type: "buy",
+    },
+    {
+        id: "buy-001",
+        date: "01-06-26",
+        time: "15:10",
+        fileName: "comprobante-compra-01.jpg",
+        type: "buy",
+    },
+    {
+        id: "buy-002",
+        date: "01-06-26",
+        time: "15:32",
+        fileName: "comprobante-compra-02.jpg",
+        type: "buy",
+    },
+    {
+        id: "buy-003",
+        date: "01-06-26",
+        time: "16:18",
+        fileName: "compra-btc-0912.jpg",
+        type: "buy",
+    },
+    {
+        id: "buy-001",
+        date: "01-06-26",
+        time: "15:10",
+        fileName: "comprobante-compra-01.jpg",
+        type: "buy",
+    },
+    {
+        id: "buy-002",
+        date: "01-06-26",
+        time: "15:32",
+        fileName: "comprobante-compra-02.jpg",
+        type: "buy",
+    },
+    {
+        id: "buy-003",
+        date: "01-06-26",
+        time: "16:18",
+        fileName: "compra-btc-0912.jpg",
+        type: "buy",
+    },
+    {
+        id: "buy-001",
+        date: "01-06-26",
+        time: "15:10",
+        fileName: "comprobante-compra-01.jpg",
+        type: "buy",
+    },
+    {
+        id: "buy-002",
+        date: "01-06-26",
+        time: "15:32",
+        fileName: "comprobante-compra-02.jpg",
+        type: "buy",
+    },
+    {
+        id: "buy-003",
+        date: "01-06-26",
+        time: "16:18",
+        fileName: "compra-btc-0912.jpg",
+        type: "buy",
+    },
+    {
+        id: "buy-001",
+        date: "01-06-26",
+        time: "15:10",
+        fileName: "comprobante-compra-01.jpg",
+        type: "buy",
+    },
+    {
+        id: "buy-002",
+        date: "01-06-26",
+        time: "15:32",
+        fileName: "comprobante-compra-02.jpg",
+        type: "buy",
+    },
+    {
+        id: "buy-003",
+        date: "01-06-26",
+        time: "16:18",
+        fileName: "compra-btc-0912.jpg",
+        type: "buy",
+    },
+    {
+        id: "buy-001",
+        date: "01-06-26",
+        time: "15:10",
+        fileName: "comprobante-compra-01.jpg",
+        type: "buy",
+    },
+    {
+        id: "buy-002",
+        date: "01-06-26",
+        time: "15:32",
+        fileName: "comprobante-compra-02.jpg",
+        type: "buy",
+    },
+    {
+        id: "buy-003",
+        date: "01-06-26",
+        time: "16:18",
+        fileName: "compra-btc-0912.jpg",
+        type: "buy",
+    },
+    {
+        id: "buy-001",
+        date: "01-06-26",
+        time: "15:10",
+        fileName: "comprobante-compra-01.jpg",
+        type: "buy",
+    },
+    {
+        id: "buy-002",
+        date: "01-06-26",
+        time: "15:32",
+        fileName: "comprobante-compra-02.jpg",
+        type: "buy",
+    },
+    {
+        id: "buy-003",
+        date: "01-06-26",
+        time: "16:18",
+        fileName: "compra-btc-0912.jpg",
+        type: "buy",
+    },
+    {
+        id: "buy-001",
+        date: "01-06-26",
+        time: "15:10",
+        fileName: "comprobante-compra-01.jpg",
+        type: "buy",
+    },
+    {
+        id: "buy-002",
+        date: "01-06-26",
+        time: "15:32",
+        fileName: "comprobante-compra-02.jpg",
+        type: "buy",
+    },
+    {
+        id: "buy-003",
+        date: "01-06-26",
+        time: "16:18",
+        fileName: "compra-btc-0912.jpg",
+        type: "buy",
+    },
+    {
+        id: "buy-001",
+        date: "01-06-26",
+        time: "15:10",
+        fileName: "comprobante-compra-01.jpg",
+        type: "buy",
+    },
+    {
+        id: "buy-002",
+        date: "01-06-26",
+        time: "15:32",
+        fileName: "comprobante-compra-02.jpg",
+        type: "buy",
+    },
+    {
+        id: "buy-003",
+        date: "01-06-26",
+        time: "16:18",
+        fileName: "compra-btc-0912.jpg",
+        type: "buy",
+    },
+    {
+        id: "buy-001",
+        date: "01-06-26",
+        time: "15:10",
+        fileName: "comprobante-compra-01.jpg",
+        type: "buy",
+    },
+    {
+        id: "buy-002",
+        date: "01-06-26",
+        time: "15:32",
+        fileName: "comprobante-compra-02.jpg",
+        type: "buy",
+    },
+    {
+        id: "buy-003",
+        date: "01-06-26",
+        time: "16:18",
+        fileName: "compra-btc-0912.jpg",
+        type: "buy",
+    },
+    {
+        id: "buy-001",
+        date: "01-06-26",
+        time: "15:10",
+        fileName: "comprobante-compra-01.jpg",
+        type: "buy",
+    },
+    {
+        id: "buy-002",
+        date: "01-06-26",
+        time: "15:32",
+        fileName: "comprobante-compra-02.jpg",
+        type: "buy",
+    },
+    {
+        id: "buy-003",
+        date: "01-06-26",
+        time: "16:18",
+        fileName: "compra-btc-0912.jpg",
+        type: "buy",
+    },
+    {
+        id: "buy-001",
+        date: "01-06-26",
+        time: "15:10",
+        fileName: "comprobante-compra-01.jpg",
+        type: "buy",
+    },
+    {
+        id: "buy-002",
+        date: "01-06-26",
+        time: "15:32",
+        fileName: "comprobante-compra-02.jpg",
+        type: "buy",
+    },
+    {
+        id: "buy-003",
+        date: "01-06-26",
+        time: "16:18",
+        fileName: "compra-btc-0912.jpg",
+        type: "buy",
+    },
+    {
+        id: "buy-001",
+        date: "01-06-26",
+        time: "15:10",
+        fileName: "comprobante-compra-01.jpg",
+        type: "buy",
+    },
+    {
+        id: "buy-002",
+        date: "01-06-26",
+        time: "15:32",
+        fileName: "comprobante-compra-02.jpg",
+        type: "buy",
+    },
+    {
+        id: "buy-003",
+        date: "01-06-26",
+        time: "16:18",
+        fileName: "compra-btc-0912.jpg",
+        type: "buy",
+    },
+    {
+        id: "buy-001",
+        date: "01-06-26",
+        time: "15:10",
+        fileName: "comprobante-compra-01.jpg",
+        type: "buy",
+    },
+    {
+        id: "buy-002",
+        date: "01-06-26",
+        time: "15:32",
+        fileName: "comprobante-compra-02.jpg",
+        type: "buy",
+    },
+    {
+        id: "buy-003",
+        date: "01-06-26",
+        time: "16:18",
+        fileName: "compra-btc-0912.jpg",
+        type: "buy",
+    },
+    {
+        id: "buy-001",
+        date: "01-06-26",
+        time: "15:10",
+        fileName: "comprobante-compra-01.jpg",
+        type: "buy",
+    },
+    {
+        id: "buy-002",
+        date: "01-06-26",
+        time: "15:32",
+        fileName: "comprobante-compra-02.jpg",
+        type: "buy",
+    },
+    {
+        id: "buy-003",
+        date: "01-06-26",
+        time: "16:18",
+        fileName: "compra-btc-0912.jpg",
+        type: "buy",
+    },
+    {
+        id: "buy-001",
+        date: "01-06-26",
+        time: "15:10",
+        fileName: "comprobante-compra-01.jpg",
+        type: "buy",
+    },
+    {
+        id: "buy-002",
+        date: "01-06-26",
+        time: "15:32",
+        fileName: "comprobante-compra-02.jpg",
+        type: "buy",
+    },
+    {
+        id: "buy-003",
+        date: "01-06-26",
+        time: "16:18",
+        fileName: "compra-btc-0912.jpg",
+        type: "buy",
+    },
+    {
+        id: "buy-001",
+        date: "01-06-26",
+        time: "15:10",
+        fileName: "comprobante-compra-01.jpg",
+        type: "buy",
+    },
+    {
+        id: "buy-002",
+        date: "01-06-26",
+        time: "15:32",
+        fileName: "comprobante-compra-02.jpg",
+        type: "buy",
+    },
+    {
+        id: "buy-003",
+        date: "01-06-26",
+        time: "16:18",
+        fileName: "compra-btc-0912.jpg",
+        type: "buy",
+    },
+    {
+        id: "buy-001",
+        date: "01-06-26",
+        time: "15:10",
+        fileName: "comprobante-compra-01.jpg",
+        type: "buy",
+    },
+    {
+        id: "buy-002",
+        date: "01-06-26",
+        time: "15:32",
+        fileName: "comprobante-compra-02.jpg",
+        type: "buy",
+    },
+    {
+        id: "buy-003",
+        date: "01-06-26",
+        time: "16:18",
+        fileName: "compra-btc-0912.jpg",
+        type: "buy",
+    },
+    {
+        id: "buy-001",
+        date: "01-06-26",
+        time: "15:10",
+        fileName: "comprobante-compra-01.jpg",
+        type: "buy",
+    },
+    {
+        id: "buy-002",
+        date: "01-06-26",
+        time: "15:32",
+        fileName: "comprobante-compra-02.jpg",
+        type: "buy",
+    },
+    {
+        id: "buy-003",
+        date: "01-06-26",
+        time: "16:18",
+        fileName: "compra-btc-0912.jpg",
+        type: "buy",
+    },
+    {
+        id: "buy-001",
+        date: "01-06-26",
+        time: "15:10",
+        fileName: "comprobante-compra-01.jpg",
+        type: "buy",
+    },
+    {
+        id: "buy-002",
+        date: "01-06-26",
+        time: "15:32",
+        fileName: "comprobante-compra-02.jpg",
+        type: "buy",
+    },
+    {
+        id: "buy-003",
+        date: "01-06-26",
+        time: "16:18",
+        fileName: "compra-btc-0912.jpg",
+        type: "buy",
+    },
+    {
+        id: "buy-001",
+        date: "01-06-26",
+        time: "15:10",
+        fileName: "comprobante-compra-01.jpg",
+        type: "buy",
+    },
+    {
+        id: "buy-002",
+        date: "01-06-26",
+        time: "15:32",
+        fileName: "comprobante-compra-02.jpg",
+        type: "buy",
+    },
+    {
+        id: "buy-003",
+        date: "01-06-26",
+        time: "16:18",
+        fileName: "compra-btc-0912.jpg",
+        type: "buy",
+    },
+    {
+        id: "buy-001",
+        date: "01-06-26",
+        time: "15:10",
+        fileName: "comprobante-compra-01.jpg",
+        type: "buy",
+    },
+    {
+        id: "buy-002",
+        date: "01-06-26",
+        time: "15:32",
+        fileName: "comprobante-compra-02.jpg",
+        type: "buy",
+    },
+    {
+        id: "buy-003",
+        date: "01-06-26",
+        time: "16:18",
+        fileName: "compra-btc-0912.jpg",
+        type: "buy",
+    },
+    {
+        id: "buy-001",
+        date: "01-06-26",
+        time: "15:10",
+        fileName: "comprobante-compra-01.jpg",
+        type: "buy",
+    },
+    {
+        id: "buy-002",
+        date: "01-06-26",
+        time: "15:32",
+        fileName: "comprobante-compra-02.jpg",
+        type: "buy",
+    },
+    {
+        id: "buy-003",
+        date: "01-06-26",
+        time: "16:18",
+        fileName: "compra-btc-0912.jpg",
+        type: "buy",
+    },
+    {
+        id: "buy-001",
+        date: "01-06-26",
+        time: "15:10",
+        fileName: "comprobante-compra-01.jpg",
+        type: "buy",
+    },
+    {
+        id: "buy-002",
+        date: "01-06-26",
+        time: "15:32",
+        fileName: "comprobante-compra-02.jpg",
+        type: "buy",
+    },
+    {
+        id: "buy-003",
+        date: "01-06-26",
+        time: "16:18",
+        fileName: "compra-btc-0912.jpg",
+        type: "buy",
+    },
+    {
+        id: "buy-001",
+        date: "01-06-26",
+        time: "15:10",
+        fileName: "comprobante-compra-01.jpg",
+        type: "buy",
+    },
+    {
+        id: "buy-002",
+        date: "01-06-26",
+        time: "15:32",
+        fileName: "comprobante-compra-02.jpg",
+        type: "buy",
+    },
+    {
+        id: "buy-003",
+        date: "01-06-26",
+        time: "16:18",
+        fileName: "compra-btc-0912.jpg",
+        type: "buy",
+    },
+    {
+        id: "buy-001",
+        date: "01-06-26",
+        time: "15:10",
+        fileName: "comprobante-compra-01.jpg",
+        type: "buy",
+    },
+    {
+        id: "buy-002",
+        date: "01-06-26",
+        time: "15:32",
+        fileName: "comprobante-compra-02.jpg",
+        type: "buy",
+    },
+    {
+        id: "buy-003",
+        date: "01-06-26",
+        time: "16:18",
+        fileName: "compra-btc-0912.jpg",
+        type: "buy",
+    },
+    {
+        id: "buy-001",
+        date: "01-06-26",
+        time: "15:10",
+        fileName: "comprobante-compra-01.jpg",
+        type: "buy",
+    },
+    {
+        id: "buy-002",
+        date: "01-06-26",
+        time: "15:32",
+        fileName: "comprobante-compra-02.jpg",
+        type: "buy",
+    },
+    {
+        id: "buy-003",
+        date: "01-06-26",
+        time: "16:18",
+        fileName: "compra-btc-0912.jpg",
+        type: "buy",
+    },
+    {
+        id: "buy-001",
+        date: "01-06-26",
+        time: "15:10",
+        fileName: "comprobante-compra-01.jpg",
+        type: "buy",
+    },
+    {
+        id: "buy-002",
+        date: "01-06-26",
+        time: "15:32",
+        fileName: "comprobante-compra-02.jpg",
+        type: "buy",
+    },
+    {
+        id: "buy-003",
+        date: "01-06-26",
+        time: "16:18",
+        fileName: "compra-btc-0912.jpg",
+        type: "buy",
+    },
 ];
 
 type ReceiptMenuAction = (record: ReceiptItem) => void;
@@ -241,17 +905,18 @@ export const ReceiptsTable = ({ selectedDate, receiptType }: ReceiptsTableProps)
     const { t } = useTranslation("");
     const [activeMenuId, setActiveMenuId] = useState<string | null>(null);
     const [pageIndex, setPageIndex] = useState(0);
-    const [pageSize, setPageSize] = useState(10);
+    const [pageSize, setPageSize] = useLocalStorage<number>(RECEIPTS_PAGE_SIZE_KEY, 10);
     const popoverRef = useRef<HTMLDivElement | null>(null);
 
-    const records = receiptType === "sell" ? MOCK_SELL_RECEIPTS : MOCK_BUY_RECEIPTS;
+    const records = useMemo<ReceiptItem[]>(
+        () => (receiptType === "sell" ? MOCK_SELL_RECEIPTS : MOCK_BUY_RECEIPTS),
+        [receiptType],
+    );
 
-    useEffect(() => {
-        setPageIndex(0);
-    }, [receiptType, selectedDate]);
-
-    const totalPages = Math.max(1, Math.ceil(records.length / pageSize));
-    const paginatedRecords = records.slice(pageIndex * pageSize, (pageIndex + 1) * pageSize);
+    // Clamp the page index so a shrinking dataset never renders an empty page
+    // (e.g. switching from "Venta" to "Compra" while on a later page).
+    const pageCount = Math.max(1, Math.ceil(records.length / pageSize));
+    const safePageIndex = Math.min(pageIndex, pageCount - 1);
 
     const menuOptions = useMemo<ReceiptMenuOption[]>(
         () => [
@@ -302,6 +967,108 @@ export const ReceiptsTable = ({ selectedDate, receiptType }: ReceiptsTableProps)
         };
     }, [activeMenuId]);
 
+    const columns = useMemo(
+        () => [
+            columnHelper.accessor("date", {
+                header: t("ReceiptsScreen.tableHeaderDate"),
+                cell: (info) => info.getValue(),
+            }),
+            columnHelper.accessor("time", {
+                header: t("ReceiptsScreen.tableHeaderTime"),
+                cell: (info) => info.getValue(),
+            }),
+            columnHelper.accessor("fileName", {
+                header: t("ReceiptsScreen.tableHeaderName"),
+                cell: (info) => info.getValue(),
+            }),
+            columnHelper.display({
+                id: "options",
+                header: t("ReceiptsScreen.tableHeaderOptions"),
+                cell: (info) => {
+                    const record = info.row.original;
+                    const rowId = info.row.id;
+                    const isOpen = activeMenuId === rowId;
+
+                    return (
+                        <div
+                            className="receipts-table__options-cell"
+                            ref={isOpen ? popoverRef : undefined}
+                        >
+                            <button
+                                type="button"
+                                className="receipts-table__options-btn"
+                                aria-label={t("ReceiptsScreen.tableOptionsMenuLabel")}
+                                aria-haspopup="menu"
+                                aria-expanded={isOpen}
+                                onClick={() =>
+                                    setActiveMenuId((current) => (current === rowId ? null : rowId))
+                                }
+                            >
+                                <MoreHorizontal size={18} aria-hidden="true" />
+                            </button>
+
+                            {isOpen ? (
+                                <div
+                                    className="receipts-table__popover"
+                                    role="menu"
+                                    aria-label={t("ReceiptsScreen.tableOptionsMenuLabel")}
+                                >
+                                    {menuOptions.map((option) => (
+                                        <button
+                                            key={option.id}
+                                            type="button"
+                                            className={`receipts-table__popover-item${
+                                                option.danger
+                                                    ? " receipts-table__popover-item--danger"
+                                                    : ""
+                                            }`}
+                                            role="menuitem"
+                                            onClick={() => {
+                                                option.onSelect(record);
+                                                setActiveMenuId(null);
+                                            }}
+                                        >
+                                            <option.icon size={16} aria-hidden="true" />
+                                            <span>{option.label}</span>
+                                        </button>
+                                    ))}
+                                </div>
+                            ) : null}
+                        </div>
+                    );
+                },
+            }),
+        ],
+        [t, activeMenuId, menuOptions],
+    );
+
+    const handlePaginationChange: OnChangeFn<PaginationState> = (updater) => {
+        const current = { pageIndex: safePageIndex, pageSize };
+        const next = typeof updater === "function" ? updater(current) : updater;
+
+        setPageIndex(next.pageIndex);
+        setPageSize(next.pageSize);
+    };
+
+    const table = useReactTable({
+        data: records,
+        columns,
+        state: {
+            pagination: { pageIndex: safePageIndex, pageSize },
+        },
+        onPaginationChange: handlePaginationChange,
+        getCoreRowModel: getCoreRowModel(),
+        getPaginationRowModel: getPaginationRowModel(),
+    });
+
+    // Changing the receipt type or selected date must only reset the page
+    // index; the chosen page size is a user preference that must be preserved.
+    useEffect(() => {
+        setPageIndex(0);
+    }, [receiptType, selectedDate]);
+
+    const rows = table.getRowModel().rows;
+
     return (
         <section className="receipts-table">
             {selectedDate === null ? (
@@ -315,109 +1082,61 @@ export const ReceiptsTable = ({ selectedDate, receiptType }: ReceiptsTableProps)
                     <div className="receipts-table__scroll">
                         <table className="receipts-table__table">
                             <thead>
-                                <tr className="receipts-table__row">
-                                    <th scope="col" className="receipts-table__header-cell">
-                                        {t("ReceiptsScreen.tableHeaderDate")}
-                                    </th>
-                                    <th scope="col" className="receipts-table__header-cell">
-                                        {t("ReceiptsScreen.tableHeaderTime")}
-                                    </th>
-                                    <th scope="col" className="receipts-table__header-cell">
-                                        {t("ReceiptsScreen.tableHeaderName")}
-                                    </th>
-                                    <th
-                                        scope="col"
-                                        className="receipts-table__header-cell receipts-table__header-cell--options"
-                                    >
-                                        {t("ReceiptsScreen.tableHeaderOptions")}
-                                    </th>
-                                </tr>
+                                {table.getHeaderGroups().map((headerGroup) => (
+                                    <tr key={headerGroup.id} className="receipts-table__row">
+                                        {headerGroup.headers.map((header) => (
+                                            <th
+                                                key={header.id}
+                                                scope="col"
+                                                className={`receipts-table__header-cell${
+                                                    header.column.id === "options"
+                                                        ? " receipts-table__header-cell--options"
+                                                        : ""
+                                                }`}
+                                            >
+                                                {header.isPlaceholder
+                                                    ? null
+                                                    : flexRender(
+                                                          header.column.columnDef.header,
+                                                          header.getContext(),
+                                                      )}
+                                            </th>
+                                        ))}
+                                    </tr>
+                                ))}
                             </thead>
                             <tbody>
-                                {paginatedRecords.map((record) => {
-                                    const isOpen = activeMenuId === record.id;
-
-                                    return (
-                                        <tr key={record.id} className="receipts-table__row">
-                                            <td className="receipts-table__cell">{record.date}</td>
-                                            <td className="receipts-table__cell">{record.time}</td>
-                                            <td className="receipts-table__cell receipts-table__cell--file">
-                                                {record.fileName}
+                                {rows.map((row) => (
+                                    <tr key={row.id} className="receipts-table__row">
+                                        {row.getVisibleCells().map((cell) => (
+                                            <td
+                                                key={cell.id}
+                                                className={`receipts-table__cell${
+                                                    cell.column.id === "fileName"
+                                                        ? " receipts-table__cell--file"
+                                                        : cell.column.id === "options"
+                                                          ? " receipts-table__cell--options"
+                                                          : ""
+                                                }`}
+                                            >
+                                                {flexRender(
+                                                    cell.column.columnDef.cell,
+                                                    cell.getContext(),
+                                                )}
                                             </td>
-                                            <td className="receipts-table__cell receipts-table__cell--options">
-                                                <div
-                                                    className="receipts-table__options-cell"
-                                                    ref={isOpen ? popoverRef : undefined}
-                                                >
-                                                    <button
-                                                        type="button"
-                                                        className="receipts-table__options-btn"
-                                                        aria-label={t(
-                                                            "ReceiptsScreen.tableOptionsMenuLabel",
-                                                        )}
-                                                        aria-haspopup="menu"
-                                                        aria-expanded={isOpen}
-                                                        onClick={() =>
-                                                            setActiveMenuId((current) =>
-                                                                current === record.id
-                                                                    ? null
-                                                                    : record.id,
-                                                            )
-                                                        }
-                                                    >
-                                                        <MoreHorizontal
-                                                            size={18}
-                                                            aria-hidden="true"
-                                                        />
-                                                    </button>
-
-                                                    {isOpen ? (
-                                                        <div
-                                                            className="receipts-table__popover"
-                                                            role="menu"
-                                                            aria-label={t(
-                                                                "ReceiptsScreen.tableOptionsMenuLabel",
-                                                            )}
-                                                        >
-                                                            {menuOptions.map((option) => (
-                                                                <button
-                                                                    key={option.id}
-                                                                    type="button"
-                                                                    className={`receipts-table__popover-item${
-                                                                        option.danger
-                                                                            ? " receipts-table__popover-item--danger"
-                                                                            : ""
-                                                                    }`}
-                                                                    role="menuitem"
-                                                                    onClick={() => {
-                                                                        option.onSelect(record);
-                                                                        setActiveMenuId(null);
-                                                                    }}
-                                                                >
-                                                                    <option.icon
-                                                                        size={16}
-                                                                        aria-hidden="true"
-                                                                    />
-                                                                    <span>{option.label}</span>
-                                                                </button>
-                                                            ))}
-                                                        </div>
-                                                    ) : null}
-                                                </div>
-                                            </td>
-                                        </tr>
-                                    );
-                                })}
+                                        ))}
+                                    </tr>
+                                ))}
                             </tbody>
                         </table>
                     </div>
 
                     <TablePagination
-                        currentPage={pageIndex + 1}
-                        totalPages={totalPages}
-                        pageSize={pageSize}
-                        canPreviousPage={pageIndex > 0}
-                        canNextPage={pageIndex < totalPages - 1}
+                        currentPage={table.getState().pagination.pageIndex + 1}
+                        totalPages={table.getPageCount()}
+                        pageSize={table.getState().pagination.pageSize}
+                        canPreviousPage={table.getCanPreviousPage()}
+                        canNextPage={table.getCanNextPage()}
                         onPageChange={(page) => setPageIndex(page - 1)}
                         onPageSizeChange={(size) => {
                             setPageSize(size);
