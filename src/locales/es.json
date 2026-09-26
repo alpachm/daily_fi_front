@@ -72,6 +72,8 @@
     "tablePrevPageLabel": "Página anterior",
     "tableNextPageLabel": "Página siguiente",
     "tablePageInfo": "Página {{current}} de {{total}}",
+    "tableRowsPerPageLabel": "Registros por página",
+    "tableGoToPageLabel": "Ir a la página {{page}}",
     "tableEmptyState": "No hay registros disponibles"
   },
   "ProfileScreen": {

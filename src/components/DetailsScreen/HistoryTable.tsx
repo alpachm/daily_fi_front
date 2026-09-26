@@ -1,5 +1,6 @@
 // src/components/DetailsScreen/HistoryTable.tsx
 import { useMemo } from "react";
+import type { ChangeEvent } from "react";
 import { useTranslation } from "react-i18next";
 import {
     createColumnHelper,
@@ -8,7 +9,7 @@ import {
     getPaginationRowModel,
     useReactTable,
 } from "@tanstack/react-table";
-import { ChevronLeft, ChevronRight, MoreHorizontal } from "lucide-react";
+import { ChevronDown, ChevronLeft, ChevronRight, MoreHorizontal } from "lucide-react";
 import "./styles/HistoryTable.css";
 
 export interface HistoryRecord {
@@ -99,7 +100,8 @@ export const HistoryTable = ({ records, pageSize = 5, onRowOptions }: HistoryTab
 
     const rows = table.getRowModel().rows;
     const pageCount = table.getPageCount();
-    const currentPage = table.getState().pagination.pageIndex + 1;
+    const currentPageIndex = table.getState().pagination.pageIndex;
+    const pageIndexes = Array.from({ length: pageCount }, (_, index) => index);
 
     return (
         <section className="history-table" aria-labelledby="history-table-title">
@@ -157,26 +159,70 @@ export const HistoryTable = ({ records, pageSize = 5, onRowOptions }: HistoryTab
             </div>
 
             <footer className="history-table__footer">
-                <span className="history-table__page-info">
-                    {t("DetailsScreen.tablePageInfo", {
-                        current: currentPage,
-                        total: pageCount,
-                    })}
-                </span>
+                <div className="history-table__page-size">
+                    <label
+                        className="history-table__page-size-label"
+                        htmlFor="history-table-page-size"
+                    >
+                        {t("DetailsScreen.tableRowsPerPageLabel")}
+                    </label>
+                    <div className="history-table__select-wrapper">
+                        <select
+                            id="history-table-page-size"
+                            className="history-table__select"
+                            value={table.getState().pagination.pageSize}
+                            onChange={(event: ChangeEvent<HTMLSelectElement>) => {
+                                table.setPageSize(Number(event.target.value));
+                                table.setPageIndex(0);
+                            }}
+                        >
+                            <option value={10}>10</option>
+                            <option value={50}>50</option>
+                            <option value={100}>100</option>
+                        </select>
+                        <ChevronDown
+                            size={16}
+                            className="history-table__select-chevron"
+                            aria-hidden="true"
+                        />
+                    </div>
+                </div>
 
                 <div className="history-table__pagination">
                     <button
                         type="button"
-                        className="history-table__page-button"
+                        className="history-table__page-btn"
                         onClick={() => table.previousPage()}
                         disabled={!table.getCanPreviousPage()}
                         aria-label={t("DetailsScreen.tablePrevPageLabel")}
                     >
                         <ChevronLeft size={18} aria-hidden="true" />
                     </button>
+
+                    {pageIndexes.map((pageIndex) => (
+                        <button
+                            key={pageIndex}
+                            type="button"
+                            className={
+                                pageIndex === currentPageIndex
+                                    ? "history-table__page-btn history-table__page-btn--active"
+                                    : "history-table__page-btn"
+                            }
+                            onClick={() => table.setPageIndex(pageIndex)}
+                            aria-label={t("DetailsScreen.tableGoToPageLabel", {
+                                page: pageIndex + 1,
+                            })}
+                            aria-current={
+                                pageIndex === currentPageIndex ? "page" : undefined
+                            }
+                        >
+                            {pageIndex + 1}
+                        </button>
+                    ))}
+
                     <button
                         type="button"
-                        className="history-table__page-button"
+                        className="history-table__page-btn"
                         onClick={() => table.nextPage()}
                         disabled={!table.getCanNextPage()}
                         aria-label={t("DetailsScreen.tableNextPageLabel")}
