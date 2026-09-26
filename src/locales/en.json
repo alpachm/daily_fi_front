@@ -31,8 +31,8 @@
   "BalanceScreen": {
     "title": "Balance",
     "placeholder": "Balance",
-    "chartTitle": "Balance Chart (Recharts Integration)",
-    "chartHint": "Placeholder for the interactive Recharts chart.",
+    "chartSeriesName": "Balance",
+    "chartAriaLabel": "Historical balance chart",
     "totalNetLabel": "Total Net Balance",
     "percentageChangeLabel": "Percentage Change",
     "previousDayTitle": "Previous Day",

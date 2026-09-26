@@ -3,6 +3,7 @@ import { useTranslation } from "react-i18next";
 import { TrendingDown, TrendingUp } from "lucide-react";
 import "./styles/BalanceChartContainer.css";
 import type { BalanceTone } from "../../hooks/useBalanceDiario";
+import { BalanceChart } from "./BalanceChart";
 
 interface BalanceChartContainerProps {
     net: number;
@@ -52,10 +53,7 @@ export const BalanceChartContainer = ({
                 </div>
             </div>
 
-            <div className="balance-chart__empty" role="status" aria-live="polite">
-                <span className="balance-chart__empty-title">{t("BalanceScreen.chartTitle")}</span>
-                <span className="balance-chart__empty-hint">{t("BalanceScreen.chartHint")}</span>
-            </div>
+            <BalanceChart />
         </section>
     );
 };

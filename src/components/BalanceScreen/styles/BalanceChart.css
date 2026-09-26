@@ -1,0 +1,46 @@
+/* ============================================================
+   src/components/BalanceScreen/styles/BalanceChart.css — Recharts balance chart
+   ============================================================ */
+
+.balance-chart__plot {
+    width: 100%;
+}
+
+/* Axis tick labels */
+.balance-chart__plot .recharts-cartesian-axis-tick-value {
+    fill: var(--text-secondary);
+    font-size: 0.75rem;
+    transition: fill 0.3s ease;
+}
+
+/* Horizontal grid lines */
+.balance-chart__plot .recharts-cartesian-grid line {
+    stroke: var(--text-secondary);
+    stroke-opacity: 0.2;
+}
+
+/* Area fill */
+.balance-chart__plot .recharts-area-area {
+    fill: var(--btn-primary);
+    fill-opacity: 0.15;
+    transition: fill 0.3s ease;
+}
+
+/* Area stroke */
+.balance-chart__plot .recharts-area-curve {
+    stroke: var(--btn-primary);
+    transition: stroke 0.3s ease;
+}
+
+/* Tooltip cursor line */
+.balance-chart__plot .recharts-tooltip-cursor {
+    stroke: var(--text-secondary);
+    stroke-opacity: 0.35;
+}
+
+/* Active data point on hover */
+.balance-chart__plot .recharts-active-dot {
+    fill: var(--btn-primary);
+    stroke: var(--card-background);
+    stroke-width: 2;
+}

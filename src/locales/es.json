@@ -31,8 +31,8 @@
   "BalanceScreen": {
     "title": "Balance",
     "placeholder": "BALANCE",
-    "chartTitle": "Gráfica de Balance (Recharts Integration)",
-    "chartHint": "Espacio reservado para la gráfica interactiva de Recharts.",
+    "chartSeriesName": "Capital",
+    "chartAriaLabel": "Gráfica de balance histórico",
     "totalNetLabel": "Balance Neto Total",
     "percentageChangeLabel": "Cambio Porcentual",
     "previousDayTitle": "Día Anterior",
