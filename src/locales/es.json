@@ -63,7 +63,16 @@
     "chartModalDescription": "Evolución del capital según el período seleccionado.",
     "chartPeriodLabel": "Seleccionar período",
     "chartSeriesName": "Capital",
-    "chartAriaLabel": "Gráfica de balance por período"
+    "chartAriaLabel": "Gráfica de balance por período",
+    "historyTitle": "Historial de Balances Diarios",
+    "tableHeaderDate": "Fecha",
+    "tableHeaderAmount": "Ganancias / Pérdidas",
+    "tableHeaderOptions": "Opciones",
+    "tableOptionsMenuLabel": "Opciones de la fila",
+    "tablePrevPageLabel": "Página anterior",
+    "tableNextPageLabel": "Página siguiente",
+    "tablePageInfo": "Página {{current}} de {{total}}",
+    "tableEmptyState": "No hay registros disponibles"
   },
   "ProfileScreen": {
     "title": "Perfil",
