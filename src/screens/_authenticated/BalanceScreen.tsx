@@ -11,8 +11,6 @@ export const BalanceScreen = () => {
 
     return (
         <div className="balance-screen">
-            <h1 className="balance-screen__title">{t("BalanceScreen.title")}</h1>
-
             <BalanceChartContainer
                 net={balance.todayNet}
                 tone={balance.todayTone}
