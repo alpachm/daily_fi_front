@@ -76,11 +76,6 @@
     "optionShowSaleVouchers": "Mostrar comprobantes de venta",
     "optionViewMonthDetails": "Ver detalles del mes",
     "optionViewYearDetails": "Mostrar detalles de año",
-    "tablePrevPageLabel": "Página anterior",
-    "tableNextPageLabel": "Página siguiente",
-    "tablePageInfo": "Página {{current}} de {{total}}",
-    "tableRowsPerPageLabel": "Registros por página",
-    "tableGoToPageLabel": "Ir a la página {{page}}",
     "tableEmptyState": "No hay registros disponibles"
   },
   "ProfileScreen": {
@@ -110,6 +105,14 @@
     "optionViewReceipt": "Visualizar comprobante",
     "optionDownloadReceipt": "Descargar comprobante",
     "optionDeleteReceipt": "Eliminar comprobante"
+  },
+  "TablePagination": {
+    "rowsPerPageLabel": "Registros por página",
+    "firstPageLabel": "Primera página",
+    "prevPageLabel": "Página anterior",
+    "nextPageLabel": "Página siguiente",
+    "lastPageLabel": "Última página",
+    "goToPageLabel": "Ir a la página {{page}}"
   },
   "DashboardLayout": {
     "headerTitle": "Daily FI",

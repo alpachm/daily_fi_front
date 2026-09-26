@@ -76,11 +76,6 @@
     "optionShowSaleVouchers": "Show sale vouchers",
     "optionViewMonthDetails": "View month details",
     "optionViewYearDetails": "Show year details",
-    "tablePrevPageLabel": "Previous page",
-    "tableNextPageLabel": "Next page",
-    "tablePageInfo": "Page {{current}} of {{total}}",
-    "tableRowsPerPageLabel": "Rows per page",
-    "tableGoToPageLabel": "Go to page {{page}}",
     "tableEmptyState": "No records available"
   },
   "ProfileScreen": {
@@ -110,6 +105,14 @@
     "optionViewReceipt": "View receipt",
     "optionDownloadReceipt": "Download receipt",
     "optionDeleteReceipt": "Delete receipt"
+  },
+  "TablePagination": {
+    "rowsPerPageLabel": "Rows per page",
+    "firstPageLabel": "First page",
+    "prevPageLabel": "Previous page",
+    "nextPageLabel": "Next page",
+    "lastPageLabel": "Last page",
+    "goToPageLabel": "Go to page {{page}}"
   },
   "DashboardLayout": {
     "headerTitle": "Daily FI",
