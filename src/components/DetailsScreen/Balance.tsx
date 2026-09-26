@@ -40,10 +40,10 @@ const MOCK_SUMMARY_METRICS: SummaryMetricsByPeriod = {
     year: { totalBalance: 48250.15, bestDay: 980, worstDay: -450.25 },
 };
 
-const PERIOD_LABEL_KEYS: Record<FilterPeriod, string> = {
-    day: "DetailsScreen.periodDay",
-    month: "DetailsScreen.periodMonth",
-    year: "DetailsScreen.periodYear",
+const BALANCE_TITLE_KEYS: Record<FilterPeriod, string> = {
+    day: "DetailsScreen.balanceTitleDay",
+    month: "DetailsScreen.balanceTitleMonth",
+    year: "DetailsScreen.balanceTitleYear",
 };
 
 const getTone = (value: number): BalanceTone => {
@@ -78,7 +78,10 @@ export const Balance = ({
     onFilterChange,
 }: BalanceProps) => {
     const { t, i18n } = useTranslation("");
-    const { period, isOpen, containerRef, toggle, select } = useBalanceFilter(currentFilter, onFilterChange);
+    const { period, isOpen, containerRef, toggle, select } = useBalanceFilter(
+        currentFilter,
+        onFilterChange,
+    );
     const [isChartModalOpen, setIsChartModalOpen] = useState(false);
 
     const currentMetrics = metrics[period];
@@ -125,7 +128,7 @@ export const Balance = ({
                     <h2 id="balance-summary-title" className="balance-summary__title">
                         {t("DetailsScreen.balanceSummaryTitle")}
                     </h2>
-                    <p className="balance-summary__period">{t(PERIOD_LABEL_KEYS[period])}</p>
+                    <p className="balance-summary__period">{t(BALANCE_TITLE_KEYS[period])}</p>
                 </div>
 
                 <div className="balance-summary__actions">
