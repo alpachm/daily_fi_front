@@ -1,12 +1,13 @@
 // src/screens/_authenticated/ProfileScreen.tsx
-import { useTranslation } from "react-i18next";
+import "../../styles/ProfileScreen.css";
+import { SecurityCard } from "../../components/ProfileScreen/SecurityCard";
+import { PreferencesCard } from "../../components/ProfileScreen/PreferencesCard";
 
 export const ProfileScreen = () => {
-    const { t } = useTranslation("");
-
     return (
-        <div>
-            <h3>{t("ProfileScreen.placeholder")}</h3>
+        <div className="profile-screen">
+            <PreferencesCard />
+            <SecurityCard />
         </div>
     );
 };
