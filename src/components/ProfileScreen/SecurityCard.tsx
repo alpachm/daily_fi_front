@@ -80,67 +80,69 @@ export const SecurityCard = () => {
                 </h2>
             </header>
 
-            <form className="security-card__section" onSubmit={handleSubmit} noValidate>
-                {passwordFields.map(({ key, label, autoComplete }) => (
-                    <PasswordField
-                        key={key}
-                        id={`security-${key}`}
-                        label={label}
-                        value={formData[key]}
-                        isVisible={visibleFields[key]}
-                        autoComplete={autoComplete}
-                        onChange={handleChange(key)}
-                        onToggleVisibility={() => toggleVisibility(key)}
-                        showLabel={t("ProfileScreen.securityShowPassword")}
-                        hideLabel={t("ProfileScreen.securityHidePassword")}
-                    />
-                ))}
+            <div className="security-card__grid">
+                <form className="security-card__section" onSubmit={handleSubmit} noValidate>
+                    {passwordFields.map(({ key, label, autoComplete }) => (
+                        <PasswordField
+                            key={key}
+                            id={`security-${key}`}
+                            label={label}
+                            value={formData[key]}
+                            isVisible={visibleFields[key]}
+                            autoComplete={autoComplete}
+                            onChange={handleChange(key)}
+                            onToggleVisibility={() => toggleVisibility(key)}
+                            showLabel={t("ProfileScreen.securityShowPassword")}
+                            hideLabel={t("ProfileScreen.securityHidePassword")}
+                        />
+                    ))}
 
-                <div className="security-card__action-row">
-                    <button
-                        type="submit"
-                        className="security-card__button security-card__button--primary"
-                    >
-                        {t("ProfileScreen.securityUpdatePasswordButton")}
-                    </button>
-                </div>
-            </form>
+                    <div className="security-card__action-row">
+                        <button
+                            type="submit"
+                            className="security-card__button security-card__button--primary"
+                        >
+                            {t("ProfileScreen.securityUpdatePasswordButton")}
+                        </button>
+                    </div>
+                </form>
 
-            <div className="security-card__section security-card__section--divided">
-                <h3 className="security-card__section-title">
-                    {t("ProfileScreen.securitySessionsTitle")}
-                </h3>
+                <div className="security-card__section">
+                    <h3 className="security-card__section-title">
+                        {t("ProfileScreen.securitySessionsTitle")}
+                    </h3>
 
-                <ul className="security-card__sessions">
-                    <li className="security-card__session">
-                        <span className="security-card__session-icon">
-                            <MonitorSmartphone size={18} aria-hidden="true" />
-                        </span>
-                        <div className="security-card__session-info">
-                            <span className="security-card__session-device">
-                                {t("ProfileScreen.securityCurrentDeviceLabel")}
+                    <ul className="security-card__sessions">
+                        <li className="security-card__session">
+                            <span className="security-card__session-icon">
+                                <MonitorSmartphone size={18} aria-hidden="true" />
                             </span>
-                            <span className="security-card__session-meta">
-                                <ShieldCheck size={14} aria-hidden="true" />
-                                {t("ProfileScreen.securityActiveSessionLabel")}
+                            <div className="security-card__session-info">
+                                <span className="security-card__session-device">
+                                    {t("ProfileScreen.securityCurrentDeviceLabel")}
+                                </span>
+                                <span className="security-card__session-meta">
+                                    <ShieldCheck size={14} aria-hidden="true" />
+                                    {t("ProfileScreen.securityActiveSessionLabel")}
+                                </span>
+                            </div>
+                            <span className="security-card__session-last">
+                                <span className="security-card__session-last-label">
+                                    {t("ProfileScreen.securityLastActivityLabel")}
+                                </span>
+                                {t("ProfileScreen.securityLastActivityValue")}
                             </span>
-                        </div>
-                        <span className="security-card__session-last">
-                            <span className="security-card__session-last-label">
-                                {t("ProfileScreen.securityLastActivityLabel")}
-                            </span>
-                            {t("ProfileScreen.securityLastActivityValue")}
-                        </span>
-                    </li>
-                </ul>
+                        </li>
+                    </ul>
 
-                <div className="security-card__action-row">
-                    <button
-                        type="button"
-                        className="security-card__button security-card__button--secondary"
-                    >
-                        {t("ProfileScreen.securityCloseSessionsButton")}
-                    </button>
+                    <div className="security-card__action-row">
+                        <button
+                            type="button"
+                            className="security-card__button security-card__button--secondary"
+                        >
+                            {t("ProfileScreen.securityCloseSessionsButton")}
+                        </button>
+                    </div>
                 </div>
             </div>
 

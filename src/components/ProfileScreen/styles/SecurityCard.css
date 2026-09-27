@@ -43,6 +43,13 @@
     border-top: 1px solid var(--text-secondary);
 }
 
+.security-card__grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1.5rem;
+    align-items: start;
+}
+
 .security-card__section-title {
     margin: 0;
     font-size: 1rem;
@@ -190,6 +197,10 @@
 }
 
 @media (max-width: 768px) {
+    .security-card__grid {
+        grid-template-columns: 1fr;
+    }
+
     .security-card__button {
         width: 100%;
     }
