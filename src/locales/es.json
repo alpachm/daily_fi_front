@@ -94,7 +94,15 @@
     "securityLastActivityLabel": "Última actividad",
     "securityLastActivityValue": "Ahora mismo",
     "securityCloseSessionsButton": "Cerrar todas las sesiones",
-    "securityLogoutButton": "Cerrar sesión"
+    "securityLogoutButton": "Cerrar sesión",
+    "preferencesTitle": "Preferencias del Sistema",
+    "preferencesAppearanceLabel": "Apariencia",
+    "preferencesThemeLight": "Claro",
+    "preferencesThemeDark": "Oscuro",
+    "preferencesThemeSystem": "Sistema",
+    "preferencesLanguageLabel": "Idioma de la aplicación",
+    "preferencesLanguageSpanish": "Español",
+    "preferencesLanguageEnglish": "Inglés"
   },
   "ReceiptsScreen": {
     "title": "Comprobantes",

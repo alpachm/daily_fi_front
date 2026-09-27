@@ -94,7 +94,15 @@
     "securityLastActivityLabel": "Last activity",
     "securityLastActivityValue": "Just now",
     "securityCloseSessionsButton": "Close all sessions",
-    "securityLogoutButton": "Log out"
+    "securityLogoutButton": "Log out",
+    "preferencesTitle": "System Preferences",
+    "preferencesAppearanceLabel": "Appearance",
+    "preferencesThemeLight": "Light",
+    "preferencesThemeDark": "Dark",
+    "preferencesThemeSystem": "System",
+    "preferencesLanguageLabel": "Application language",
+    "preferencesLanguageSpanish": "Spanish",
+    "preferencesLanguageEnglish": "English"
   },
   "ReceiptsScreen": {
     "title": "Receipts",

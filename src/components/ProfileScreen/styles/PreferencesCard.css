@@ -1,0 +1,118 @@
+/* ============================================================
+   src/components/ProfileScreen/styles/PreferencesCard.css
+   System Preferences card — borderless elevation style
+   ============================================================ */
+
+.preferences-card {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+    background-color: var(--card-background);
+    border-radius: 1rem;
+    padding: 1.5rem;
+    box-shadow:
+        0 4px 6px -1px rgba(0, 0, 0, 0.08),
+        0 2px 4px -2px rgba(0, 0, 0, 0.05);
+    transition:
+        background-color 0.3s ease,
+        box-shadow 0.3s ease;
+}
+
+.preferences-card__header {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+}
+
+.preferences-card__title {
+    margin: 0;
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    transition: color 0.3s ease;
+}
+
+.preferences-card__content {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1.5rem;
+    align-items: start;
+}
+
+.preferences-card__section {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+
+.preferences-card__section-title {
+    margin: 0;
+    font-size: 1rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    transition: color 0.3s ease;
+}
+
+.preferences-card__segmented {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.25rem;
+    padding: 0.25rem;
+    background-color: var(--background);
+    border-radius: 12px;
+    transition: background-color 0.3s ease;
+}
+
+.preferences-card__segment {
+    display: inline-flex;
+    flex: 1 1 110px;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    padding: 0.625rem 1rem;
+    font-size: 0.9375rem;
+    font-weight: 600;
+    font-family: inherit;
+    color: var(--text-secondary);
+    background-color: transparent;
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    transition:
+        background-color 0.3s ease,
+        color 0.3s ease,
+        box-shadow 0.3s ease;
+}
+
+.preferences-card__segment:hover {
+    color: var(--text-primary);
+}
+
+.preferences-card__segment--active,
+.preferences-card__segment--active:hover {
+    color: var(--btn-text);
+    background-color: var(--btn-primary);
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+}
+
+.preferences-card__segment:focus-visible {
+    outline: 2px solid var(--btn-primary);
+    outline-offset: 2px;
+}
+
+@media (max-width: 768px) {
+    .preferences-card__content {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 480px) {
+    .preferences-card__segmented {
+        flex-direction: column;
+    }
+
+    .preferences-card__segment {
+        flex: 1 1 100%;
+        width: 100%;
+    }
+}
