@@ -6,8 +6,8 @@ import { PreferencesCard } from "../../components/ProfileScreen/PreferencesCard"
 export const ProfileScreen = () => {
     return (
         <div className="profile-screen">
-            <SecurityCard />
             <PreferencesCard />
+            <SecurityCard />
         </div>
     );
 };
