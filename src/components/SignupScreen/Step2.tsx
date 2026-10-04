@@ -2,7 +2,7 @@
 import { motion } from "framer-motion";
 import { useTranslation } from "react-i18next";
 import { Link } from "@tanstack/react-router";
-import { Check, CircleAlert } from "lucide-react";
+import { Check, TriangleAlert } from "lucide-react";
 import { ROUTES } from "../../constants/routes";
 import "./styles/Step2.css";
 
@@ -36,7 +36,7 @@ export const Step2 = ({ isSuccess, errorMessage, onGoToStep1 }: Step2Props) => {
                 transition={{ type: "spring", stiffness: 260, damping: 20 }}
                 aria-hidden="true"
             >
-                {isSuccess ? <Check size={40} /> : <CircleAlert size={40} />}
+                {isSuccess ? <Check size={40} /> : <TriangleAlert size={40} />}
             </motion.div>
 
             <h2 className="step2-title">{title}</h2>

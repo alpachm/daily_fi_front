@@ -25,7 +25,6 @@
 
 .step2-logo--success {
     color: var(--status-success);
-    background-color: var(--card-background);
     background-color: color-mix(
         in srgb,
         var(--status-success) 12%,
@@ -36,7 +35,6 @@
 
 .step2-logo--error {
     color: var(--status-error);
-    background-color: var(--card-background);
     background-color: color-mix(
         in srgb,
         var(--status-error) 12%,

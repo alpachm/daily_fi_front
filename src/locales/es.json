@@ -5,7 +5,9 @@
     "cancel": "Cancelar",
     "confirm": "Confirmar",
     "close": "Cerrar",
-    "back": "Volver"
+    "back": "Volver",
+    "showPassword": "Mostrar contraseña",
+    "hidePassword": "Ocultar contraseña"
   },
   "LoginScreen": {
     "title": "Daily FI",

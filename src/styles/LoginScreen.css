@@ -123,6 +123,44 @@
     box-shadow: 0 0 0 3px rgba(56, 189, 248, 0.2);
 }
 
+/* ---------- PASSWORD TOGGLE ---------- */
+.login-input-wrap {
+    position: relative;
+}
+
+.login-input-wrap .login-input {
+    padding-right: 2.75rem;
+}
+
+.login-input-toggle {
+    position: absolute;
+    top: 50%;
+    right: 0.5rem;
+    transform: translateY(-50%);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    border: none;
+    border-radius: 8px;
+    background-color: transparent;
+    color: var(--text-secondary);
+    cursor: pointer;
+    transition:
+        background-color 0.15s ease,
+        color 0.15s ease;
+}
+
+.login-input-toggle:hover {
+    color: var(--text-primary);
+}
+
+.login-input-toggle:focus-visible {
+    outline: 2px solid var(--btn-primary);
+    outline-offset: 2px;
+}
+
 /* ---------- FORGOT PASSWORD ---------- */
 .login-forgot {
     display: flex;

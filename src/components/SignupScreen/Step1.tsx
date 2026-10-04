@@ -1,6 +1,8 @@
 // src/components/SignupScreen/Step1.tsx
 import type { FormEvent } from "react";
+import { useState } from "react";
 import { useTranslation } from "react-i18next";
+import { Eye, EyeOff } from "lucide-react";
 import { Link } from "@tanstack/react-router";
 import { ROUTES } from "../../constants/routes";
 import type { RegisterFieldErrors } from "../../hooks/useRegister";
@@ -30,6 +32,8 @@ export const Step1 = ({
     onSubmit,
 }: Step1Props) => {
     const { t } = useTranslation("");
+    const [showPassword, setShowPassword] = useState(false);
+    const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
     return (
         <div className="step1">
@@ -70,21 +74,39 @@ export const Step1 = ({
                     <label htmlFor="step1-password" className="step1-label">
                         {t("SignupScreen.passwordLabel")}
                     </label>
-                    <input
-                        id="step1-password"
-                        className="step1-input"
-                        type="password"
-                        autoComplete="new-password"
-                        placeholder={t("SignupScreen.passwordPlaceholder")}
-                        value={password}
-                        onChange={(event) => onPasswordChange(event.target.value)}
-                        aria-invalid={fieldErrors.password !== undefined}
-                        aria-describedby={
-                            fieldErrors.password !== undefined
-                                ? "step1-password-error"
-                                : undefined
-                        }
-                    />
+                    <div className="step1-input-wrap">
+                        <input
+                            id="step1-password"
+                            className="step1-input"
+                            type={showPassword ? "text" : "password"}
+                            autoComplete="new-password"
+                            placeholder={t("SignupScreen.passwordPlaceholder")}
+                            value={password}
+                            onChange={(event) => onPasswordChange(event.target.value)}
+                            aria-invalid={fieldErrors.password !== undefined}
+                            aria-describedby={
+                                fieldErrors.password !== undefined
+                                    ? "step1-password-error"
+                                    : undefined
+                            }
+                        />
+                        <button
+                            type="button"
+                            className="step1-input-toggle"
+                            onClick={() => setShowPassword((prev) => !prev)}
+                            aria-label={
+                                showPassword
+                                    ? t("Actions.hidePassword")
+                                    : t("Actions.showPassword")
+                            }
+                        >
+                            {showPassword ? (
+                                <EyeOff size={18} aria-hidden="true" />
+                            ) : (
+                                <Eye size={18} aria-hidden="true" />
+                            )}
+                        </button>
+                    </div>
                     {fieldErrors.password !== undefined && (
                         <p id="step1-password-error" className="step1-field-error">
                             {fieldErrors.password}
@@ -96,23 +118,43 @@ export const Step1 = ({
                     <label htmlFor="step1-confirm-password" className="step1-label">
                         {t("SignupScreen.confirmPasswordLabel")}
                     </label>
-                    <input
-                        id="step1-confirm-password"
-                        className="step1-input"
-                        type="password"
-                        autoComplete="new-password"
-                        placeholder={t("SignupScreen.confirmPasswordPlaceholder")}
-                        value={confirmPassword}
-                        onChange={(event) =>
-                            onConfirmPasswordChange(event.target.value)
-                        }
-                        aria-invalid={fieldErrors.confirmPassword !== undefined}
-                        aria-describedby={
-                            fieldErrors.confirmPassword !== undefined
-                                ? "step1-confirm-password-error"
-                                : undefined
-                        }
-                    />
+                    <div className="step1-input-wrap">
+                        <input
+                            id="step1-confirm-password"
+                            className="step1-input"
+                            type={showConfirmPassword ? "text" : "password"}
+                            autoComplete="new-password"
+                            placeholder={t("SignupScreen.confirmPasswordPlaceholder")}
+                            value={confirmPassword}
+                            onChange={(event) =>
+                                onConfirmPasswordChange(event.target.value)
+                            }
+                            aria-invalid={fieldErrors.confirmPassword !== undefined}
+                            aria-describedby={
+                                fieldErrors.confirmPassword !== undefined
+                                    ? "step1-confirm-password-error"
+                                    : undefined
+                            }
+                        />
+                        <button
+                            type="button"
+                            className="step1-input-toggle"
+                            onClick={() =>
+                                setShowConfirmPassword((prev) => !prev)
+                            }
+                            aria-label={
+                                showConfirmPassword
+                                    ? t("Actions.hidePassword")
+                                    : t("Actions.showPassword")
+                            }
+                        >
+                            {showConfirmPassword ? (
+                                <EyeOff size={18} aria-hidden="true" />
+                            ) : (
+                                <Eye size={18} aria-hidden="true" />
+                            )}
+                        </button>
+                    </div>
                     {fieldErrors.confirmPassword !== undefined && (
                         <p
                             id="step1-confirm-password-error"
