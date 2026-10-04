@@ -1,3 +1,6 @@
+# ==========================================
+# Logs y Trazas
+# ==========================================
 logs
 *.log
 npm-debug.log*
@@ -6,36 +9,73 @@ yarn-error.log*
 pnpm-debug.log*
 lerna-debug.log*
 
+# ==========================================
+# Dependencias
+# ==========================================
 node_modules/
+.pnp
+.pnp.js
+.yarn/
+
+# ==========================================
+# Archivos de Compilación y Builts
+# ==========================================
 dist/
 dist-ssr/
 build/
 out/
-.yarn/
+*.tsbuildinfo
+.eslintcache
+.vite/
+.cache/
+.npm/
 
-.env
-.env.local
-.env.development.local
-.env.test.local
-.env.production.local
+# ==========================================
+# Variables de Entorno y Configuración
+# Ignora todos los .env excepto .env.example
+# ==========================================
 *.env
-*.env.local
+*.env.*
+!.env.example
 config.json
-.vouchers_temp/
 
-.pnp
-.pnp.js
+# ==========================================
+# Archivos Temporales y Descargas de la App
+# ==========================================
+.vouchers_temp/
+*.tmp
+*.temp
+
+# ==========================================
+# Colecciones Locales / Claves Temporales de Postman
+# ==========================================
+*.postman_environment
+*.postman_globals
+
+# ==========================================
+# Plataformas de Despliegue y Serverless
+# ==========================================
 .speedy/
 .turbo/
 .vercel
 .netlify
 .render
 .railway
-.cache/
-.npm/
 
+# ==========================================
+# Pruebas y Cobertura de Código
+# ==========================================
+coverage/
+.nyc_output/
+cypress/videos/
+cypress/screenshots/
+
+# ==========================================
+# Archivos de IDEs y Editores de Código
+# ==========================================
 .vscode/*
 !.vscode/extensions.json
+!.vscode/settings.json
 .idea/
 *.suo
 *.ntvs*
@@ -43,10 +83,14 @@ config.json
 *.sln
 *.sw?
 
+# ==========================================
+# Archivos Basura del Sistema Operativo
+# ==========================================
 .DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
 Thumbs.db
 desktop.ini
-
-*.tsbuildinfo
-.eslintcache
-.vite/
