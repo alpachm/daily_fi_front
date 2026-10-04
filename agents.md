@@ -112,3 +112,21 @@ Los archivos de traducción se organizarán de forma estrictamente plana en su r
     }
 }
 ```
+
+### 🗂️️ Estándares para Servicios API e Interfaz de Datos (Frontend)
+
+Para mantener la capa de comunicación HTTP desacoplada y fuertemente tipada, la creación de servicios e interfaces debe seguir estrictamente estas reglas:
+
+1. **Ubicación y Nomenclatura de Servicios:**
+    - Todo servicio de integración HTTP/API debe guardarse exclusivamente en la ruta `src/services/`.
+    - El nombre del archivo y del servicio debe estar escrito en **PascalCase**, compuesto por el nombre del dominio o módulo seguido obligatoriamente de la palabra `Service` (ej. `RegisterService.ts`, `DailyBalanceService.ts`).
+    - _Ruta de ejemplo:_ `src/services/RegisterService.ts`
+
+2. **Ubicación y Nomenclatura de Interfaces:**
+    - Todas las interfaces, tipos de petición/respuesta y contratos de datos vinculados a un servicio deben guardarse exclusivamente en la ruta `src/interfaces/`.
+    - El nombre del archivo debe corresponder exactamente al nombre del servicio seguido de la extensión `.interface.ts` (ej. `RegisterService.interface.ts`, `DailyBalanceService.interface.ts`).
+    - Queda estrictamente prohibido definir interfaces de la API dentro del archivo del servicio o del componente TSX.
+    - _Ruta de ejemplo:_ `src/interfaces/RegisterService.interface.ts`
+
+3. **Inmutabilidad y Tipado Estricto:**
+    - Toda función dentro del servicio debe retornar promesas con tipos explícitos importados desde su respectivo archivo `.interface.ts`. Prohibido el uso de `any` en parámetros o respuestas.
