@@ -5,7 +5,9 @@
     "cancel": "Cancel",
     "confirm": "Confirm",
     "close": "Close",
-    "back": "Back"
+    "back": "Back",
+    "showPassword": "Show password",
+    "hidePassword": "Hide password"
   },
   "LoginScreen": {
     "title": "Daily FI",
@@ -19,8 +21,37 @@
     "signupLink": "Sign Up"
   },
   "SignupScreen": {
-    "title": "Sign Up",
-    "subtitle": "Sign up screen — under development."
+    "title": "Create your account",
+    "subtitle": "P2P Financial Management",
+    "emailLabel": "Email",
+    "emailPlaceholder": "you@email.com",
+    "passwordLabel": "Password",
+    "passwordPlaceholder": "••••••••",
+    "confirmPasswordLabel": "Confirm password",
+    "confirmPasswordPlaceholder": "••••••••",
+    "submitButton": "Sign Up",
+    "haveAccount": "Already have an account?",
+    "loginLink": "Sign In",
+    "success": {
+      "title": "Account created successfully!",
+      "description": "Your account is ready. You can now sign in to Daily FI.",
+      "action": "Go to Login"
+    },
+    "error": {
+      "title": "We couldn't create your account",
+      "description": "Something went wrong while processing your request. Please try again.",
+      "action": "Try Again"
+    },
+    "errors": {
+      "emailRequired": "Email is required.",
+      "passwordRequired": "Password is required.",
+      "confirmPasswordRequired": "Please confirm your password.",
+      "passwordsDoNotMatch": "Passwords do not match.",
+      "invalidData": "The entered data is invalid. Please check your email and password.",
+      "conflict": "A user with that email already exists.",
+      "network": "Unable to reach the server. Please try again.",
+      "generic": "An unexpected error occurred. Please try again."
+    }
   },
   "Navbar": {
     "login": "Login",

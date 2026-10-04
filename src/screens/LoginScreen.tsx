@@ -1,6 +1,7 @@
 // src/screens/LoginScreen.tsx
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
+import { Eye, EyeOff } from "lucide-react";
 import { Link, useNavigate } from "@tanstack/react-router";
 import "../styles/LoginScreen.css";
 import { DASHBOARD_ROUTES, ROUTES } from "../constants/routes";
@@ -15,6 +16,7 @@ const LoginScreen = () => {
     const navigate = useNavigate();
     const [usuario, setUsuario] = useState("");
     const [contrasena, setContrasena] = useState("");
+    const [showPassword, setShowPassword] = useState(false);
 
     const onSubmit = (e: React.FormEvent<HTMLFormElement>): void => {
         e.preventDefault();
@@ -53,16 +55,34 @@ const LoginScreen = () => {
                         <label htmlFor="login-contrasena" className="login-label">
                             {t("LoginScreen.passwordLabel")}
                         </label>
-                        <input
-                            id="login-contrasena"
-                            className="login-input"
-                            type="password"
-                            autoComplete="current-password"
-                            placeholder={t("LoginScreen.passwordPlaceholder")}
-                            value={contrasena}
-                            onChange={(e) => setContrasena(e.target.value)}
-                            required
-                        />
+                        <div className="login-input-wrap">
+                            <input
+                                id="login-contrasena"
+                                className="login-input"
+                                type={showPassword ? "text" : "password"}
+                                autoComplete="current-password"
+                                placeholder={t("LoginScreen.passwordPlaceholder")}
+                                value={contrasena}
+                                onChange={(e) => setContrasena(e.target.value)}
+                                required
+                            />
+                            <button
+                                type="button"
+                                className="login-input-toggle"
+                                onClick={() => setShowPassword((prev) => !prev)}
+                                aria-label={
+                                    showPassword
+                                        ? t("Actions.hidePassword")
+                                        : t("Actions.showPassword")
+                                }
+                            >
+                                {showPassword ? (
+                                    <EyeOff size={18} aria-hidden="true" />
+                                ) : (
+                                    <Eye size={18} aria-hidden="true" />
+                                )}
+                            </button>
+                        </div>
                     </div>
 
                     <div className="login-forgot">

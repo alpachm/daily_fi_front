@@ -5,7 +5,9 @@
     "cancel": "Cancelar",
     "confirm": "Confirmar",
     "close": "Cerrar",
-    "back": "Volver"
+    "back": "Volver",
+    "showPassword": "Mostrar contraseña",
+    "hidePassword": "Ocultar contraseña"
   },
   "LoginScreen": {
     "title": "Daily FI",
@@ -19,8 +21,37 @@
     "signupLink": "Registrarse"
   },
   "SignupScreen": {
-    "title": "Registro",
-    "subtitle": "Pantalla de registro — en desarrollo."
+    "title": "Crea tu cuenta",
+    "subtitle": "Gestión financiera P2P",
+    "emailLabel": "Correo electrónico",
+    "emailPlaceholder": "tu@correo.com",
+    "passwordLabel": "Contraseña",
+    "passwordPlaceholder": "••••••••",
+    "confirmPasswordLabel": "Confirmar contraseña",
+    "confirmPasswordPlaceholder": "••••••••",
+    "submitButton": "Registrarse",
+    "haveAccount": "¿Ya tienes una cuenta?",
+    "loginLink": "Iniciar sesión",
+    "success": {
+      "title": "¡Cuenta creada con éxito!",
+      "description": "Tu cuenta está lista. Ya puedes iniciar sesión en Daily FI.",
+      "action": "Ir a iniciar sesión"
+    },
+    "error": {
+      "title": "No pudimos crear tu cuenta",
+      "description": "Ocurrió un problema al procesar tu solicitud. Inténtalo de nuevo.",
+      "action": "Intentar de nuevo"
+    },
+    "errors": {
+      "emailRequired": "El correo electrónico es obligatorio.",
+      "passwordRequired": "La contraseña es obligatoria.",
+      "confirmPasswordRequired": "Confirma tu contraseña.",
+      "passwordsDoNotMatch": "Las contraseñas no coinciden.",
+      "invalidData": "Los datos ingresados no son válidos. Revisa tu correo electrónico y contraseña.",
+      "conflict": "Ya existe un usuario con ese correo electrónico.",
+      "network": "No se pudo conectar con el servidor. Inténtalo de nuevo.",
+      "generic": "Ocurrió un error inesperado. Inténtalo de nuevo."
+    }
   },
   "Navbar": {
     "login": "Inicio",

@@ -2,7 +2,7 @@
 import { createRootRoute, createRoute, createRouter, redirect } from "@tanstack/react-router";
 
 import LoginScreen from "./screens/LoginScreen";
-import SignupScreen from "./screens/SignupScreen";
+import { SignupScreen } from "./screens/SignupScreen";
 import DashboardLayout from "./layouts/DashboardLayout";
 import BalanceScreen from "./screens/_authenticated/BalanceScreen";
 import DetailsScreen from "./screens/_authenticated/DetailsScreen";

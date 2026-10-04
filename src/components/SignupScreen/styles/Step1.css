@@ -1,47 +1,23 @@
 /* ============================================================
-   src/styles/LoginScreen.css
-   Login Screen Styles — Pure CSS, Responsive, Light/Dark Mode
+   src/components/SignupScreen/styles/Step1.css
+   Registration form step — Pure CSS, Light/Dark Mode
    ============================================================ */
 
-/* ---------- SCREEN CONTAINER ---------- */
-.login-screen {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    min-height: 100vh;
-    min-height: 100dvh;
-    padding: 1.5rem;
-    background-color: var(--background);
-    transition: background-color 0.3s ease;
-}
-
-/* ---------- CARD ---------- */
-.login-card {
-    width: 100%;
-    max-width: 420px;
-    background-color: var(--card-background);
-    border-radius: 16px;
-    padding: 2.5rem 2rem;
-    box-shadow:
-        0 4px 6px -1px rgba(0, 0, 0, 0.08),
-        0 2px 4px -2px rgba(0, 0, 0, 0.05);
-    transition:
-        background-color 0.3s ease,
-        box-shadow 0.3s ease;
+.step1 {
     display: flex;
     flex-direction: column;
     gap: 2rem;
 }
 
 /* ---------- HEADER ---------- */
-.login-header {
+.step1-header {
     text-align: center;
     display: flex;
     flex-direction: column;
     gap: 0.5rem;
 }
 
-.login-title {
+.step1-title {
     font-size: 1.75rem;
     font-weight: 700;
     color: var(--text-primary);
@@ -49,34 +25,34 @@
     transition: color 0.3s ease;
 }
 
-.login-subtitle {
+.step1-subtitle {
     font-size: 0.9375rem;
     color: var(--text-secondary);
     transition: color 0.3s ease;
 }
 
 /* ---------- FORM ---------- */
-.login-form {
+.step1-form {
     display: flex;
     flex-direction: column;
     gap: 1.25rem;
 }
 
 /* ---------- FIELD ---------- */
-.login-field {
+.step1-field {
     display: flex;
     flex-direction: column;
     gap: 0.4rem;
 }
 
-.login-label {
+.step1-label {
     font-size: 0.875rem;
     font-weight: 600;
     color: var(--text-primary);
     transition: color 0.3s ease;
 }
 
-.login-input {
+.step1-input {
     width: 100%;
     padding: 0.75rem 1rem;
     font-size: 0.9375rem;
@@ -93,46 +69,46 @@
         box-shadow 0.2s ease;
 }
 
-.login-input::-webkit-input-placeholder {
+.step1-input::-webkit-input-placeholder {
     color: var(--text-secondary);
     opacity: 0.7;
 }
 
-.login-input::-moz-placeholder {
+.step1-input::-moz-placeholder {
     color: var(--text-secondary);
     opacity: 0.7;
 }
 
-.login-input:-ms-input-placeholder {
+.step1-input:-ms-input-placeholder {
     color: var(--text-secondary);
     opacity: 0.7;
 }
 
-.login-input::-ms-input-placeholder {
+.step1-input::-ms-input-placeholder {
     color: var(--text-secondary);
     opacity: 0.7;
 }
 
-.login-input::placeholder {
+.step1-input::placeholder {
     color: var(--text-secondary);
     opacity: 0.7;
 }
 
-.login-input:focus {
+.step1-input:focus {
     border-color: var(--btn-primary);
     box-shadow: 0 0 0 3px rgba(56, 189, 248, 0.2);
 }
 
 /* ---------- PASSWORD TOGGLE ---------- */
-.login-input-wrap {
+.step1-input-wrap {
     position: relative;
 }
 
-.login-input-wrap .login-input {
+.step1-input-wrap .step1-input {
     padding-right: 2.75rem;
 }
 
-.login-input-toggle {
+.step1-input-toggle {
     position: absolute;
     top: 50%;
     right: 0.5rem;
@@ -152,42 +128,27 @@
         color 0.15s ease;
 }
 
-.login-input-toggle:hover {
+.step1-input-toggle:hover {
     color: var(--text-primary);
 }
 
-.login-input-toggle:focus-visible {
+.step1-input-toggle:focus-visible {
     outline: 2px solid var(--btn-primary);
     outline-offset: 2px;
 }
 
-/* ---------- FORGOT PASSWORD ---------- */
-.login-forgot {
-    display: flex;
-    justify-content: flex-end;
+.step1-input[aria-invalid="true"] {
+    border-color: var(--status-error);
 }
 
-.login-forgot-btn {
-    background: none;
-    border: none;
-    padding: 0;
+.step1-field-error {
     font-size: 0.8125rem;
-    font-family: inherit;
-    color: var(--btn-primary);
-    cursor: pointer;
-    text-decoration: underline;
-    text-underline-offset: 3px;
-    transition:
-        color 0.3s ease,
-        opacity 0.2s ease;
-}
-
-.login-forgot-btn:hover {
-    opacity: 0.8;
+    color: var(--status-error);
+    transition: color 0.3s ease;
 }
 
 /* ---------- SUBMIT BUTTON ---------- */
-.login-submit {
+.step1-submit {
     width: 100%;
     padding: 0.85rem 1.5rem;
     font-size: 1rem;
@@ -205,16 +166,21 @@
         transform 0.1s ease;
 }
 
-.login-submit:hover {
+.step1-submit:hover {
     opacity: 0.9;
 }
 
-.login-submit:active {
+.step1-submit:active {
     transform: scale(0.98);
 }
 
+.step1-submit:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
 /* ---------- FOOTER ---------- */
-.login-footer {
+.step1-footer {
     display: flex;
     align-items: center;
     justify-content: center;
@@ -222,12 +188,12 @@
     font-size: 0.875rem;
 }
 
-.login-footer-text {
+.step1-footer-text {
     color: var(--text-secondary);
     transition: color 0.3s ease;
 }
 
-.login-signup-link {
+.step1-login-link {
     color: var(--btn-primary);
     font-weight: 600;
     text-decoration: none;
@@ -236,52 +202,29 @@
         opacity 0.2s ease;
 }
 
-.login-signup-link:hover {
+.step1-login-link:hover {
     opacity: 0.8;
     text-decoration: underline;
     text-underline-offset: 3px;
 }
 
-/* ============================================================
-   RESPONSIVE — Mobile (< 480px)
-   ============================================================ */
+/* ---------- RESPONSIVE ---------- */
 @media screen and (max-width: 480px) {
-    .login-screen {
-        padding: 1rem;
-    }
-
-    .login-card {
-        padding: 2rem 1.25rem;
-        border-radius: 12px;
-        gap: 1.5rem;
-    }
-
-    .login-title {
+    .step1-title {
         font-size: 1.5rem;
     }
 
-    .login-subtitle {
+    .step1-subtitle {
         font-size: 0.85rem;
     }
 
-    .login-input {
+    .step1-input {
         padding: 0.7rem 0.875rem;
         font-size: 0.875rem;
     }
 
-    .login-submit {
+    .step1-submit {
         padding: 0.75rem 1.25rem;
         font-size: 0.9375rem;
-    }
-}
-
-/* ============================================================
-   LARGE SCREENS (> 768px) — subtle card enhancement
-   ============================================================ */
-@media screen and (min-width: 768px) {
-    .login-card {
-        box-shadow:
-            0 10px 25px -5px rgba(0, 0, 0, 0.1),
-            0 8px 10px -6px rgba(0, 0, 0, 0.06);
     }
 }
