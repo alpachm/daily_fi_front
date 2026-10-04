@@ -6,7 +6,8 @@ import { useNavigate } from "@tanstack/react-router";
 
 import { LoginService } from "../services/LoginService";
 import { LoginApiError } from "../interfaces/LoginService.interface";
-import { DASHBOARD_ROUTES } from "../constants/routes";
+import { ROUTES } from "../constants/routes";
+import { AUTH_TOKEN_KEY, AUTH_USER_KEY } from "../utils/auth";
 
 export type LoginField = "email" | "password";
 
@@ -22,9 +23,6 @@ interface UseLoginResult {
     setPassword: (value: string) => void;
     handleSubmit: (event: FormEvent<HTMLFormElement>) => void;
 }
-
-const AUTH_TOKEN_KEY = "auth_token";
-const AUTH_USER_KEY = "auth_user";
 
 export const useLogin = (): UseLoginResult => {
     const { t } = useTranslation("");
@@ -78,7 +76,7 @@ export const useLogin = (): UseLoginResult => {
                 }
 
                 setPassword("");
-                navigate({ to: DASHBOARD_ROUTES.DASHBOARD });
+                navigate({ to: ROUTES.BALANCE });
             } catch (error: unknown) {
                 // Clear sensitive data on execution errors.
                 setPassword("");

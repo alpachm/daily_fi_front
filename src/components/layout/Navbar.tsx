@@ -3,6 +3,8 @@ import { Link } from "@tanstack/react-router";
 import { useTranslation } from "react-i18next";
 import type { LucideProps } from "lucide-react";
 import { Wallet, FileText, Receipt, User } from "lucide-react";
+import { ROUTES } from "../../constants/routes";
+import type { RoutePath } from "../../constants/routes";
 import "./styles/Navbar.css";
 
 interface NavbarProps {
@@ -12,35 +14,35 @@ interface NavbarProps {
 
 interface NavLinkConfig {
     id: string;
-    to: string;
+    to: RoutePath;
     labelKey: string;
     icon: React.ComponentType<LucideProps>;
 }
 
 const NAV_LINKS: NavLinkConfig[] = [
     {
-        id: "dashboard-balance",
-        to: "/dashboard",
+        id: "balance",
+        to: ROUTES.BALANCE,
         labelKey: "Navbar.balance",
         icon: Wallet,
     },
     {
-        id: "dashboard-details",
-        to: "/dashboard/details",
+        id: "details",
+        to: ROUTES.DETAILS,
         labelKey: "Navbar.details",
         icon: FileText,
     },
     {
-        id: "dashboard-receipts",
-        to: "/dashboard/receipts",
+        id: "receipts",
+        to: ROUTES.RECEIPTS,
         labelKey: "Navbar.receipts",
         icon: Receipt,
     },
 ];
 
 const PROFILE_LINK: NavLinkConfig = {
-    id: "dashboard-profile",
-    to: "/dashboard/profile",
+    id: "profile",
+    to: ROUTES.PROFILE,
     labelKey: "Navbar.profile",
     icon: User,
 };
