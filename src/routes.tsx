@@ -1,4 +1,4 @@
-// src/routes.tsx — Nested route configuration with protected layout route
+// src/routes.tsx — Route configuration with clean, semantic paths and auth guards
 import { createRootRoute, createRoute, createRouter, redirect } from "@tanstack/react-router";
 
 import LoginScreen from "./screens/LoginScreen";
@@ -8,7 +8,8 @@ import BalanceScreen from "./screens/_authenticated/BalanceScreen";
 import DetailsScreen from "./screens/_authenticated/DetailsScreen";
 import ProfileScreen from "./screens/_authenticated/ProfileScreen";
 import ReceiptsScreen from "./screens/_authenticated/ReceiptsScreen";
-import { DASHBOARD_ROUTES, ROUTES } from "./constants/routes";
+import { ROUTES } from "./constants/routes";
+import { isAuthenticated } from "./utils/auth";
 
 // ---- Root ----
 const rootRoute = createRootRoute();
@@ -18,12 +19,22 @@ export const loginRoute = createRoute({
     getParentRoute: () => rootRoute,
     path: ROUTES.LOGIN,
     component: LoginScreen,
+    beforeLoad: async () => {
+        if (isAuthenticated()) {
+            throw redirect({ to: ROUTES.BALANCE });
+        }
+    },
 });
 
 export const signupRoute = createRoute({
     getParentRoute: () => rootRoute,
     path: ROUTES.SIGNUP,
     component: SignupScreen,
+    beforeLoad: async () => {
+        if (isAuthenticated()) {
+            throw redirect({ to: ROUTES.BALANCE });
+        }
+    },
 });
 
 // ---- Protected layout route (pathless guard) ----
@@ -32,47 +43,48 @@ export const authenticatedRoute = createRoute({
     getParentRoute: () => rootRoute,
     id: "_authenticated",
     beforeLoad: async () => {
-        // Mock authentication flag for development
-        const isAuthenticated = true; // Toggle to false to test redirect to signup
-
-        if (!isAuthenticated) {
-            throw redirect({
-                to: ROUTES.SIGNUP,
-            });
+        if (!isAuthenticated()) {
+            throw redirect({ to: ROUTES.LOGIN });
         }
     },
 });
 
-// ---- Dashboard layout route (private) ----
+// ---- Private layout route (pathless, renders the dashboard shell) ----
 export const dashboardRoute = createRoute({
     getParentRoute: () => authenticatedRoute,
-    path: DASHBOARD_ROUTES.DASHBOARD,
+    id: "dashboardLayout",
     component: DashboardLayout,
 });
 
-// ---- Dashboard child routes ----
+// ---- Private child routes (clean, un-prefixed paths) ----
 export const balanceIndexRoute = createRoute({
     getParentRoute: () => dashboardRoute,
-    path: DASHBOARD_ROUTES.BALANCE,
+    path: ROUTES.ROOT,
+    component: BalanceScreen,
+});
+
+export const balanceRoute = createRoute({
+    getParentRoute: () => dashboardRoute,
+    path: ROUTES.BALANCE,
     component: BalanceScreen,
 });
 
 export const detailsRoute = createRoute({
     getParentRoute: () => dashboardRoute,
-    path: DASHBOARD_ROUTES.DETAILS,
+    path: ROUTES.DETAILS,
     component: DetailsScreen,
-});
-
-export const profileRoute = createRoute({
-    getParentRoute: () => dashboardRoute,
-    path: DASHBOARD_ROUTES.PROFILE,
-    component: ProfileScreen,
 });
 
 export const receiptsRoute = createRoute({
     getParentRoute: () => dashboardRoute,
-    path: DASHBOARD_ROUTES.RECEIPTS,
+    path: ROUTES.RECEIPTS,
     component: ReceiptsScreen,
+});
+
+export const profileRoute = createRoute({
+    getParentRoute: () => dashboardRoute,
+    path: ROUTES.PROFILE,
+    component: ProfileScreen,
 });
 
 // ---- Route tree ----
@@ -80,7 +92,13 @@ const routeTree = rootRoute.addChildren([
     loginRoute,
     signupRoute,
     authenticatedRoute.addChildren([
-        dashboardRoute.addChildren([balanceIndexRoute, detailsRoute, receiptsRoute, profileRoute]),
+        dashboardRoute.addChildren([
+            balanceIndexRoute,
+            balanceRoute,
+            detailsRoute,
+            receiptsRoute,
+            profileRoute,
+        ]),
     ]),
 ]);
 

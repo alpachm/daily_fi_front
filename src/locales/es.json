@@ -12,13 +12,21 @@
   "LoginScreen": {
     "title": "Daily FI",
     "subtitle": "Gestión financiera P2P",
-    "usernameLabel": "Usuario",
-    "usernamePlaceholder": "tu@correo.com",
+    "emailLabel": "Correo electrónico",
+    "emailPlaceholder": "tu@correo.com",
     "passwordLabel": "Contraseña",
     "passwordPlaceholder": "••••••••",
     "forgotPassword": "¿Olvidó su contraseña?",
     "noAccount": "¿No tienes una cuenta?",
-    "signupLink": "Registrarse"
+    "signupLink": "Registrarse",
+    "errors": {
+      "emailRequired": "El correo electrónico es obligatorio.",
+      "passwordRequired": "La contraseña es obligatoria.",
+      "invalidCredentials": "Correo o contraseña incorrectos",
+      "invalidData": "Los datos ingresados no son válidos. Revisa tu correo electrónico y contraseña.",
+      "network": "No se pudo conectar con el servidor. Inténtalo de nuevo.",
+      "generic": "Ocurrió un error inesperado. Inténtalo de nuevo."
+    }
   },
   "SignupScreen": {
     "title": "Crea tu cuenta",

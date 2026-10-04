@@ -1,13 +1,12 @@
+// src/constants/routes.ts
 export const ROUTES = {
-    LOGIN: "/",
+    ROOT: "/",
+    LOGIN: "/login",
     SIGNUP: "/signup",
-
-} as const;
-
-export const DASHBOARD_ROUTES = {
-    DASHBOARD: "/dashboard",
-    BALANCE: "/",
+    BALANCE: "/balance",
     DETAILS: "/details",
     RECEIPTS: "/receipts",
     PROFILE: "/profile",
 } as const;
+
+export type RoutePath = (typeof ROUTES)[keyof typeof ROUTES];
