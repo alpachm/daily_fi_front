@@ -11,12 +11,14 @@ export const SignupScreen = () => {
     const {
         email,
         password,
+        confirmPassword,
         isLoading,
         errorMessage,
         fieldErrors,
         isSuccess,
         setEmail,
         setPassword,
+        setConfirmPassword,
         handleSubmit,
     } = useRegister();
 
@@ -90,6 +92,32 @@ export const SignupScreen = () => {
                         {fieldErrors.password !== undefined && (
                             <p id="signup-password-error" className="signup-field-error">
                                 {fieldErrors.password}
+                            </p>
+                        )}
+                    </div>
+
+                    <div className="signup-field">
+                        <label htmlFor="signup-confirm-password" className="signup-label">
+                            {t("SignupScreen.confirmPasswordLabel")}
+                        </label>
+                        <input
+                            id="signup-confirm-password"
+                            className="signup-input"
+                            type="password"
+                            autoComplete="new-password"
+                            placeholder={t("SignupScreen.confirmPasswordPlaceholder")}
+                            value={confirmPassword}
+                            onChange={(event) => setConfirmPassword(event.target.value)}
+                            aria-invalid={fieldErrors.confirmPassword !== undefined}
+                            aria-describedby={
+                                fieldErrors.confirmPassword !== undefined
+                                    ? "signup-confirm-password-error"
+                                    : undefined
+                            }
+                        />
+                        {fieldErrors.confirmPassword !== undefined && (
+                            <p id="signup-confirm-password-error" className="signup-field-error">
+                                {fieldErrors.confirmPassword}
                             </p>
                         )}
                     </div>

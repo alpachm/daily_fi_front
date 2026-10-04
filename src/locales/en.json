@@ -25,6 +25,8 @@
     "emailPlaceholder": "you@email.com",
     "passwordLabel": "Password",
     "passwordPlaceholder": "••••••••",
+    "confirmPasswordLabel": "Confirm password",
+    "confirmPasswordPlaceholder": "••••••••",
     "submitButton": "Sign Up",
     "haveAccount": "Already have an account?",
     "loginLink": "Sign In",
@@ -32,6 +34,8 @@
     "errors": {
       "emailRequired": "Email is required.",
       "passwordRequired": "Password is required.",
+      "confirmPasswordRequired": "Please confirm your password.",
+      "passwordsDoNotMatch": "Passwords do not match.",
       "emailInvalid": "Enter a valid email address.",
       "passwordInvalid": "Password does not meet the requirements.",
       "conflict": "A user with that email already exists.",

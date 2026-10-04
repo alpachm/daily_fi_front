@@ -6,19 +6,21 @@ import type { FormEvent } from "react";
 import { RegisterService } from "../services/RegisterService";
 import { RegisterApiError } from "../interfaces/RegisterService.interface";
 
-export type RegisterField = "email" | "password";
+export type RegisterField = "email" | "password" | "confirmPassword";
 
 export type RegisterFieldErrors = Partial<Record<RegisterField, string>>;
 
 interface UseRegisterResult {
     email: string;
     password: string;
+    confirmPassword: string;
     isLoading: boolean;
     errorMessage: string | null;
     fieldErrors: RegisterFieldErrors;
     isSuccess: boolean;
     setEmail: (value: string) => void;
     setPassword: (value: string) => void;
+    setConfirmPassword: (value: string) => void;
     handleSubmit: (event: FormEvent<HTMLFormElement>) => void;
 }
 
@@ -27,6 +29,7 @@ export const useRegister = (): UseRegisterResult => {
 
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
+    const [confirmPassword, setConfirmPassword] = useState("");
     const [isLoading, setIsLoading] = useState(false);
     const [errorMessage, setErrorMessage] = useState<string | null>(null);
     const [fieldErrors, setFieldErrors] = useState<RegisterFieldErrors>({});
@@ -45,6 +48,15 @@ export const useRegister = (): UseRegisterResult => {
             if (password === "") {
                 nextFieldErrors.password = t("SignupScreen.errors.passwordRequired");
             }
+            if (confirmPassword === "") {
+                nextFieldErrors.confirmPassword = t(
+                    "SignupScreen.errors.confirmPasswordRequired",
+                );
+            } else if (password !== confirmPassword) {
+                nextFieldErrors.confirmPassword = t(
+                    "SignupScreen.errors.passwordsDoNotMatch",
+                );
+            }
 
             setFieldErrors(nextFieldErrors);
             setErrorMessage(null);
@@ -59,6 +71,7 @@ export const useRegister = (): UseRegisterResult => {
                 setIsSuccess(true);
                 setEmail("");
                 setPassword("");
+                setConfirmPassword("");
             } catch (error: unknown) {
                 if (error instanceof RegisterApiError) {
                     if (error.kind === "validation") {
@@ -103,18 +116,20 @@ export const useRegister = (): UseRegisterResult => {
                 setIsLoading(false);
             }
         },
-        [email, password, t],
+        [email, password, confirmPassword, t],
     );
 
     return {
         email,
         password,
+        confirmPassword,
         isLoading,
         errorMessage,
         fieldErrors,
         isSuccess,
         setEmail,
         setPassword,
+        setConfirmPassword,
         handleSubmit,
     };
 };
