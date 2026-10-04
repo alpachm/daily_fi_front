@@ -19,8 +19,25 @@
     "signupLink": "Sign Up"
   },
   "SignupScreen": {
-    "title": "Sign Up",
-    "subtitle": "Sign up screen — under development."
+    "title": "Create your account",
+    "subtitle": "P2P Financial Management",
+    "emailLabel": "Email",
+    "emailPlaceholder": "you@email.com",
+    "passwordLabel": "Password",
+    "passwordPlaceholder": "••••••••",
+    "submitButton": "Sign Up",
+    "haveAccount": "Already have an account?",
+    "loginLink": "Sign In",
+    "successMessage": "Account created successfully. You can now sign in.",
+    "errors": {
+      "emailRequired": "Email is required.",
+      "passwordRequired": "Password is required.",
+      "emailInvalid": "Enter a valid email address.",
+      "passwordInvalid": "Password does not meet the requirements.",
+      "conflict": "A user with that email already exists.",
+      "network": "Unable to reach the server. Please try again.",
+      "generic": "An unexpected error occurred. Please try again."
+    }
   },
   "Navbar": {
     "login": "Login",

@@ -19,8 +19,25 @@
     "signupLink": "Registrarse"
   },
   "SignupScreen": {
-    "title": "Registro",
-    "subtitle": "Pantalla de registro — en desarrollo."
+    "title": "Crea tu cuenta",
+    "subtitle": "Gestión financiera P2P",
+    "emailLabel": "Correo electrónico",
+    "emailPlaceholder": "tu@correo.com",
+    "passwordLabel": "Contraseña",
+    "passwordPlaceholder": "••••••••",
+    "submitButton": "Registrarse",
+    "haveAccount": "¿Ya tienes una cuenta?",
+    "loginLink": "Iniciar sesión",
+    "successMessage": "Cuenta creada exitosamente. Ahora puedes iniciar sesión.",
+    "errors": {
+      "emailRequired": "El correo electrónico es obligatorio.",
+      "passwordRequired": "La contraseña es obligatoria.",
+      "emailInvalid": "Ingresa un correo electrónico válido.",
+      "passwordInvalid": "La contraseña no cumple con los requisitos.",
+      "conflict": "Ya existe un usuario con ese correo electrónico.",
+      "network": "No se pudo conectar con el servidor. Inténtalo de nuevo.",
+      "generic": "Ocurrió un error inesperado. Inténtalo de nuevo."
+    }
   },
   "Navbar": {
     "login": "Inicio",
