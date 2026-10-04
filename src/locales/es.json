@@ -30,14 +30,22 @@
     "submitButton": "Registrarse",
     "haveAccount": "¿Ya tienes una cuenta?",
     "loginLink": "Iniciar sesión",
-    "successMessage": "Cuenta creada exitosamente. Ahora puedes iniciar sesión.",
+    "success": {
+      "title": "¡Cuenta creada con éxito!",
+      "description": "Tu cuenta está lista. Ya puedes iniciar sesión en Daily FI.",
+      "action": "Ir a iniciar sesión"
+    },
+    "error": {
+      "title": "No pudimos crear tu cuenta",
+      "description": "Ocurrió un problema al procesar tu solicitud. Inténtalo de nuevo.",
+      "action": "Intentar de nuevo"
+    },
     "errors": {
       "emailRequired": "El correo electrónico es obligatorio.",
       "passwordRequired": "La contraseña es obligatoria.",
       "confirmPasswordRequired": "Confirma tu contraseña.",
       "passwordsDoNotMatch": "Las contraseñas no coinciden.",
-      "emailInvalid": "Ingresa un correo electrónico válido.",
-      "passwordInvalid": "La contraseña no cumple con los requisitos.",
+      "invalidData": "Los datos ingresados no son válidos. Revisa tu correo electrónico y contraseña.",
       "conflict": "Ya existe un usuario con ese correo electrónico.",
       "network": "No se pudo conectar con el servidor. Inténtalo de nuevo.",
       "generic": "Ocurrió un error inesperado. Inténtalo de nuevo."

@@ -10,10 +10,13 @@ export type RegisterField = "email" | "password" | "confirmPassword";
 
 export type RegisterFieldErrors = Partial<Record<RegisterField, string>>;
 
+export type RegisterStep = 1 | 2;
+
 interface UseRegisterResult {
     email: string;
     password: string;
     confirmPassword: string;
+    currentStep: RegisterStep;
     isLoading: boolean;
     errorMessage: string | null;
     fieldErrors: RegisterFieldErrors;
@@ -22,6 +25,7 @@ interface UseRegisterResult {
     setPassword: (value: string) => void;
     setConfirmPassword: (value: string) => void;
     handleSubmit: (event: FormEvent<HTMLFormElement>) => void;
+    goToStep1: () => void;
 }
 
 export const useRegister = (): UseRegisterResult => {
@@ -30,6 +34,7 @@ export const useRegister = (): UseRegisterResult => {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [confirmPassword, setConfirmPassword] = useState("");
+    const [currentStep, setCurrentStep] = useState<RegisterStep>(1);
     const [isLoading, setIsLoading] = useState(false);
     const [errorMessage, setErrorMessage] = useState<string | null>(null);
     const [fieldErrors, setFieldErrors] = useState<RegisterFieldErrors>({});
@@ -72,46 +77,23 @@ export const useRegister = (): UseRegisterResult => {
                 setEmail("");
                 setPassword("");
                 setConfirmPassword("");
+                setCurrentStep(2);
             } catch (error: unknown) {
+                setIsSuccess(false);
+
+                let message = t("SignupScreen.errors.generic");
                 if (error instanceof RegisterApiError) {
                     if (error.kind === "validation") {
-                        const mappedErrors: RegisterFieldErrors = {};
-                        for (const fieldError of error.fieldErrors) {
-                            if (
-                                fieldError.field === "email" &&
-                                mappedErrors.email === undefined
-                            ) {
-                                mappedErrors.email = t(
-                                    "SignupScreen.errors.emailInvalid",
-                                );
-                            } else if (
-                                fieldError.field === "password" &&
-                                mappedErrors.password === undefined
-                            ) {
-                                mappedErrors.password = t(
-                                    "SignupScreen.errors.passwordInvalid",
-                                );
-                            }
-                        }
-                        setFieldErrors(mappedErrors);
-                        return;
+                        message = t("SignupScreen.errors.invalidData");
+                    } else if (error.kind === "conflict") {
+                        message = t("SignupScreen.errors.conflict");
+                    } else if (error.kind === "network") {
+                        message = t("SignupScreen.errors.network");
                     }
-
-                    if (error.kind === "conflict") {
-                        setErrorMessage(t("SignupScreen.errors.conflict"));
-                        return;
-                    }
-
-                    if (error.kind === "network") {
-                        setErrorMessage(t("SignupScreen.errors.network"));
-                        return;
-                    }
-
-                    setErrorMessage(t("SignupScreen.errors.generic"));
-                    return;
                 }
 
-                setErrorMessage(t("SignupScreen.errors.generic"));
+                setErrorMessage(message);
+                setCurrentStep(2);
             } finally {
                 setIsLoading(false);
             }
@@ -119,18 +101,27 @@ export const useRegister = (): UseRegisterResult => {
         [email, password, confirmPassword, t],
     );
 
+    const goToStep1 = useCallback((): void => {
+        setIsSuccess(false);
+        setErrorMessage(null);
+        setFieldErrors({});
+        setCurrentStep(1);
+    }, []);
+
     return {
         email,
         password,
         confirmPassword,
+        currentStep,
+        isSuccess,
         isLoading,
         errorMessage,
         fieldErrors,
-        isSuccess,
         setEmail,
         setPassword,
         setConfirmPassword,
         handleSubmit,
+        goToStep1,
     };
 };
 
