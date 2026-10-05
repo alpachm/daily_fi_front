@@ -11,7 +11,7 @@ import { clearAuthCredentials } from "../utils/auth";
 interface UseLogoutResult {
     isLoading: boolean;
     errorMessage: string | null;
-    logout: () => void;
+    logout: () => Promise<void>;
 }
 
 export const useLogout = (): UseLogoutResult => {

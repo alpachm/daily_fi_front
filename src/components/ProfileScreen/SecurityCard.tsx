@@ -5,6 +5,7 @@ import { useTranslation } from "react-i18next";
 import { LogOut, MonitorSmartphone, ShieldCheck, TriangleAlert } from "lucide-react";
 import { PasswordField } from "./PasswordField";
 import { useLogout } from "../../hooks/useLogout";
+import { AlertModal } from "../shared/AlertModal";
 import "./styles/SecurityCard.css";
 
 interface PasswordFormData {
@@ -37,6 +38,7 @@ export const SecurityCard = () => {
     const { t } = useTranslation("");
     const { isLoading: isLoggingOut, errorMessage: logoutError, logout } =
         useLogout();
+    const [isLogoutModalOpen, setIsLogoutModalOpen] = useState(false);
     const [formData, setFormData] = useState<PasswordFormData>(INITIAL_FORM_DATA);
     const [visibleFields, setVisibleFields] =
         useState<Record<PasswordFieldKey, boolean>>(INITIAL_VISIBILITY);
@@ -73,6 +75,11 @@ export const SecurityCard = () => {
         event.preventDefault();
         // Mock: clear the form. Replace with the real auth/API call when wired.
         setFormData(INITIAL_FORM_DATA);
+    };
+
+    const handleConfirmLogout = async (): Promise<void> => {
+        await logout();
+        setIsLogoutModalOpen(false);
     };
 
     return (
@@ -165,17 +172,24 @@ export const SecurityCard = () => {
                     <button
                         type="button"
                         className="security-card__button security-card__button--danger"
-                        onClick={() => void logout()}
-                        disabled={isLoggingOut}
-                        aria-busy={isLoggingOut}
+                        onClick={() => setIsLogoutModalOpen(true)}
                     >
                         <LogOut size={18} aria-hidden="true" />
-                        {isLoggingOut
-                            ? t("Common.loading")
-                            : t("ProfileScreen.securityLogoutButton")}
+                        {t("ProfileScreen.securityLogoutButton")}
                     </button>
                 </div>
             </div>
+            <AlertModal
+                isOpen={isLogoutModalOpen}
+                onClose={() => setIsLogoutModalOpen(false)}
+                onConfirm={handleConfirmLogout}
+                title={t("ProfileScreen.securityLogoutModalTitle")}
+                message={t("ProfileScreen.securityLogoutModalMessage")}
+                icon={<LogOut size={24} aria-hidden="true" />}
+                confirmText={t("ProfileScreen.securityLogoutButton")}
+                variant="warning"
+                isLoading={isLoggingOut}
+            />
         </section>
     );
 };
