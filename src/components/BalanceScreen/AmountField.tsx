@@ -1,6 +1,6 @@
 // src/components/BalanceScreen/AmountField.tsx
 import { useTranslation } from "react-i18next";
-import { Check, Edit2, X } from "lucide-react";
+import { Edit2, X } from "lucide-react";
 import "./styles/AmountField.css";
 
 interface AmountFieldProps {
@@ -8,12 +8,11 @@ interface AmountFieldProps {
     value: number;
     draft: string;
     isEditing: boolean;
-    showInlineActions: boolean;
+    showCancelButton: boolean;
     disabled?: boolean;
     showEditIcon?: boolean;
     onBeginEdit: () => void;
     onChangeDraft: (raw: string) => void;
-    onCommit: () => void;
     onCancel: () => void;
     formatAmount: (value: number) => string;
 }
@@ -23,12 +22,11 @@ export const AmountField = ({
     value,
     draft,
     isEditing,
-    showInlineActions,
+    showCancelButton,
     disabled = false,
     showEditIcon = true,
     onBeginEdit,
     onChangeDraft,
-    onCommit,
     onCancel,
     formatAmount,
 }: AmountFieldProps) => {
@@ -50,25 +48,15 @@ export const AmountField = ({
                         onChange={(event) => onChangeDraft(event.target.value)}
                         autoFocus
                     />
-                    {showInlineActions ? (
-                        <div className="amount-field__actions">
-                            <button
-                                type="button"
-                                className="amount-field__action"
-                                onClick={onCommit}
-                                aria-label={t("Actions.confirm")}
-                            >
-                                <Check size={18} aria-hidden="true" />
-                            </button>
-                            <button
-                                type="button"
-                                className="amount-field__action"
-                                onClick={onCancel}
-                                aria-label={t("Actions.cancel")}
-                            >
-                                <X size={18} aria-hidden="true" />
-                            </button>
-                        </div>
+                    {showCancelButton ? (
+                        <button
+                            type="button"
+                            className="amount-field__action"
+                            onClick={onCancel}
+                            aria-label={t("Actions.cancel")}
+                        >
+                            <X size={18} aria-hidden="true" />
+                        </button>
                     ) : null}
                 </div>
             ) : (

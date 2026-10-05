@@ -100,17 +100,6 @@ export const useBalanceDiario = () => {
     [],
   );
 
-  const commit = useCallback((block: BalanceBlock, field: BalanceField): void => {
-    const setState = block === "previous" ? setPrevious : setToday;
-    setState((current) =>
-      updateField(current, field, {
-        value: parseAmount(current[field].draft),
-        draft: "",
-        isEditing: false,
-      }),
-    );
-  }, []);
-
   const cancel = useCallback((block: BalanceBlock, field: BalanceField): void => {
     const setState = block === "previous" ? setPrevious : setToday;
     setState((current) =>
@@ -119,33 +108,33 @@ export const useBalanceDiario = () => {
   }, []);
 
   const confirmToday = useCallback((): void => {
-    if (isTodayConfirmed) {
-      // Close the current shift: commit the closing balance.
+    if (!isTodayConfirmed) {
+      // Open the shift: commit the opening balance and enable the closing field.
       setToday((current) => ({
-        ...current,
-        finished: {
-          value: parseAmount(current.finished.draft),
+        started: {
+          value: parseAmount(current.started.draft),
           draft: "",
           isEditing: false,
         },
+        finished: {
+          value: current.finished.value,
+          draft: "",
+          isEditing: true,
+        },
       }));
+      setIsTodayConfirmed(true);
       return;
     }
 
-    // Open the shift: commit the opening balance and enable the closing field.
+    // Unified save: persist every field that is currently being edited at once.
     setToday((current) => ({
-      started: {
-        value: parseAmount(current.started.draft),
-        draft: "",
-        isEditing: false,
-      },
-      finished: {
-        value: current.finished.value,
-        draft: "",
-        isEditing: true,
-      },
+      started: current.started.isEditing
+        ? { value: parseAmount(current.started.draft), draft: "", isEditing: false }
+        : current.started,
+      finished: current.finished.isEditing
+        ? { value: parseAmount(current.finished.draft), draft: "", isEditing: false }
+        : current.finished,
     }));
-    setIsTodayConfirmed(true);
   }, [isTodayConfirmed]);
 
   const numberFormatter = useMemo(
@@ -184,7 +173,8 @@ export const useBalanceDiario = () => {
   const previousTone = getBalanceTone(previousNet);
 
   const canConfirmToday = isTodayConfirmed
-    ? isValidAmount(today.finished.draft)
+    ? (today.started.isEditing ? isValidAmount(today.started.draft) : true) &&
+      (today.finished.isEditing ? isValidAmount(today.finished.draft) : true)
     : isValidAmount(today.started.draft);
 
   return {
@@ -199,7 +189,6 @@ export const useBalanceDiario = () => {
     canConfirmToday,
     beginEdit,
     changeDraft,
-    commit,
     cancel,
     confirmToday,
     formatAmount,

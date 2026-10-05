@@ -21,7 +21,6 @@ interface DayEntryBlockProps {
     canConfirm?: boolean;
     onBeginEdit: (block: BalanceBlock, field: BalanceField) => void;
     onChangeDraft: (block: BalanceBlock, field: BalanceField, raw: string) => void;
-    onCommit: (block: BalanceBlock, field: BalanceField) => void;
     onCancel: (block: BalanceBlock, field: BalanceField) => void;
     onConfirmBlock?: () => void;
     formatAmount: (value: number) => string;
@@ -32,7 +31,7 @@ interface FieldPresentation {
     isEditing: boolean;
     disabled: boolean;
     showEditIcon: boolean;
-    showInlineActions: boolean;
+    showCancelButton: boolean;
 }
 
 export const DayEntryBlock = ({
@@ -47,7 +46,6 @@ export const DayEntryBlock = ({
     canConfirm = false,
     onBeginEdit,
     onChangeDraft,
-    onCommit,
     onCancel,
     onConfirmBlock,
     formatAmount,
@@ -63,19 +61,21 @@ export const DayEntryBlock = ({
     const showNetBalance = isPrevious || (isConfirmed && !finished.isEditing);
 
     const startedPresentation: FieldPresentation = isPrevious
-        ? { isEditing: false, disabled: false, showEditIcon: false, showInlineActions: false }
+        ? { isEditing: false, disabled: false, showEditIcon: false, showCancelButton: false }
         : isConfirmed
-            ? { isEditing: started.isEditing, disabled: false, showEditIcon: true, showInlineActions: true }
-            : { isEditing: true, disabled: false, showEditIcon: false, showInlineActions: false };
+            ? { isEditing: started.isEditing, disabled: false, showEditIcon: true, showCancelButton: true }
+            : { isEditing: true, disabled: false, showEditIcon: false, showCancelButton: false };
 
     const finishedPresentation: FieldPresentation = isPrevious
-        ? { isEditing: false, disabled: false, showEditIcon: false, showInlineActions: false }
+        ? { isEditing: false, disabled: false, showEditIcon: false, showCancelButton: false }
         : isConfirmed
-            ? { isEditing: finished.isEditing, disabled: false, showEditIcon: false, showInlineActions: false }
-            : { isEditing: true, disabled: true, showEditIcon: false, showInlineActions: false };
+            ? { isEditing: finished.isEditing, disabled: false, showEditIcon: true, showCancelButton: true }
+            : { isEditing: true, disabled: true, showEditIcon: false, showCancelButton: false };
 
     const showConfirmButton =
-        !isPrevious && onConfirmBlock !== undefined && (!isConfirmed || finished.isEditing);
+        !isPrevious &&
+        onConfirmBlock !== undefined &&
+        (!isConfirmed || started.isEditing || finished.isEditing);
 
     const confirmLabel = isConfirmed ? t("Actions.close") : t("Actions.confirm");
 
@@ -94,10 +94,9 @@ export const DayEntryBlock = ({
                     isEditing={startedPresentation.isEditing}
                     disabled={startedPresentation.disabled}
                     showEditIcon={startedPresentation.showEditIcon}
-                    showInlineActions={startedPresentation.showInlineActions}
+                    showCancelButton={startedPresentation.showCancelButton}
                     onBeginEdit={() => onBeginEdit(block, "started")}
                     onChangeDraft={(raw) => onChangeDraft(block, "started", raw)}
-                    onCommit={() => onCommit(block, "started")}
                     onCancel={() => onCancel(block, "started")}
                     formatAmount={formatAmount}
                 />
@@ -108,10 +107,9 @@ export const DayEntryBlock = ({
                     isEditing={finishedPresentation.isEditing}
                     disabled={finishedPresentation.disabled}
                     showEditIcon={finishedPresentation.showEditIcon}
-                    showInlineActions={finishedPresentation.showInlineActions}
+                    showCancelButton={finishedPresentation.showCancelButton}
                     onBeginEdit={() => onBeginEdit(block, "finished")}
                     onChangeDraft={(raw) => onChangeDraft(block, "finished", raw)}
-                    onCommit={() => onCommit(block, "finished")}
                     onCancel={() => onCancel(block, "finished")}
                     formatAmount={formatAmount}
                 />
