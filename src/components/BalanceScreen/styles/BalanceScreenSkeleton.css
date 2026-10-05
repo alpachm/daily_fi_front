@@ -53,12 +53,12 @@
 
 .balance-screen-skeleton__label {
     width: 110px;
-    height: 0.8125rem;
+    height: 1.21875rem;
 }
 
 .balance-screen-skeleton__value {
     width: 180px;
-    height: 1.5rem;
+    height: 1.8rem;
 }
 
 .balance-screen-skeleton__plot {
@@ -105,12 +105,12 @@
 
 .balance-screen-skeleton__title {
     width: 140px;
-    height: 1.125rem;
+    height: 1.6875rem;
 }
 
 .balance-screen-skeleton__subtitle {
     width: 180px;
-    height: 0.8125rem;
+    height: 1.21875rem;
 }
 
 .balance-screen-skeleton__fields {
@@ -129,12 +129,19 @@
 
 .balance-screen-skeleton__field-label {
     width: 80px;
-    height: 0.875rem;
+    height: 1.3125rem;
 }
 
 .balance-screen-skeleton__field-value {
     width: 120px;
-    height: 1.125rem;
+    height: 1.6875rem;
+}
+
+/* Mirrors .amount-field__input: 0.7rem padding × 2 + 2px border × 2 + 1rem @ ~1.2 line-height */
+.balance-screen-skeleton__field-input {
+    width: 100%;
+    height: 2.85rem;
+    border-radius: 10px;
 }
 
 .balance-screen-skeleton__footer {
@@ -148,10 +155,17 @@
 
 .balance-screen-skeleton__net-label {
     width: 60px;
-    height: 0.875rem;
+    height: 1.3125rem;
 }
 
 .balance-screen-skeleton__net-value {
     width: 100px;
-    height: 1.25rem;
+    height: 1.875rem;
+}
+
+/* Mirrors .day-entry-block__confirm: 0.75rem padding × 2 + 0.9375rem @ ~1.2 line-height */
+.balance-screen-skeleton__confirm {
+    width: 100%;
+    height: 2.625rem;
+    border-radius: 10px;
 }

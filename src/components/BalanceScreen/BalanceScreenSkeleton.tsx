@@ -3,8 +3,6 @@ import { useTranslation } from "react-i18next";
 import { Skeleton } from "../shared/Skeleton";
 import "./styles/BalanceScreenSkeleton.css";
 
-const DAY_ENTRY_CARDS = 2;
-
 export const BalanceScreenSkeleton = () => {
     const { t } = useTranslation("");
 
@@ -35,33 +33,50 @@ export const BalanceScreenSkeleton = () => {
             </section>
 
             <div className="balance-screen-skeleton__columns">
-                {Array.from({ length: DAY_ENTRY_CARDS }, (_, index) => (
-                    <section
-                        key={`balance-screen-skeleton__card-${index}`}
-                        className="balance-screen-skeleton__card"
-                    >
-                        <header className="balance-screen-skeleton__header">
-                            <Skeleton className="balance-screen-skeleton__title" />
-                            <Skeleton className="balance-screen-skeleton__subtitle" />
-                        </header>
+                {/* Previous day card: read-only values + net footer (mirrors DayEntryBlock block="previous") */}
+                <section className="balance-screen-skeleton__card">
+                    <header className="balance-screen-skeleton__header">
+                        <Skeleton className="balance-screen-skeleton__title" />
+                        <Skeleton className="balance-screen-skeleton__subtitle" />
+                    </header>
 
-                        <div className="balance-screen-skeleton__fields">
-                            <div className="balance-screen-skeleton__field">
-                                <Skeleton className="balance-screen-skeleton__field-label" />
-                                <Skeleton className="balance-screen-skeleton__field-value" />
-                            </div>
-                            <div className="balance-screen-skeleton__field">
-                                <Skeleton className="balance-screen-skeleton__field-label" />
-                                <Skeleton className="balance-screen-skeleton__field-value" />
-                            </div>
+                    <div className="balance-screen-skeleton__fields">
+                        <div className="balance-screen-skeleton__field">
+                            <Skeleton className="balance-screen-skeleton__field-label" />
+                            <Skeleton className="balance-screen-skeleton__field-value" />
                         </div>
+                        <div className="balance-screen-skeleton__field">
+                            <Skeleton className="balance-screen-skeleton__field-label" />
+                            <Skeleton className="balance-screen-skeleton__field-value" />
+                        </div>
+                    </div>
 
-                        <footer className="balance-screen-skeleton__footer">
-                            <Skeleton className="balance-screen-skeleton__net-label" />
-                            <Skeleton className="balance-screen-skeleton__net-value" />
-                        </footer>
-                    </section>
-                ))}
+                    <footer className="balance-screen-skeleton__footer">
+                        <Skeleton className="balance-screen-skeleton__net-label" />
+                        <Skeleton className="balance-screen-skeleton__net-value" />
+                    </footer>
+                </section>
+
+                {/* Today card: editable inputs + confirm button (mirrors DayEntryBlock block="today") */}
+                <section className="balance-screen-skeleton__card">
+                    <header className="balance-screen-skeleton__header">
+                        <Skeleton className="balance-screen-skeleton__title" />
+                        <Skeleton className="balance-screen-skeleton__subtitle" />
+                    </header>
+
+                    <div className="balance-screen-skeleton__fields">
+                        <div className="balance-screen-skeleton__field">
+                            <Skeleton className="balance-screen-skeleton__field-label" />
+                            <Skeleton className="balance-screen-skeleton__field-input" />
+                        </div>
+                        <div className="balance-screen-skeleton__field">
+                            <Skeleton className="balance-screen-skeleton__field-label" />
+                            <Skeleton className="balance-screen-skeleton__field-input" />
+                        </div>
+                    </div>
+
+                    <Skeleton className="balance-screen-skeleton__confirm" />
+                </section>
             </div>
         </div>
     );
