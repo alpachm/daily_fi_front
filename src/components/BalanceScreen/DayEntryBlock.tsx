@@ -18,6 +18,7 @@ interface DayEntryBlockProps {
     started: AmountFieldState;
     finished: AmountFieldState;
     isConfirmed: boolean;
+    canConfirm?: boolean;
     onBeginEdit: (block: BalanceBlock, field: BalanceField) => void;
     onChangeDraft: (block: BalanceBlock, field: BalanceField, raw: string) => void;
     onCommit: (block: BalanceBlock, field: BalanceField) => void;
@@ -27,10 +28,11 @@ interface DayEntryBlockProps {
     formatSignedAmount: (value: number) => string;
 }
 
-interface FieldDescriptor {
-    key: BalanceField;
-    label: string;
-    state: AmountFieldState;
+interface FieldPresentation {
+    isEditing: boolean;
+    disabled: boolean;
+    showEditIcon: boolean;
+    showInlineActions: boolean;
 }
 
 export const DayEntryBlock = ({
@@ -42,6 +44,7 @@ export const DayEntryBlock = ({
     started,
     finished,
     isConfirmed,
+    canConfirm = false,
     onBeginEdit,
     onChangeDraft,
     onCommit,
@@ -52,10 +55,24 @@ export const DayEntryBlock = ({
 }: DayEntryBlockProps) => {
     const { t } = useTranslation("");
 
-    const fields: FieldDescriptor[] = [
-        { key: "started", label: t("BalanceScreen.startedLabel"), state: started },
-        { key: "finished", label: t("BalanceScreen.finishedLabel"), state: finished },
-    ];
+    const isPrevious = block === "previous";
+
+    const startedPresentation: FieldPresentation = isPrevious
+        ? { isEditing: false, disabled: false, showEditIcon: false, showInlineActions: false }
+        : isConfirmed
+            ? { isEditing: started.isEditing, disabled: false, showEditIcon: true, showInlineActions: true }
+            : { isEditing: true, disabled: false, showEditIcon: false, showInlineActions: false };
+
+    const finishedPresentation: FieldPresentation = isPrevious
+        ? { isEditing: false, disabled: false, showEditIcon: false, showInlineActions: false }
+        : isConfirmed
+            ? { isEditing: finished.isEditing, disabled: false, showEditIcon: false, showInlineActions: false }
+            : { isEditing: true, disabled: true, showEditIcon: false, showInlineActions: false };
+
+    const showConfirmButton =
+        !isPrevious && onConfirmBlock !== undefined && (!isConfirmed || finished.isEditing);
+
+    const confirmLabel = isConfirmed ? t("Actions.close") : t("Actions.confirm");
 
     return (
         <section className="day-entry-block">
@@ -65,21 +82,34 @@ export const DayEntryBlock = ({
             </header>
 
             <div className="day-entry-block__fields">
-                {fields.map(({ key, label, state }) => (
-                    <AmountField
-                        key={key}
-                        label={label}
-                        value={state.value}
-                        draft={state.draft}
-                        isEditing={isConfirmed ? state.isEditing : true}
-                        showInlineActions={isConfirmed}
-                        onBeginEdit={() => onBeginEdit(block, key)}
-                        onChangeDraft={(raw) => onChangeDraft(block, key, raw)}
-                        onCommit={() => onCommit(block, key)}
-                        onCancel={() => onCancel(block, key)}
-                        formatAmount={formatAmount}
-                    />
-                ))}
+                <AmountField
+                    label={t("BalanceScreen.startedLabel")}
+                    value={started.value}
+                    draft={started.draft}
+                    isEditing={startedPresentation.isEditing}
+                    disabled={startedPresentation.disabled}
+                    showEditIcon={startedPresentation.showEditIcon}
+                    showInlineActions={startedPresentation.showInlineActions}
+                    onBeginEdit={() => onBeginEdit(block, "started")}
+                    onChangeDraft={(raw) => onChangeDraft(block, "started", raw)}
+                    onCommit={() => onCommit(block, "started")}
+                    onCancel={() => onCancel(block, "started")}
+                    formatAmount={formatAmount}
+                />
+                <AmountField
+                    label={t("BalanceScreen.finishedLabel")}
+                    value={finished.value}
+                    draft={finished.draft}
+                    isEditing={finishedPresentation.isEditing}
+                    disabled={finishedPresentation.disabled}
+                    showEditIcon={finishedPresentation.showEditIcon}
+                    showInlineActions={finishedPresentation.showInlineActions}
+                    onBeginEdit={() => onBeginEdit(block, "finished")}
+                    onChangeDraft={(raw) => onChangeDraft(block, "finished", raw)}
+                    onCommit={() => onCommit(block, "finished")}
+                    onCancel={() => onCancel(block, "finished")}
+                    formatAmount={formatAmount}
+                />
             </div>
 
             <footer className="day-entry-block__footer">
@@ -89,9 +119,14 @@ export const DayEntryBlock = ({
                 </span>
             </footer>
 
-            {!isConfirmed && onConfirmBlock ? (
-                <button type="button" className="day-entry-block__confirm" onClick={onConfirmBlock}>
-                    {t("Actions.confirm")}
+            {showConfirmButton ? (
+                <button
+                    type="button"
+                    className="day-entry-block__confirm"
+                    disabled={!canConfirm}
+                    onClick={onConfirmBlock}
+                >
+                    {confirmLabel}
                 </button>
             ) : null}
         </section>

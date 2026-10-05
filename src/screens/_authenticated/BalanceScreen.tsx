@@ -51,6 +51,7 @@ export const BalanceScreen = () => {
                     onCommit={balance.commit}
                     onCancel={balance.cancel}
                     onConfirmBlock={balance.confirmToday}
+                    canConfirm={balance.canConfirmToday}
                     formatAmount={balance.formatAmount}
                     formatSignedAmount={balance.formatSignedAmount}
                 />

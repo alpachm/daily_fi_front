@@ -96,10 +96,15 @@
         transform 0.1s ease;
 }
 
-.day-entry-block__confirm:hover {
+.day-entry-block__confirm:hover:not(:disabled) {
     opacity: 0.9;
 }
 
-.day-entry-block__confirm:active {
+.day-entry-block__confirm:active:not(:disabled) {
     transform: scale(0.98);
+}
+
+.day-entry-block__confirm:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
 }

@@ -9,6 +9,8 @@ interface AmountFieldProps {
     draft: string;
     isEditing: boolean;
     showInlineActions: boolean;
+    disabled?: boolean;
+    showEditIcon?: boolean;
     onBeginEdit: () => void;
     onChangeDraft: (raw: string) => void;
     onCommit: () => void;
@@ -22,6 +24,8 @@ export const AmountField = ({
     draft,
     isEditing,
     showInlineActions,
+    disabled = false,
+    showEditIcon = true,
     onBeginEdit,
     onChangeDraft,
     onCommit,
@@ -42,6 +46,7 @@ export const AmountField = ({
                         inputMode="decimal"
                         step="any"
                         value={draft}
+                        disabled={disabled}
                         onChange={(event) => onChangeDraft(event.target.value)}
                         autoFocus
                     />
@@ -69,14 +74,16 @@ export const AmountField = ({
             ) : (
                 <div className="amount-field__display">
                     <span className="amount-field__value">{formatAmount(value)}</span>
-                    <button
-                        type="button"
-                        className="amount-field__action"
-                        onClick={onBeginEdit}
-                        aria-label={t("BalanceScreen.editLabel")}
-                    >
-                        <Edit2 size={18} aria-hidden="true" />
-                    </button>
+                    {showEditIcon ? (
+                        <button
+                            type="button"
+                            className="amount-field__action"
+                            onClick={onBeginEdit}
+                            aria-label={t("BalanceScreen.editLabel")}
+                        >
+                            <Edit2 size={18} aria-hidden="true" />
+                        </button>
+                    ) : null}
                 </div>
             )}
         </div>
