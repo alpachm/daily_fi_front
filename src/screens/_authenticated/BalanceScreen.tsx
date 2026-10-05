@@ -31,7 +31,6 @@ export const BalanceScreen = () => {
                     isConfirmed
                     onBeginEdit={balance.beginEdit}
                     onChangeDraft={balance.changeDraft}
-                    onCommit={balance.commit}
                     onCancel={balance.cancel}
                     formatAmount={balance.formatAmount}
                     formatSignedAmount={balance.formatSignedAmount}
@@ -48,9 +47,12 @@ export const BalanceScreen = () => {
                     isConfirmed={balance.isTodayConfirmed}
                     onBeginEdit={balance.beginEdit}
                     onChangeDraft={balance.changeDraft}
-                    onCommit={balance.commit}
                     onCancel={balance.cancel}
                     onConfirmBlock={balance.confirmToday}
+                    canConfirm={balance.canConfirmToday}
+                    isSubmitting={balance.isSubmittingToday}
+                    errorMessage={balance.todayError}
+                    successMessage={balance.todaySuccess}
                     formatAmount={balance.formatAmount}
                     formatSignedAmount={balance.formatSignedAmount}
                 />

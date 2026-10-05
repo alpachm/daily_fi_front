@@ -2,6 +2,13 @@
 import { useCallback, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 
+import { CreateDailyBalanceService } from "../services/CreateDailyBalanceService";
+import {
+    CreateDailyBalanceApiError,
+    type CreateDailyBalancePayload,
+} from "../interfaces/CreateDailyBalanceService.interface";
+import { getTodayIsoDate } from "../utils/date";
+
 export type BalanceBlock = "previous" | "today";
 export type BalanceField = "started" | "finished";
 export type BalanceTone = "positive" | "negative" | "neutral";
@@ -33,6 +40,15 @@ const parseAmount = (raw: string): number => {
   return Number.isFinite(parsed) ? parsed : 0;
 };
 
+const isValidAmount = (raw: string): boolean => {
+  const trimmed = raw.trim();
+  if (trimmed === "") {
+    return false;
+  }
+  const parsed = Number(trimmed);
+  return Number.isFinite(parsed) && parsed >= 0;
+};
+
 const effectiveValue = (field: AmountFieldState): number =>
   field.isEditing ? parseAmount(field.draft) : field.value;
 
@@ -59,7 +75,7 @@ const updateField = (
 };
 
 export const useBalanceDiario = () => {
-  const { i18n } = useTranslation("");
+  const { t, i18n } = useTranslation("");
 
   const [previous, setPrevious] = useState<DayBlockState>({
     started: createInitialField(MOCK_PREVIOUS_DAY.started),
@@ -68,10 +84,13 @@ export const useBalanceDiario = () => {
 
   const [today, setToday] = useState<DayBlockState>({
     started: createInitialField(0, true),
-    finished: createInitialField(0, true),
+    finished: createInitialField(0, false),
   });
 
   const [isTodayConfirmed, setIsTodayConfirmed] = useState(false);
+  const [isSubmittingToday, setIsSubmittingToday] = useState(false);
+  const [todayError, setTodayError] = useState<string | null>(null);
+  const [todaySuccess, setTodaySuccess] = useState<string | null>(null);
 
   const beginEdit = useCallback((block: BalanceBlock, field: BalanceField): void => {
     const setState = block === "previous" ? setPrevious : setToday;
@@ -91,17 +110,6 @@ export const useBalanceDiario = () => {
     [],
   );
 
-  const commit = useCallback((block: BalanceBlock, field: BalanceField): void => {
-    const setState = block === "previous" ? setPrevious : setToday;
-    setState((current) =>
-      updateField(current, field, {
-        value: parseAmount(current[field].draft),
-        draft: "",
-        isEditing: false,
-      }),
-    );
-  }, []);
-
   const cancel = useCallback((block: BalanceBlock, field: BalanceField): void => {
     const setState = block === "previous" ? setPrevious : setToday;
     setState((current) =>
@@ -109,21 +117,69 @@ export const useBalanceDiario = () => {
     );
   }, []);
 
-  const confirmToday = useCallback((): void => {
+  const confirmToday = useCallback(async (): Promise<void> => {
+    setTodayError(null);
+    setTodaySuccess(null);
+
+    if (!isTodayConfirmed) {
+      // Scenario A: opening balance. Persist the new record in the backend
+      // before enabling the closing field ("Terminé").
+      const payload: CreateDailyBalancePayload = {
+        date: getTodayIsoDate(),
+        opening_balance: parseAmount(today.started.draft),
+      };
+
+      setIsSubmittingToday(true);
+      try {
+        const response =
+          await CreateDailyBalanceService.createDailyBalance(payload);
+
+        setToday((current) => ({
+          started: {
+            value: response.data.openingBalance,
+            draft: "",
+            isEditing: false,
+          },
+          finished: {
+            value: current.finished.value,
+            draft: "",
+            isEditing: true,
+          },
+        }));
+        setIsTodayConfirmed(true);
+        setTodaySuccess(t("BalanceScreen.openingSuccess"));
+      } catch (error: unknown) {
+        let message = t("BalanceScreen.errors.generic");
+
+        if (error instanceof CreateDailyBalanceApiError) {
+          if (error.kind === "validation") {
+            message = t("BalanceScreen.errors.invalidOpeningBalance");
+          } else if (error.kind === "unauthorized") {
+            message = t("BalanceScreen.errors.unauthorized");
+          } else if (error.kind === "conflict") {
+            message = t("BalanceScreen.errors.conflict");
+          } else if (error.kind === "network") {
+            message = t("BalanceScreen.errors.network");
+          }
+        }
+
+        setTodayError(message);
+      } finally {
+        setIsSubmittingToday(false);
+      }
+      return;
+    }
+
+    // Unified save: persist every field that is currently being edited at once.
     setToday((current) => ({
-      started: {
-        value: parseAmount(current.started.draft),
-        draft: "",
-        isEditing: false,
-      },
-      finished: {
-        value: parseAmount(current.finished.draft),
-        draft: "",
-        isEditing: false,
-      },
+      started: current.started.isEditing
+        ? { value: parseAmount(current.started.draft), draft: "", isEditing: false }
+        : current.started,
+      finished: current.finished.isEditing
+        ? { value: parseAmount(current.finished.draft), draft: "", isEditing: false }
+        : current.finished,
     }));
-    setIsTodayConfirmed(true);
-  }, []);
+  }, [isTodayConfirmed, today.started.draft, t]);
 
   const numberFormatter = useMemo(
     () =>
@@ -160,18 +216,26 @@ export const useBalanceDiario = () => {
   const todayTone = getBalanceTone(todayNet);
   const previousTone = getBalanceTone(previousNet);
 
+  const canConfirmToday = isTodayConfirmed
+    ? (today.started.isEditing ? isValidAmount(today.started.draft) : true) &&
+      (today.finished.isEditing ? isValidAmount(today.finished.draft) : true)
+    : isValidAmount(today.started.draft);
+
   return {
     previous,
     today,
     isTodayConfirmed,
+    isSubmittingToday,
+    todayError,
+    todaySuccess,
     todayNet,
     previousNet,
     percentageChange,
     todayTone,
     previousTone,
+    canConfirmToday,
     beginEdit,
     changeDraft,
-    commit,
     cancel,
     confirmToday,
     formatAmount,

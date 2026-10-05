@@ -82,7 +82,15 @@
     "startedLabel": "Empecé",
     "finishedLabel": "Terminé",
     "netLabel": "Neto",
-    "editLabel": "Editar"
+    "editLabel": "Editar",
+    "openingSuccess": "El balance del día se registró correctamente.",
+    "errors": {
+      "invalidOpeningBalance": "El monto de inicio ingresado no es válido.",
+      "unauthorized": "Tu sesión no es válida. Vuelve a iniciar sesión.",
+      "conflict": "Ya existe un balance para el día de hoy. Cierra la jornada antes de abrir una nueva.",
+      "network": "No se pudo conectar con el servidor. Inténtalo de nuevo.",
+      "generic": "Ocurrió un error inesperado. Inténtalo de nuevo."
+    }
   },
   "DetailsScreen": {
     "title": "Detalles",

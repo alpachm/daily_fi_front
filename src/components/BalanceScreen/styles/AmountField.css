@@ -32,6 +32,8 @@
     border: 2px solid transparent;
     border-radius: 10px;
     outline: none;
+    appearance: textfield;
+    -moz-appearance: textfield;
     transition:
         border-color 0.2s ease,
         box-shadow 0.2s ease,
@@ -44,10 +46,15 @@
     box-shadow: 0 0 0 3px rgba(56, 189, 248, 0.2);
 }
 
-.amount-field__actions {
-    display: flex;
-    align-items: center;
-    gap: 0.25rem;
+.amount-field__input:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+.amount-field__input::-webkit-outer-spin-button,
+.amount-field__input::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
 }
 
 .amount-field__action {

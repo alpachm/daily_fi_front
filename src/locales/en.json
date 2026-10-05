@@ -82,7 +82,15 @@
     "startedLabel": "Started",
     "finishedLabel": "Finished",
     "netLabel": "Net",
-    "editLabel": "Edit"
+    "editLabel": "Edit",
+    "openingSuccess": "Today's balance was recorded successfully.",
+    "errors": {
+      "invalidOpeningBalance": "The entered opening amount is invalid.",
+      "unauthorized": "Your session is invalid. Please sign in again.",
+      "conflict": "A balance already exists for today. Close the current shift before opening a new one.",
+      "network": "Unable to reach the server. Please try again.",
+      "generic": "An unexpected error occurred. Please try again."
+    }
   },
   "DetailsScreen": {
     "title": "Details",
