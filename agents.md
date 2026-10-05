@@ -130,3 +130,15 @@ Para mantener la capa de comunicación HTTP desacoplada y fuertemente tipada, la
 
 3. **Inmutabilidad y Tipado Estricto:**
     - Toda función dentro del servicio debe retornar promesas con tipos explícitos importados desde su respectivo archivo `.interface.ts`. Prohibido el uso de `any` en parámetros o respuestas.
+
+### Gestión de Estado de Red y Peticiones API (TanStack Query)
+
+- **Uso Obligatorio de Wrappers:** NO realizar llamadas a servicios de API directamente dentro de componentes React ni mediante hooks `useEffect` nativos. Toda consulta de estado del servidor debe envolverse en custom hooks utilizando `@tanstack/react-query` (`useQuery` / `useMutation`).
+- **Convención de Query Keys:** Utilizar arreglos estructurados y predecibles para las claves de consulta (ej. `['resource-name', entityIdOrDate]`).
+- **Estándar de Configuración de Caché:**
+    - Establecer `staleTime` en un mínimo de 5 minutos (`1000 * 60 * 5`) para consultas estándar, a menos que se requiera explícitamente sondeo en tiempo real (_polling_).
+    - Configurar `retry: 1` para evitar bucles repetitivos de peticiones ante errores del cliente o de autenticación.
+- **Mutaciones e Invalidación de Caché:**
+    - Todo hook `useMutation` (`POST`, `PUT`, `PATCH`, `DELETE`) DEBE gestionar el evento `onSuccess` invalidando o actualizando las claves de caché correspondientes en `QueryClient` (`invalidateQueries` o `setQueryData`).
+- **Manejo Gradual de Errores y Nulos:**
+    - Los servicios y consultas deben manejar respuestas distintas a 200 de forma limpia (por ejemplo, retornando `null` ante un `404`) para que los componentes puedan renderizar estados iniciales o vacíos sin fallos inesperados.
