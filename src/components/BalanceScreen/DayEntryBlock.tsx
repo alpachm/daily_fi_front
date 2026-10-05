@@ -93,16 +93,33 @@ export const DayEntryBlock = ({
     // ("Empecé") is being entered, we must not render (nor flash) a net value.
     const showNetBalance = isPrevious || (isConfirmed && !finished.isEditing);
 
+    // A closing balance ("Terminé") is considered "already saved" once its
+    // persisted value differs from the initial zero sentinel set by
+    // `createInitialField`. This lets us hide the cancel button ("X") during the
+    // initial entry phase and only reveal it while editing a previously
+    // submitted value.
+    const hasSavedClosingBalance = finished.value !== 0;
+
     const startedPresentation: FieldPresentation = isPrevious
         ? { isEditing: false, disabled: false, showEditIcon: false, showCancelButton: false }
         : isConfirmed
-            ? { isEditing: started.isEditing, disabled: false, showEditIcon: true, showCancelButton: true }
+            ? {
+                isEditing: started.isEditing,
+                disabled: false,
+                showEditIcon: !started.isEditing,
+                showCancelButton: started.isEditing,
+            }
             : { isEditing: true, disabled: false, showEditIcon: false, showCancelButton: false };
 
     const finishedPresentation: FieldPresentation = isPrevious
         ? { isEditing: false, disabled: false, showEditIcon: false, showCancelButton: false }
         : isConfirmed
-            ? { isEditing: finished.isEditing, disabled: false, showEditIcon: true, showCancelButton: true }
+            ? {
+                isEditing: finished.isEditing,
+                disabled: false,
+                showEditIcon: !finished.isEditing,
+                showCancelButton: finished.isEditing && hasSavedClosingBalance,
+            }
             : { isEditing: true, disabled: true, showEditIcon: false, showCancelButton: false };
 
     const showConfirmButton =
