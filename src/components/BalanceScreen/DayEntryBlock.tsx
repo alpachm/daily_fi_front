@@ -57,6 +57,11 @@ export const DayEntryBlock = ({
 
     const isPrevious = block === "previous";
 
+    // The net balance is only meaningful once the closing balance ("Terminé")
+    // has been submitted for the current day. While only the opening balance
+    // ("Empecé") is being entered, we must not render (nor flash) a net value.
+    const showNetBalance = isPrevious || (isConfirmed && !finished.isEditing);
+
     const startedPresentation: FieldPresentation = isPrevious
         ? { isEditing: false, disabled: false, showEditIcon: false, showInlineActions: false }
         : isConfirmed
@@ -112,12 +117,14 @@ export const DayEntryBlock = ({
                 />
             </div>
 
-            <footer className="day-entry-block__footer">
-                <span className="day-entry-block__net-label">{t("BalanceScreen.netLabel")}</span>
-                <span className={`day-entry-block__net day-entry-block__net--${tone}`}>
-                    {formatSignedAmount(net)}
-                </span>
-            </footer>
+            {showNetBalance ? (
+                <footer className="day-entry-block__footer">
+                    <span className="day-entry-block__net-label">{t("BalanceScreen.netLabel")}</span>
+                    <span className={`day-entry-block__net day-entry-block__net--${tone}`}>
+                        {formatSignedAmount(net)}
+                    </span>
+                </footer>
+            ) : null}
 
             {showConfirmButton ? (
                 <button
