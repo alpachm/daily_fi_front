@@ -1,7 +1,9 @@
 // src/components/BalanceScreen/DayEntryBlock.tsx
+import { useCallback, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Check, LoaderCircle, TriangleAlert } from "lucide-react";
 import { AmountField } from "./AmountField";
+import { AutomaticAlertModal } from "../shared/AutomaticAlertModal";
 import "./styles/DayEntryBlock.css";
 import type {
     AmountFieldState,
@@ -38,6 +40,13 @@ interface FieldPresentation {
     showCancelButton: boolean;
 }
 
+type DayEntryAlertVariant = "success" | "error";
+
+interface DayEntryAlert {
+    variant: DayEntryAlertVariant;
+    message: string;
+}
+
 export const DayEntryBlock = ({
     block,
     title,
@@ -59,6 +68,23 @@ export const DayEntryBlock = ({
     formatSignedAmount,
 }: DayEntryBlockProps) => {
     const { t } = useTranslation("");
+
+    const [alert, setAlert] = useState<DayEntryAlert | null>(null);
+
+    useEffect(() => {
+        if (successMessage !== null) {
+            setAlert({ variant: "success", message: successMessage });
+            return;
+        }
+
+        if (errorMessage !== null) {
+            setAlert({ variant: "error", message: errorMessage });
+        }
+    }, [successMessage, errorMessage]);
+
+    const handleAlertClose = useCallback((): void => {
+        setAlert(null);
+    }, []);
 
     const isPrevious = block === "previous";
 
@@ -122,34 +148,6 @@ export const DayEntryBlock = ({
                 />
             </div>
 
-            {errorMessage !== null ? (
-                <div
-                    className="day-entry-block__alert day-entry-block__alert--error"
-                    role="alert"
-                >
-                    <TriangleAlert
-                        size={18}
-                        className="day-entry-block__alert-icon"
-                        aria-hidden="true"
-                    />
-                    <span>{errorMessage}</span>
-                </div>
-            ) : null}
-
-            {successMessage !== null ? (
-                <div
-                    className="day-entry-block__alert day-entry-block__alert--success"
-                    role="status"
-                >
-                    <Check
-                        size={18}
-                        className="day-entry-block__alert-icon"
-                        aria-hidden="true"
-                    />
-                    <span>{successMessage}</span>
-                </div>
-            ) : null}
-
             {showNetBalance ? (
                 <footer className="day-entry-block__footer">
                     <span className="day-entry-block__net-label">{t("BalanceScreen.netLabel")}</span>
@@ -176,6 +174,22 @@ export const DayEntryBlock = ({
                     ) : null}
                     {confirmLabel}
                 </button>
+            ) : null}
+
+            {alert !== null ? (
+                <AutomaticAlertModal
+                    isOpen
+                    onClose={handleAlertClose}
+                    message={alert.message}
+                    icon={
+                        alert.variant === "success" ? (
+                            <Check size={24} aria-hidden="true" />
+                        ) : (
+                            <TriangleAlert size={24} aria-hidden="true" />
+                        )
+                    }
+                    variant={alert.variant}
+                />
             ) : null}
         </section>
     );
