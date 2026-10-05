@@ -85,6 +85,8 @@
     "editLabel": "Editar",
     "openingSuccess": "El balance del día se registró correctamente.",
     "noData": "Sin datos",
+    "previousDayEmpty": "No se registraron datos correspondientes al día anterior",
+    "previousDayError": "Ocurrió un error al cargar los datos del día anterior",
     "errors": {
       "invalidOpeningBalance": "El monto de inicio ingresado no es válido.",
       "unauthorized": "Tu sesión no es válida. Vuelve a iniciar sesión.",

@@ -56,12 +56,12 @@ export const dailyBalanceQueryKey = (
     date: string,
 ): readonly [string, string] => ["daily-balance", date];
 
-export const useGetBalancePerDay = () => {
-    const date = useMemo(() => getTodayIsoDate(), []);
+export const useGetBalancePerDay = (date?: string) => {
+    const resolvedDate = useMemo(() => date ?? getTodayIsoDate(), [date]);
 
     const query = useQuery<DailyBalanceData | null, GetBalancePerDayApiError>({
-        queryKey: dailyBalanceQueryKey(date),
-        queryFn: () => GetBalancePerDayService.getBalancePerDay(date),
+        queryKey: dailyBalanceQueryKey(resolvedDate),
+        queryFn: () => GetBalancePerDayService.getBalancePerDay(resolvedDate),
         staleTime: FIVE_MINUTES_MS,
         retry: 1,
     });
