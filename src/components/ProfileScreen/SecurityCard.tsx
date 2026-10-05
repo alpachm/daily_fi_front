@@ -2,8 +2,10 @@
 import { useState } from "react";
 import type { ChangeEvent, FormEvent } from "react";
 import { useTranslation } from "react-i18next";
-import { LogOut, MonitorSmartphone, ShieldCheck } from "lucide-react";
+import { LogOut, MonitorSmartphone, ShieldCheck, TriangleAlert } from "lucide-react";
 import { PasswordField } from "./PasswordField";
+import { useLogout } from "../../hooks/useLogout";
+import { AlertModal } from "../shared/AlertModal";
 import "./styles/SecurityCard.css";
 
 interface PasswordFormData {
@@ -34,6 +36,9 @@ const INITIAL_VISIBILITY: Record<PasswordFieldKey, boolean> = {
 
 export const SecurityCard = () => {
     const { t } = useTranslation("");
+    const { isLoading: isLoggingOut, errorMessage: logoutError, logout } =
+        useLogout();
+    const [isLogoutModalOpen, setIsLogoutModalOpen] = useState(false);
     const [formData, setFormData] = useState<PasswordFormData>(INITIAL_FORM_DATA);
     const [visibleFields, setVisibleFields] =
         useState<Record<PasswordFieldKey, boolean>>(INITIAL_VISIBILITY);
@@ -70,6 +75,11 @@ export const SecurityCard = () => {
         event.preventDefault();
         // Mock: clear the form. Replace with the real auth/API call when wired.
         setFormData(INITIAL_FORM_DATA);
+    };
+
+    const handleConfirmLogout = async (): Promise<void> => {
+        await logout();
+        setIsLogoutModalOpen(false);
     };
 
     return (
@@ -147,16 +157,39 @@ export const SecurityCard = () => {
             </div>
 
             <div className="security-card__section security-card__section--divided">
+                {logoutError !== null && (
+                    <div className="security-card__alert" role="alert">
+                        <TriangleAlert
+                            size={18}
+                            className="security-card__alert-icon"
+                            aria-hidden="true"
+                        />
+                        <span>{logoutError}</span>
+                    </div>
+                )}
+
                 <div className="security-card__action-row">
                     <button
                         type="button"
                         className="security-card__button security-card__button--danger"
+                        onClick={() => setIsLogoutModalOpen(true)}
                     >
                         <LogOut size={18} aria-hidden="true" />
                         {t("ProfileScreen.securityLogoutButton")}
                     </button>
                 </div>
             </div>
+            <AlertModal
+                isOpen={isLogoutModalOpen}
+                onClose={() => setIsLogoutModalOpen(false)}
+                onConfirm={handleConfirmLogout}
+                title={t("ProfileScreen.securityLogoutModalTitle")}
+                message={t("ProfileScreen.securityLogoutModalMessage")}
+                icon={<LogOut size={24} aria-hidden="true" />}
+                confirmText={t("ProfileScreen.securityLogoutButton")}
+                variant="warning"
+                isLoading={isLoggingOut}
+            />
         </section>
     );
 };

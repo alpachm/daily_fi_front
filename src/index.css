@@ -50,6 +50,7 @@ body {
     --text-secondary: #94a3b8;
     --status-success: #10b981;
     --status-error: #e11d48;
+    --status-warning: #e11d48;
 }
 
 /* ============================================================
@@ -65,4 +66,5 @@ html.dark {
     --text-secondary: #94a3b8;
     --status-success: #34d399;
     --status-error: #fb7185;
+    --status-warning: #fb7185;
 }
