@@ -2,8 +2,10 @@
 import {
     GetBalancePerDayApiError,
     type DailyBalanceData,
-    type GetBalancePerDayFailResponse,
+    type GenericApiErrorResponse,
     type GetBalancePerDaySuccessResponse,
+    type GetBalancePerDayValidationError,
+    type ValidationErrorItem,
 } from "../interfaces/GetBalancePerDayService.interface";
 import { getAccessToken } from "../utils/auth";
 
@@ -21,9 +23,29 @@ const GET_BALANCE_PER_DAY_ENDPOINT = "/daily-balances";
 const isObject = (value: unknown): value is Record<string, unknown> =>
     typeof value === "object" && value !== null;
 
-const isFailResponse = (
+const isValidationErrorItem = (value: unknown): value is ValidationErrorItem => {
+    if (!isObject(value)) {
+        return false;
+    }
+    return typeof value.field === "string" && typeof value.message === "string";
+};
+
+const isValidationErrorResponse = (
     value: unknown,
-): value is GetBalancePerDayFailResponse => {
+): value is GetBalancePerDayValidationError => {
+    if (!isObject(value)) {
+        return false;
+    }
+    if (value.status !== "fail" || typeof value.message !== "string") {
+        return false;
+    }
+    const errors: unknown = value.errors;
+    return Array.isArray(errors) && errors.every(isValidationErrorItem);
+};
+
+const isGenericApiErrorResponse = (
+    value: unknown,
+): value is GenericApiErrorResponse => {
     if (!isObject(value)) {
         return false;
     }
@@ -69,16 +91,17 @@ const mapErrorResponse = (
     statusCode: number,
     body: unknown,
 ): GetBalancePerDayApiError => {
-    if (statusCode === 401 && isFailResponse(body)) {
+    if (statusCode === 400 && isValidationErrorResponse(body)) {
         return new GetBalancePerDayApiError(body.message, {
-            kind: "unauthorized",
+            kind: "validation",
             statusCode,
+            fieldErrors: body.errors,
         });
     }
 
-    if (statusCode === 403 && isFailResponse(body)) {
+    if (statusCode === 401 && isGenericApiErrorResponse(body)) {
         return new GetBalancePerDayApiError(body.message, {
-            kind: "forbidden",
+            kind: "unauthorized",
             statusCode,
         });
     }
