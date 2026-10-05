@@ -10,7 +10,7 @@ import type {
     BalanceBlock,
     BalanceField,
     BalanceTone,
-} from "../../hooks/useBalanceDiario";
+} from "../../hooks/useDailyBalance";
 
 interface DayEntryBlockProps {
     block: BalanceBlock;

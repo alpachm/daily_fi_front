@@ -84,6 +84,7 @@
     "netLabel": "Neto",
     "editLabel": "Editar",
     "openingSuccess": "El balance del día se registró correctamente.",
+    "noData": "Sin datos",
     "errors": {
       "invalidOpeningBalance": "El monto de inicio ingresado no es válido.",
       "unauthorized": "Tu sesión no es válida. Vuelve a iniciar sesión.",

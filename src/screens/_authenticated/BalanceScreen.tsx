@@ -1,41 +1,61 @@
 // src/screens/_authenticated/BalanceScreen.tsx
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import "../../styles/BalanceScreen.css";
-import { useBalanceDiario } from "../../hooks/useBalanceDiario";
+import { useDailyBalance } from "../../hooks/useDailyBalance";
+import { useGetBalancePerDay } from "../../hooks/useGetBalancePerDay";
 import { BalanceChartContainer } from "../../components/BalanceScreen/BalanceChartContainer";
 import { DayEntryBlock } from "../../components/BalanceScreen/DayEntryBlock";
 import { BalanceScreenSkeleton } from "../../components/BalanceScreen/BalanceScreenSkeleton";
 
-const SKELETON_LOADING_DURATION_MS = 2000;
-
 export const BalanceScreen = () => {
     const { t } = useTranslation("");
-    const balance = useBalanceDiario();
-    const [isLoading, setIsLoading] = useState(true);
+    const balance = useDailyBalance();
+    const {
+        data: balanceData,
+        isLoading,
+        percentageChange,
+        tone,
+    } = useGetBalancePerDay();
 
+    const { hydrateToday } = balance;
+
+    // Reactive binding: any cache update produced by the creation mutation
+    // (or a refetch) flows into the local "Empecé"/"Terminé" fields without a
+    // manual refresh. The header reads `balanceData` directly, so it updates in
+    // the same render.
     useEffect(() => {
-        const timeoutId = window.setTimeout(() => {
-            setIsLoading(false);
-        }, SKELETON_LOADING_DURATION_MS);
+        if (balanceData != null) {
+            hydrateToday(balanceData);
+        }
+    }, [balanceData, hydrateToday]);
 
-        return () => {
-            window.clearTimeout(timeoutId);
-        };
-    }, []);
-
+    // `isLoading` is only true while the query has no cached data and is
+    // fetching for the first time (it already implies `isFetching`). Rendering
+    // the skeleton during background refetches would introduce a layout shift,
+    // so we gate it on the initial load only.
     if (isLoading) {
         return <BalanceScreenSkeleton />;
     }
 
+    const openingBalance = balanceData?.openingBalance ?? null;
+
+    const totalNetDisplay =
+        openingBalance === null
+            ? t("BalanceScreen.noData")
+            : balance.formatAmount(openingBalance);
+
+    const percentageChangeDisplay =
+        percentageChange === null
+            ? t("BalanceScreen.noData")
+            : balance.formatPercentage(percentageChange);
+
     return (
         <div className="balance-screen">
             <BalanceChartContainer
-                net={balance.todayNet}
-                tone={balance.todayTone}
-                percentageChange={balance.percentageChange}
-                formatSignedAmount={balance.formatSignedAmount}
-                formatPercentage={balance.formatPercentage}
+                totalNetDisplay={totalNetDisplay}
+                percentageChangeDisplay={percentageChangeDisplay}
+                percentageChangeTone={tone}
             />
 
             <div className="balance-screen__columns">

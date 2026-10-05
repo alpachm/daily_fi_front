@@ -1,4 +1,7 @@
 // src/interfaces/CreateDailyBalanceService.interface.ts
+import type { DailyBalanceData } from "./DailyBalance.interface";
+
+export type { DailyBalanceData };
 
 /**
  * Payload required to open a new daily balance (shift).
@@ -6,22 +9,6 @@
 export interface CreateDailyBalancePayload {
     date: string;
     opening_balance: number;
-}
-
-/**
- * Daily balance entity returned after a successful creation.
- */
-export interface DailyBalanceData {
-    id: number;
-    userId: number;
-    date: string;
-    openingBalance: number;
-    closingBalance: number;
-    totalIncome: number;
-    totalExpenses: number;
-    notes: string | null;
-    createdAt: string;
-    updatedAt: string;
 }
 
 /**

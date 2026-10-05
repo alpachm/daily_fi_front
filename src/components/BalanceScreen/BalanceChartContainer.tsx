@@ -1,24 +1,19 @@
 // src/components/BalanceScreen/BalanceChartContainer.tsx
 import { useTranslation } from "react-i18next";
-import { TrendingDown, TrendingUp } from "lucide-react";
 import "./styles/BalanceChartContainer.css";
-import type { BalanceTone } from "../../hooks/useBalanceDiario";
+import type { BalanceTone } from "../../hooks/useDailyBalance";
 import { BalanceChart } from "./BalanceChart";
 
 interface BalanceChartContainerProps {
-    net: number;
-    tone: BalanceTone;
-    percentageChange: number;
-    formatSignedAmount: (value: number) => string;
-    formatPercentage: (value: number) => string;
+    totalNetDisplay: string;
+    percentageChangeDisplay: string;
+    percentageChangeTone: BalanceTone;
 }
 
 export const BalanceChartContainer = ({
-    net,
-    tone,
-    percentageChange,
-    formatSignedAmount,
-    formatPercentage,
+    totalNetDisplay,
+    percentageChangeDisplay,
+    percentageChangeTone,
 }: BalanceChartContainerProps) => {
     const { t } = useTranslation("");
 
@@ -29,15 +24,8 @@ export const BalanceChartContainer = ({
                     <span className="balance-chart__metric-label">
                         {t("BalanceScreen.totalNetLabel")}
                     </span>
-                    <span
-                        className={`balance-chart__metric-value balance-chart__metric-value--${tone}`}
-                    >
-                        {tone === "negative" ? (
-                            <TrendingDown size={22} aria-hidden="true" />
-                        ) : tone === "positive" ? (
-                            <TrendingUp size={22} aria-hidden="true" />
-                        ) : null}
-                        {formatSignedAmount(net)}
+                    <span className="balance-chart__metric-value balance-chart__metric-value--neutral">
+                        {totalNetDisplay}
                     </span>
                 </div>
 
@@ -46,9 +34,9 @@ export const BalanceChartContainer = ({
                         {t("BalanceScreen.percentageChangeLabel")}
                     </span>
                     <span
-                        className={`balance-chart__metric-value balance-chart__metric-value--${tone}`}
+                        className={`balance-chart__metric-value balance-chart__metric-value--${percentageChangeTone}`}
                     >
-                        {formatPercentage(percentageChange)}
+                        {percentageChangeDisplay}
                     </span>
                 </div>
             </div>

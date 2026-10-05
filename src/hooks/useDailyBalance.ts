@@ -1,13 +1,14 @@
-// src/hooks/useBalanceDiario.ts
+// src/hooks/useDailyBalance.ts
 import { useCallback, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 
-import { CreateDailyBalanceService } from "../services/CreateDailyBalanceService";
+import { useCreateDailyBalance } from "./useCreateDailyBalance";
 import {
     CreateDailyBalanceApiError,
     type CreateDailyBalancePayload,
 } from "../interfaces/CreateDailyBalanceService.interface";
 import { getTodayIsoDate } from "../utils/date";
+import type { DailyBalanceData } from "../interfaces/DailyBalance.interface";
 
 export type BalanceBlock = "previous" | "today";
 export type BalanceField = "started" | "finished";
@@ -74,8 +75,13 @@ const updateField = (
   return { ...current, finished: { ...current.finished, ...patch } };
 };
 
-export const useBalanceDiario = () => {
+export const useDailyBalance = () => {
   const { t, i18n } = useTranslation("");
+
+  const {
+    mutateAsync: createDailyBalanceAsync,
+    isPending: isSubmittingToday,
+  } = useCreateDailyBalance();
 
   const [previous, setPrevious] = useState<DayBlockState>({
     started: createInitialField(MOCK_PREVIOUS_DAY.started),
@@ -88,7 +94,6 @@ export const useBalanceDiario = () => {
   });
 
   const [isTodayConfirmed, setIsTodayConfirmed] = useState(false);
-  const [isSubmittingToday, setIsSubmittingToday] = useState(false);
   const [todayError, setTodayError] = useState<string | null>(null);
   const [todaySuccess, setTodaySuccess] = useState<string | null>(null);
 
@@ -117,6 +122,20 @@ export const useBalanceDiario = () => {
     );
   }, []);
 
+  const hydrateToday = useCallback((record: DailyBalanceData): void => {
+    const hasClosingBalance = record.closingBalance !== 0;
+
+    setToday({
+      started: createInitialField(record.openingBalance),
+      finished: hasClosingBalance
+        ? createInitialField(record.closingBalance)
+        : createInitialField(0, true),
+    });
+    setIsTodayConfirmed(true);
+    setTodayError(null);
+    setTodaySuccess(null);
+  }, []);
+
   const confirmToday = useCallback(async (): Promise<void> => {
     setTodayError(null);
     setTodaySuccess(null);
@@ -129,10 +148,8 @@ export const useBalanceDiario = () => {
         opening_balance: parseAmount(today.started.draft),
       };
 
-      setIsSubmittingToday(true);
       try {
-        const response =
-          await CreateDailyBalanceService.createDailyBalance(payload);
+        const response = await createDailyBalanceAsync(payload);
 
         setToday((current) => ({
           started: {
@@ -164,8 +181,6 @@ export const useBalanceDiario = () => {
         }
 
         setTodayError(message);
-      } finally {
-        setIsSubmittingToday(false);
       }
       return;
     }
@@ -179,7 +194,7 @@ export const useBalanceDiario = () => {
         ? { value: parseAmount(current.finished.draft), draft: "", isEditing: false }
         : current.finished,
     }));
-  }, [isTodayConfirmed, today.started.draft, t]);
+  }, [isTodayConfirmed, today.started.draft, t, createDailyBalanceAsync]);
 
   const numberFormatter = useMemo(
     () =>
@@ -238,10 +253,11 @@ export const useBalanceDiario = () => {
     changeDraft,
     cancel,
     confirmToday,
+    hydrateToday,
     formatAmount,
     formatSignedAmount,
     formatPercentage,
   };
 };
 
-export default useBalanceDiario;
+export default useDailyBalance;
