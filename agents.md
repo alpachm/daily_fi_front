@@ -24,7 +24,7 @@
 
 - **Componentes Funcionales:** Usa exclusivamente arrow functions (`const Component = () => {}`) y exportaciones nombradas.
 - **Modularidad:** Un componente por archivo. Si un componente o vista supera las 150 líneas de código, debe ser refactorizado y dividido en subcomponentes más pequeños.
-- **Separación de Conceptos:** La lógica de negocio, cálculos de capital, hooks de manejo de estado y peticiones HTTP a la API **nunca** deben vivir directamente dentro del TSX. Extráelos siempre a Custom Hooks independientes (ej. `useBalanceDiario.ts`).
+- **Separación de Conceptos:** La lógica de negocio, cálculos de capital, hooks de manejo de estado y peticiones HTTP a la API **nunca** deben vivir directamente dentro del TSX. Extráelos siempre a Custom Hooks independientes (ej. `useDailyBalance.ts`).
 - **Diseño y UI Coherente:** El diseño visual se rige estrictamente por tokens de diseño centralizados. El soporte para Light y Dark Mode se maneja inyectando la clase `.dark` en el `<html>` o `<body>`. Queda prohibido hardcodear códigos hexadecimales; se deben usar exclusivamente las siguientes variables CSS globales:
     - **Fondo General de la App:** `var(--background)`
     - **Contenedores y Tarjetas:** `var(--card-background)`

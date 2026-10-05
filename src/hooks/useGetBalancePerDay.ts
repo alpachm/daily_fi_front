@@ -7,7 +7,7 @@ import {
     type GetBalancePerDayApiError,
 } from "../interfaces/GetBalancePerDayService.interface";
 import { getTodayIsoDate } from "../utils/date";
-import type { BalanceTone } from "./useBalanceDiario";
+import type { BalanceTone } from "./useDailyBalance";
 
 const FIVE_MINUTES_MS = 1000 * 60 * 5;
 

@@ -1,4 +1,4 @@
-// src/hooks/useBalanceDiario.ts
+// src/hooks/useDailyBalance.ts
 import { useCallback, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 
@@ -75,7 +75,7 @@ const updateField = (
   return { ...current, finished: { ...current.finished, ...patch } };
 };
 
-export const useBalanceDiario = () => {
+export const useDailyBalance = () => {
   const { t, i18n } = useTranslation("");
 
   const [previous, setPrevious] = useState<DayBlockState>({
@@ -260,4 +260,4 @@ export const useBalanceDiario = () => {
   };
 };
 
-export default useBalanceDiario;
+export default useDailyBalance;

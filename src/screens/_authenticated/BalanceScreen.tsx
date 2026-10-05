@@ -2,7 +2,7 @@
 import { useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import "../../styles/BalanceScreen.css";
-import { useBalanceDiario } from "../../hooks/useBalanceDiario";
+import { useDailyBalance } from "../../hooks/useDailyBalance";
 import { useGetBalancePerDay } from "../../hooks/useGetBalancePerDay";
 import { BalanceChartContainer } from "../../components/BalanceScreen/BalanceChartContainer";
 import { DayEntryBlock } from "../../components/BalanceScreen/DayEntryBlock";
@@ -10,7 +10,7 @@ import { BalanceScreenSkeleton } from "../../components/BalanceScreen/BalanceScr
 
 export const BalanceScreen = () => {
     const { t } = useTranslation("");
-    const balance = useBalanceDiario();
+    const balance = useDailyBalance();
     const {
         data: balanceData,
         isLoading,

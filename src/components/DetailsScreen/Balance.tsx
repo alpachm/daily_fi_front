@@ -3,7 +3,7 @@ import { useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import type { LucideIcon } from "lucide-react";
 import { ChartLine, TrendingDown, TrendingUp } from "lucide-react";
-import type { BalanceTone } from "../../hooks/useBalanceDiario";
+import type { BalanceTone } from "../../hooks/useDailyBalance";
 import { useBalanceFilter } from "../../hooks/useBalanceFilter";
 import type { FilterOption } from "../../hooks/useBalanceFilter";
 import { BalanceFilterMenu } from "./BalanceFilterMenu";

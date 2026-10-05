@@ -1,7 +1,7 @@
 // src/components/BalanceScreen/BalanceChartContainer.tsx
 import { useTranslation } from "react-i18next";
 import "./styles/BalanceChartContainer.css";
-import type { BalanceTone } from "../../hooks/useBalanceDiario";
+import type { BalanceTone } from "../../hooks/useDailyBalance";
 import { BalanceChart } from "./BalanceChart";
 
 interface BalanceChartContainerProps {
