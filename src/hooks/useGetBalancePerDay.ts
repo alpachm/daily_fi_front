@@ -46,11 +46,21 @@ const resolveTone = (
     return "neutral";
 };
 
+/**
+ * Canonical query key for a day's daily balance.
+ *
+ * It is shared with `useCreateDailyBalance` so the mutation can write to the
+ * exact same cache entry the read query subscribes to.
+ */
+export const dailyBalanceQueryKey = (
+    date: string,
+): readonly [string, string] => ["daily-balance", date];
+
 export const useGetBalancePerDay = () => {
     const date = useMemo(() => getTodayIsoDate(), []);
 
     const query = useQuery<DailyBalanceData | null, GetBalancePerDayApiError>({
-        queryKey: ["daily-balance", date],
+        queryKey: dailyBalanceQueryKey(date),
         queryFn: () => GetBalancePerDayService.getBalancePerDay(date),
         staleTime: FIVE_MINUTES_MS,
         retry: 1,

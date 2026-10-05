@@ -2,7 +2,7 @@
 import { useCallback, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 
-import { CreateDailyBalanceService } from "../services/CreateDailyBalanceService";
+import { useCreateDailyBalance } from "./useCreateDailyBalance";
 import {
     CreateDailyBalanceApiError,
     type CreateDailyBalancePayload,
@@ -78,6 +78,11 @@ const updateField = (
 export const useDailyBalance = () => {
   const { t, i18n } = useTranslation("");
 
+  const {
+    mutateAsync: createDailyBalanceAsync,
+    isPending: isSubmittingToday,
+  } = useCreateDailyBalance();
+
   const [previous, setPrevious] = useState<DayBlockState>({
     started: createInitialField(MOCK_PREVIOUS_DAY.started),
     finished: createInitialField(MOCK_PREVIOUS_DAY.finished),
@@ -89,7 +94,6 @@ export const useDailyBalance = () => {
   });
 
   const [isTodayConfirmed, setIsTodayConfirmed] = useState(false);
-  const [isSubmittingToday, setIsSubmittingToday] = useState(false);
   const [todayError, setTodayError] = useState<string | null>(null);
   const [todaySuccess, setTodaySuccess] = useState<string | null>(null);
 
@@ -144,10 +148,8 @@ export const useDailyBalance = () => {
         opening_balance: parseAmount(today.started.draft),
       };
 
-      setIsSubmittingToday(true);
       try {
-        const response =
-          await CreateDailyBalanceService.createDailyBalance(payload);
+        const response = await createDailyBalanceAsync(payload);
 
         setToday((current) => ({
           started: {
@@ -179,8 +181,6 @@ export const useDailyBalance = () => {
         }
 
         setTodayError(message);
-      } finally {
-        setIsSubmittingToday(false);
       }
       return;
     }
@@ -194,7 +194,7 @@ export const useDailyBalance = () => {
         ? { value: parseAmount(current.finished.draft), draft: "", isEditing: false }
         : current.finished,
     }));
-  }, [isTodayConfirmed, today.started.draft, t]);
+  }, [isTodayConfirmed, today.started.draft, t, createDailyBalanceAsync]);
 
   const numberFormatter = useMemo(
     () =>

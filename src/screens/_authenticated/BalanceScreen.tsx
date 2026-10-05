@@ -20,6 +20,10 @@ export const BalanceScreen = () => {
 
     const { hydrateToday } = balance;
 
+    // Reactive binding: any cache update produced by the creation mutation
+    // (or a refetch) flows into the local "Empecé"/"Terminé" fields without a
+    // manual refresh. The header reads `balanceData` directly, so it updates in
+    // the same render.
     useEffect(() => {
         if (balanceData != null) {
             hydrateToday(balanceData);
