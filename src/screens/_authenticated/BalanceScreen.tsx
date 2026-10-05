@@ -1,13 +1,32 @@
 // src/screens/_authenticated/BalanceScreen.tsx
+import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import "../../styles/BalanceScreen.css";
 import { useBalanceDiario } from "../../hooks/useBalanceDiario";
 import { BalanceChartContainer } from "../../components/BalanceScreen/BalanceChartContainer";
 import { DayEntryBlock } from "../../components/BalanceScreen/DayEntryBlock";
+import { BalanceScreenSkeleton } from "../../components/BalanceScreen/BalanceScreenSkeleton";
+
+const SKELETON_LOADING_DURATION_MS = 2000;
 
 export const BalanceScreen = () => {
     const { t } = useTranslation("");
     const balance = useBalanceDiario();
+    const [isLoading, setIsLoading] = useState(true);
+
+    useEffect(() => {
+        const timeoutId = window.setTimeout(() => {
+            setIsLoading(false);
+        }, SKELETON_LOADING_DURATION_MS);
+
+        return () => {
+            window.clearTimeout(timeoutId);
+        };
+    }, []);
+
+    if (isLoading) {
+        return <BalanceScreenSkeleton />;
+    }
 
     return (
         <div className="balance-screen">
