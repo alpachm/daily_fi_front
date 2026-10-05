@@ -2,8 +2,9 @@
 import { useState } from "react";
 import type { ChangeEvent, FormEvent } from "react";
 import { useTranslation } from "react-i18next";
-import { LogOut, MonitorSmartphone, ShieldCheck } from "lucide-react";
+import { LogOut, MonitorSmartphone, ShieldCheck, TriangleAlert } from "lucide-react";
 import { PasswordField } from "./PasswordField";
+import { useLogout } from "../../hooks/useLogout";
 import "./styles/SecurityCard.css";
 
 interface PasswordFormData {
@@ -34,6 +35,8 @@ const INITIAL_VISIBILITY: Record<PasswordFieldKey, boolean> = {
 
 export const SecurityCard = () => {
     const { t } = useTranslation("");
+    const { isLoading: isLoggingOut, errorMessage: logoutError, logout } =
+        useLogout();
     const [formData, setFormData] = useState<PasswordFormData>(INITIAL_FORM_DATA);
     const [visibleFields, setVisibleFields] =
         useState<Record<PasswordFieldKey, boolean>>(INITIAL_VISIBILITY);
@@ -147,13 +150,29 @@ export const SecurityCard = () => {
             </div>
 
             <div className="security-card__section security-card__section--divided">
+                {logoutError !== null && (
+                    <div className="security-card__alert" role="alert">
+                        <TriangleAlert
+                            size={18}
+                            className="security-card__alert-icon"
+                            aria-hidden="true"
+                        />
+                        <span>{logoutError}</span>
+                    </div>
+                )}
+
                 <div className="security-card__action-row">
                     <button
                         type="button"
                         className="security-card__button security-card__button--danger"
+                        onClick={() => void logout()}
+                        disabled={isLoggingOut}
+                        aria-busy={isLoggingOut}
                     >
                         <LogOut size={18} aria-hidden="true" />
-                        {t("ProfileScreen.securityLogoutButton")}
+                        {isLoggingOut
+                            ? t("Common.loading")
+                            : t("ProfileScreen.securityLogoutButton")}
                     </button>
                 </div>
             </div>

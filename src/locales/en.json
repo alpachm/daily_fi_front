@@ -134,6 +134,8 @@
     "securityLastActivityValue": "Just now",
     "securityCloseSessionsButton": "Close all sessions",
     "securityLogoutButton": "Log out",
+    "securityLogoutNetworkError": "Unable to reach the server. Please try again.",
+    "securityLogoutGenericError": "We couldn't log you out. Please try again.",
     "preferencesTitle": "System Preferences",
     "preferencesAppearanceLabel": "Appearance",
     "preferencesThemeLight": "Light",

@@ -134,6 +134,8 @@
     "securityLastActivityValue": "Ahora mismo",
     "securityCloseSessionsButton": "Cerrar todas las sesiones",
     "securityLogoutButton": "Cerrar sesión",
+    "securityLogoutNetworkError": "No se pudo conectar con el servidor. Inténtalo de nuevo.",
+    "securityLogoutGenericError": "No pudimos cerrar tu sesión. Inténtalo de nuevo.",
     "preferencesTitle": "Preferencias del Sistema",
     "preferencesAppearanceLabel": "Apariencia",
     "preferencesThemeLight": "Claro",
