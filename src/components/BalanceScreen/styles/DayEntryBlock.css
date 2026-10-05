@@ -82,6 +82,10 @@
 }
 
 .day-entry-block__confirm {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
     width: 100%;
     padding: 0.75rem 1.25rem;
     font-size: 0.9375rem;
@@ -110,4 +114,55 @@
 .day-entry-block__confirm:disabled {
     opacity: 0.5;
     cursor: not-allowed;
+}
+
+.day-entry-block__spinner {
+    flex-shrink: 0;
+    animation: day-entry-block__spin 0.8s linear infinite;
+}
+
+@keyframes day-entry-block__spin {
+    from {
+        transform: rotate(0deg);
+    }
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+.day-entry-block__alert {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.75rem 1rem;
+    font-size: 0.875rem;
+    border-radius: 10px;
+    transition:
+        color 0.3s ease,
+        background-color 0.3s ease,
+        border-color 0.3s ease;
+}
+
+.day-entry-block__alert-icon {
+    flex-shrink: 0;
+}
+
+.day-entry-block__alert--error {
+    color: var(--status-error);
+    background-color: color-mix(
+        in srgb,
+        var(--status-error) 12%,
+        var(--card-background)
+    );
+    border: 1px solid var(--status-error);
+}
+
+.day-entry-block__alert--success {
+    color: var(--status-success);
+    background-color: color-mix(
+        in srgb,
+        var(--status-success) 12%,
+        var(--card-background)
+    );
+    border: 1px solid var(--status-success);
 }

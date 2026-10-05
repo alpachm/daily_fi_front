@@ -2,6 +2,13 @@
 import { useCallback, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 
+import { CreateDailyBalanceService } from "../services/CreateDailyBalanceService";
+import {
+    CreateDailyBalanceApiError,
+    type CreateDailyBalancePayload,
+} from "../interfaces/CreateDailyBalanceService.interface";
+import { getTodayIsoDate } from "../utils/date";
+
 export type BalanceBlock = "previous" | "today";
 export type BalanceField = "started" | "finished";
 export type BalanceTone = "positive" | "negative" | "neutral";
@@ -68,7 +75,7 @@ const updateField = (
 };
 
 export const useBalanceDiario = () => {
-  const { i18n } = useTranslation("");
+  const { t, i18n } = useTranslation("");
 
   const [previous, setPrevious] = useState<DayBlockState>({
     started: createInitialField(MOCK_PREVIOUS_DAY.started),
@@ -81,6 +88,9 @@ export const useBalanceDiario = () => {
   });
 
   const [isTodayConfirmed, setIsTodayConfirmed] = useState(false);
+  const [isSubmittingToday, setIsSubmittingToday] = useState(false);
+  const [todayError, setTodayError] = useState<string | null>(null);
+  const [todaySuccess, setTodaySuccess] = useState<string | null>(null);
 
   const beginEdit = useCallback((block: BalanceBlock, field: BalanceField): void => {
     const setState = block === "previous" ? setPrevious : setToday;
@@ -107,22 +117,56 @@ export const useBalanceDiario = () => {
     );
   }, []);
 
-  const confirmToday = useCallback((): void => {
+  const confirmToday = useCallback(async (): Promise<void> => {
+    setTodayError(null);
+    setTodaySuccess(null);
+
     if (!isTodayConfirmed) {
-      // Open the shift: commit the opening balance and enable the closing field.
-      setToday((current) => ({
-        started: {
-          value: parseAmount(current.started.draft),
-          draft: "",
-          isEditing: false,
-        },
-        finished: {
-          value: current.finished.value,
-          draft: "",
-          isEditing: true,
-        },
-      }));
-      setIsTodayConfirmed(true);
+      // Scenario A: opening balance. Persist the new record in the backend
+      // before enabling the closing field ("Terminé").
+      const payload: CreateDailyBalancePayload = {
+        date: getTodayIsoDate(),
+        opening_balance: parseAmount(today.started.draft),
+      };
+
+      setIsSubmittingToday(true);
+      try {
+        const response =
+          await CreateDailyBalanceService.createDailyBalance(payload);
+
+        setToday((current) => ({
+          started: {
+            value: response.data.openingBalance,
+            draft: "",
+            isEditing: false,
+          },
+          finished: {
+            value: current.finished.value,
+            draft: "",
+            isEditing: true,
+          },
+        }));
+        setIsTodayConfirmed(true);
+        setTodaySuccess(t("BalanceScreen.openingSuccess"));
+      } catch (error: unknown) {
+        let message = t("BalanceScreen.errors.generic");
+
+        if (error instanceof CreateDailyBalanceApiError) {
+          if (error.kind === "validation") {
+            message = t("BalanceScreen.errors.invalidOpeningBalance");
+          } else if (error.kind === "unauthorized") {
+            message = t("BalanceScreen.errors.unauthorized");
+          } else if (error.kind === "conflict") {
+            message = t("BalanceScreen.errors.conflict");
+          } else if (error.kind === "network") {
+            message = t("BalanceScreen.errors.network");
+          }
+        }
+
+        setTodayError(message);
+      } finally {
+        setIsSubmittingToday(false);
+      }
       return;
     }
 
@@ -135,7 +179,7 @@ export const useBalanceDiario = () => {
         ? { value: parseAmount(current.finished.draft), draft: "", isEditing: false }
         : current.finished,
     }));
-  }, [isTodayConfirmed]);
+  }, [isTodayConfirmed, today.started.draft, t]);
 
   const numberFormatter = useMemo(
     () =>
@@ -181,6 +225,9 @@ export const useBalanceDiario = () => {
     previous,
     today,
     isTodayConfirmed,
+    isSubmittingToday,
+    todayError,
+    todaySuccess,
     todayNet,
     previousNet,
     percentageChange,

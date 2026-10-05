@@ -1,5 +1,6 @@
 // src/components/BalanceScreen/DayEntryBlock.tsx
 import { useTranslation } from "react-i18next";
+import { Check, LoaderCircle, TriangleAlert } from "lucide-react";
 import { AmountField } from "./AmountField";
 import "./styles/DayEntryBlock.css";
 import type {
@@ -19,10 +20,13 @@ interface DayEntryBlockProps {
     finished: AmountFieldState;
     isConfirmed: boolean;
     canConfirm?: boolean;
+    isSubmitting?: boolean;
+    errorMessage?: string | null;
+    successMessage?: string | null;
     onBeginEdit: (block: BalanceBlock, field: BalanceField) => void;
     onChangeDraft: (block: BalanceBlock, field: BalanceField, raw: string) => void;
     onCancel: (block: BalanceBlock, field: BalanceField) => void;
-    onConfirmBlock?: () => void;
+    onConfirmBlock?: () => Promise<void>;
     formatAmount: (value: number) => string;
     formatSignedAmount: (value: number) => string;
 }
@@ -44,6 +48,9 @@ export const DayEntryBlock = ({
     finished,
     isConfirmed,
     canConfirm = false,
+    isSubmitting = false,
+    errorMessage = null,
+    successMessage = null,
     onBeginEdit,
     onChangeDraft,
     onCancel,
@@ -115,6 +122,34 @@ export const DayEntryBlock = ({
                 />
             </div>
 
+            {errorMessage !== null ? (
+                <div
+                    className="day-entry-block__alert day-entry-block__alert--error"
+                    role="alert"
+                >
+                    <TriangleAlert
+                        size={18}
+                        className="day-entry-block__alert-icon"
+                        aria-hidden="true"
+                    />
+                    <span>{errorMessage}</span>
+                </div>
+            ) : null}
+
+            {successMessage !== null ? (
+                <div
+                    className="day-entry-block__alert day-entry-block__alert--success"
+                    role="status"
+                >
+                    <Check
+                        size={18}
+                        className="day-entry-block__alert-icon"
+                        aria-hidden="true"
+                    />
+                    <span>{successMessage}</span>
+                </div>
+            ) : null}
+
             {showNetBalance ? (
                 <footer className="day-entry-block__footer">
                     <span className="day-entry-block__net-label">{t("BalanceScreen.netLabel")}</span>
@@ -128,9 +163,17 @@ export const DayEntryBlock = ({
                 <button
                     type="button"
                     className="day-entry-block__confirm"
-                    disabled={!canConfirm}
+                    disabled={!canConfirm || isSubmitting}
+                    aria-busy={isSubmitting}
                     onClick={onConfirmBlock}
                 >
+                    {isSubmitting ? (
+                        <LoaderCircle
+                            size={18}
+                            className="day-entry-block__spinner"
+                            aria-hidden="true"
+                        />
+                    ) : null}
                     {confirmLabel}
                 </button>
             ) : null}

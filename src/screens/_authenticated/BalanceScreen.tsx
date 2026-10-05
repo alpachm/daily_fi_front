@@ -50,6 +50,9 @@ export const BalanceScreen = () => {
                     onCancel={balance.cancel}
                     onConfirmBlock={balance.confirmToday}
                     canConfirm={balance.canConfirmToday}
+                    isSubmitting={balance.isSubmittingToday}
+                    errorMessage={balance.todayError}
+                    successMessage={balance.todaySuccess}
                     formatAmount={balance.formatAmount}
                     formatSignedAmount={balance.formatSignedAmount}
                 />
