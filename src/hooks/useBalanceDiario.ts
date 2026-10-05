@@ -8,6 +8,7 @@ import {
     type CreateDailyBalancePayload,
 } from "../interfaces/CreateDailyBalanceService.interface";
 import { getTodayIsoDate } from "../utils/date";
+import type { DailyBalanceData } from "../interfaces/DailyBalance.interface";
 
 export type BalanceBlock = "previous" | "today";
 export type BalanceField = "started" | "finished";
@@ -115,6 +116,20 @@ export const useBalanceDiario = () => {
     setState((current) =>
       updateField(current, field, { draft: "", isEditing: false }),
     );
+  }, []);
+
+  const hydrateToday = useCallback((record: DailyBalanceData): void => {
+    const hasClosingBalance = record.closingBalance !== 0;
+
+    setToday({
+      started: createInitialField(record.openingBalance),
+      finished: hasClosingBalance
+        ? createInitialField(record.closingBalance)
+        : createInitialField(0, true),
+    });
+    setIsTodayConfirmed(true);
+    setTodayError(null);
+    setTodaySuccess(null);
   }, []);
 
   const confirmToday = useCallback(async (): Promise<void> => {
@@ -238,6 +253,7 @@ export const useBalanceDiario = () => {
     changeDraft,
     cancel,
     confirmToday,
+    hydrateToday,
     formatAmount,
     formatSignedAmount,
     formatPercentage,
