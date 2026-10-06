@@ -4,13 +4,18 @@ import { useTranslation } from "react-i18next";
 
 import { useCreateDailyBalance } from "./useCreateDailyBalance";
 import { useCloseDailyBalance } from "./useCloseDailyBalance";
+import { useUpdateDailyBalance } from "./useUpdateDailyBalance";
+import { useGetBalancePerDay } from "./useGetBalancePerDay";
 import {
     CreateDailyBalanceApiError,
     type CreateDailyBalancePayload,
 } from "../interfaces/CreateDailyBalanceService.interface";
 import { CloseDailyBalanceApiError } from "../interfaces/CloseDailyBalanceService.interface";
+import {
+    UpdateDailyBalanceApiError,
+    type UpdateDailyBalancePayload,
+} from "../interfaces/UpdateDailyBalanceService.interface";
 import { getTodayIsoDate } from "../utils/date";
-import type { DailyBalanceData } from "../interfaces/DailyBalance.interface";
 
 export type BalanceBlock = "previous" | "today";
 export type BalanceField = "started" | "finished";
@@ -26,12 +31,6 @@ export interface DayBlockState {
   started: AmountFieldState;
   finished: AmountFieldState;
 }
-
-const createInitialField = (value: number, isEditing = false): AmountFieldState => ({
-  value,
-  draft: "",
-  isEditing,
-});
 
 const parseAmount = (raw: string): number => {
   const parsed = Number(raw);
@@ -71,17 +70,6 @@ export const resolveNetBalance = (
   return { hasData: true, net, tone: getBalanceTone(net) };
 };
 
-const updateField = (
-  current: DayBlockState,
-  field: BalanceField,
-  patch: Partial<AmountFieldState>,
-): DayBlockState => {
-  if (field === "started") {
-    return { ...current, started: { ...current.started, ...patch } };
-  }
-  return { ...current, finished: { ...current.finished, ...patch } };
-};
-
 export const useDailyBalance = () => {
   const { t, i18n } = useTranslation("");
 
@@ -95,82 +83,89 @@ export const useDailyBalance = () => {
     isPending: isClosingToday,
   } = useCloseDailyBalance();
 
-  const [today, setToday] = useState<DayBlockState>({
-    started: createInitialField(0, true),
-    finished: createInitialField(0, false),
-  });
+  const {
+    mutateAsync: updateDailyBalanceAsync,
+    isPending: isUpdatingToday,
+  } = useUpdateDailyBalance();
 
-  const [todayId, setTodayId] = useState<number | null>(null);
-  const [isTodayConfirmed, setIsTodayConfirmed] = useState(false);
+  const { data: balanceData } = useGetBalancePerDay();
+
+  // Transient form state: only drafts and edit flags live locally. Persisted
+  // values are derived below straight from the query cache (single source of
+  // truth), so every cache write performed by the mutations flows back into
+  // the UI without a manual refresh.
+  const [startedDraft, setStartedDraft] = useState("");
+  const [finishedDraft, setFinishedDraft] = useState("");
+  const [startedEditing, setStartedEditing] = useState(false);
+  const [finishedEditing, setFinishedEditing] = useState(false);
   const [todayError, setTodayError] = useState<string | null>(null);
   const [todaySuccess, setTodaySuccess] = useState<string | null>(null);
 
-  const beginEdit = useCallback((field: BalanceField): void => {
-    setToday((current) =>
-      updateField(current, field, {
-        draft: String(current[field].value),
-        isEditing: true,
-      }),
-    );
-  }, []);
+  const isTodayConfirmed = balanceData != null;
+
+  const today: DayBlockState = {
+    started: {
+      value: balanceData?.openingBalance ?? 0,
+      draft: startedDraft,
+      isEditing: balanceData == null || startedEditing,
+    },
+    finished: {
+      value: balanceData?.closingBalance ?? 0,
+      draft: finishedDraft,
+      isEditing:
+        balanceData != null &&
+        (balanceData.closingBalance === 0 || finishedEditing),
+    },
+  };
+
+  const beginEdit = useCallback(
+    (field: BalanceField): void => {
+      if (field === "started") {
+        setStartedDraft(String(balanceData?.openingBalance ?? 0));
+        setStartedEditing(true);
+        return;
+      }
+      setFinishedDraft(String(balanceData?.closingBalance ?? 0));
+      setFinishedEditing(true);
+    },
+    [balanceData],
+  );
 
   const changeDraft = useCallback(
     (field: BalanceField, raw: string): void => {
-      setToday((current) => updateField(current, field, { draft: raw }));
+      if (field === "started") {
+        setStartedDraft(raw);
+        return;
+      }
+      setFinishedDraft(raw);
     },
     [],
   );
 
   const cancel = useCallback((field: BalanceField): void => {
-    setToday((current) =>
-      updateField(current, field, { draft: "", isEditing: false }),
-    );
-  }, []);
-
-  const hydrateToday = useCallback((record: DailyBalanceData): void => {
-    const hasClosingBalance = record.closingBalance !== 0;
-
-    setToday({
-      started: createInitialField(record.openingBalance),
-      finished: hasClosingBalance
-        ? createInitialField(record.closingBalance)
-        : createInitialField(0, true),
-    });
-    setTodayId(record.id);
-    setIsTodayConfirmed(true);
-    setTodayError(null);
-    setTodaySuccess(null);
+    if (field === "started") {
+      setStartedDraft("");
+      setStartedEditing(false);
+      return;
+    }
+    setFinishedDraft("");
+    setFinishedEditing(false);
   }, []);
 
   const confirmToday = useCallback(async (): Promise<void> => {
     setTodayError(null);
     setTodaySuccess(null);
 
-    if (!isTodayConfirmed) {
-      // Scenario A: opening balance. Persist the new record in the backend
-      // before enabling the closing field ("Terminé").
+    // Scenario 1: no record exists yet -> create the opening balance.
+    if (balanceData == null) {
       const payload: CreateDailyBalancePayload = {
         date: getTodayIsoDate(),
-        opening_balance: parseAmount(today.started.draft),
+        opening_balance: parseAmount(startedDraft),
       };
 
       try {
-        const response = await createDailyBalanceAsync(payload);
-
-        setToday((current) => ({
-          started: {
-            value: response.data.openingBalance,
-            draft: "",
-            isEditing: false,
-          },
-          finished: {
-            value: current.finished.value,
-            draft: "",
-            isEditing: true,
-          },
-        }));
-        setTodayId(response.data.id);
-        setIsTodayConfirmed(true);
+        await createDailyBalanceAsync(payload);
+        setStartedDraft("");
         setTodaySuccess(t("BalanceScreen.openingSuccess"));
       } catch (error: unknown) {
         let message = t("BalanceScreen.errors.generic");
@@ -192,30 +187,51 @@ export const useDailyBalance = () => {
       return;
     }
 
-    // Scenario B: closing balance. Persist the closing amount through the
-    // dedicated close endpoint so the active day is closed server-side.
-    if (today.finished.isEditing) {
-      if (todayId === null) {
-        setTodayError(t("BalanceScreen.errors.generic"));
-        return;
-      }
+    // A record already exists: dispatch based on which field is being edited.
+    const recordId = balanceData.id;
+
+    // Scenario 2: editing the opening balance -> update it.
+    if (startedEditing) {
+      const payload: UpdateDailyBalancePayload = {
+        opening_balance: parseAmount(startedDraft),
+      };
 
       try {
-        const response = await closeDailyBalanceAsync({
-          id: todayId,
-          closingBalance: parseAmount(today.finished.draft),
-        });
+        await updateDailyBalanceAsync({ id: recordId, payload });
+        setStartedDraft("");
+        setStartedEditing(false);
+        setTodaySuccess(t("BalanceScreen.openingUpdateSuccess"));
+      } catch (error: unknown) {
+        let message = t("BalanceScreen.errors.generic");
 
-        setToday((current) => ({
-          started: current.started.isEditing
-            ? { value: parseAmount(current.started.draft), draft: "", isEditing: false }
-            : current.started,
-          finished: {
-            value: response.data.closingBalance,
-            draft: "",
-            isEditing: false,
-          },
-        }));
+        if (error instanceof UpdateDailyBalanceApiError) {
+          if (error.kind === "validation") {
+            message = t("BalanceScreen.errors.invalidOpeningBalance");
+          } else if (error.kind === "unauthorized") {
+            message = t("BalanceScreen.errors.unauthorized");
+          } else if (error.kind === "forbidden") {
+            message = t("BalanceScreen.errors.forbidden");
+          } else if (error.kind === "notFound") {
+            message = t("BalanceScreen.errors.notFound");
+          } else if (error.kind === "network") {
+            message = t("BalanceScreen.errors.network");
+          }
+        }
+
+        setTodayError(message);
+      }
+      return;
+    }
+
+    // The closing field is being submitted.
+    // Scenario 3: first time closing -> close the day.
+    if (balanceData.closingBalance === 0) {
+      try {
+        await closeDailyBalanceAsync({
+          id: recordId,
+          closingBalance: parseAmount(finishedDraft),
+        });
+        setFinishedDraft("");
         setTodaySuccess(t("BalanceScreen.closingSuccess"));
       } catch (error: unknown) {
         let message = t("BalanceScreen.errors.generic");
@@ -239,23 +255,44 @@ export const useDailyBalance = () => {
       return;
     }
 
-    // Only the opening field is being edited after confirmation. There is no
-    // dedicated endpoint to update it yet, so commit it locally.
-    setToday((current) => ({
-      started: current.started.isEditing
-        ? { value: parseAmount(current.started.draft), draft: "", isEditing: false }
-        : current.started,
-      finished: current.finished,
-    }));
+    // Scenario 4: editing an already closed balance -> update it.
+    const payload: UpdateDailyBalancePayload = {
+      closing_balance: parseAmount(finishedDraft),
+    };
+
+    try {
+      await updateDailyBalanceAsync({ id: recordId, payload });
+      setFinishedDraft("");
+      setFinishedEditing(false);
+      setTodaySuccess(t("BalanceScreen.closingUpdateSuccess"));
+    } catch (error: unknown) {
+      let message = t("BalanceScreen.errors.generic");
+
+      if (error instanceof UpdateDailyBalanceApiError) {
+        if (error.kind === "validation") {
+          message = t("BalanceScreen.errors.invalidClosingBalance");
+        } else if (error.kind === "unauthorized") {
+          message = t("BalanceScreen.errors.unauthorized");
+        } else if (error.kind === "forbidden") {
+          message = t("BalanceScreen.errors.forbidden");
+        } else if (error.kind === "notFound") {
+          message = t("BalanceScreen.errors.notFound");
+        } else if (error.kind === "network") {
+          message = t("BalanceScreen.errors.network");
+        }
+      }
+
+      setTodayError(message);
+    }
   }, [
-    isTodayConfirmed,
-    todayId,
-    today.started.draft,
-    today.finished.isEditing,
-    today.finished.draft,
+    balanceData,
+    startedEditing,
+    startedDraft,
+    finishedDraft,
     t,
     createDailyBalanceAsync,
     closeDailyBalanceAsync,
+    updateDailyBalanceAsync,
   ]);
 
   const numberFormatter = useMemo(
@@ -287,15 +324,18 @@ export const useDailyBalance = () => {
     [formatSignedAmount],
   );
 
-  const canConfirmToday = isTodayConfirmed
-    ? (today.started.isEditing ? isValidAmount(today.started.draft) : true) &&
-      (today.finished.isEditing ? isValidAmount(today.finished.draft) : true)
-    : isValidAmount(today.started.draft);
+  const canConfirmToday = balanceData == null
+    ? isValidAmount(today.started.draft)
+    : today.started.isEditing
+      ? isValidAmount(today.started.draft)
+      : today.finished.isEditing
+        ? isValidAmount(today.finished.draft)
+        : false;
 
   return {
     today,
     isTodayConfirmed,
-    isSubmittingToday: isCreatingToday || isClosingToday,
+    isSubmittingToday: isCreatingToday || isClosingToday || isUpdatingToday,
     todayError,
     todaySuccess,
     canConfirmToday,
@@ -303,7 +343,6 @@ export const useDailyBalance = () => {
     changeDraft,
     cancel,
     confirmToday,
-    hydrateToday,
     formatAmount,
     formatSignedAmount,
     formatPercentage,

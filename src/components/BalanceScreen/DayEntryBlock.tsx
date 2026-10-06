@@ -108,10 +108,9 @@ export const DayEntryBlock = ({
     const netBalance = resolveNetBalance(started.value, finished.value);
 
     // A closing balance ("Terminé") is considered "already saved" once its
-    // persisted value differs from the initial zero sentinel set by
-    // `createInitialField`. This lets us hide the cancel button ("X") during the
-    // initial entry phase and only reveal it while editing a previously
-    // submitted value.
+    // persisted value differs from zero. This lets us hide the cancel button
+    // ("X") during the initial entry phase and only reveal it while editing a
+    // previously submitted value.
     const hasSavedClosingBalance = finished.value !== 0;
 
     const startedPresentation: FieldPresentation = isPrevious
@@ -141,7 +140,13 @@ export const DayEntryBlock = ({
         onConfirmBlock !== undefined &&
         (!isConfirmed || started.isEditing || finished.isEditing);
 
-    const confirmLabel = isConfirmed ? t("Actions.close") : t("Actions.confirm");
+    const confirmLabel = !isConfirmed
+        ? t("Actions.confirm")
+        : started.isEditing
+            ? t("Actions.save")
+            : finished.isEditing && !hasSavedClosingBalance
+                ? t("Actions.close")
+                : t("Actions.save");
 
     return (
         <section className="day-entry-block">
