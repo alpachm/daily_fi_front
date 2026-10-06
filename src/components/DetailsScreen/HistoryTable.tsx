@@ -5,6 +5,7 @@ import { useTranslation } from "react-i18next";
 import type { LucideIcon } from "lucide-react";
 import {
     BadgeDollarSign,
+    ChartLine,
     ChevronDown,
     ChevronLeft,
     ChevronRight,
@@ -12,8 +13,13 @@ import {
     ShoppingCart,
 } from "lucide-react";
 import { useAllDailyBalances } from "../../hooks/useAllDailyBalances";
+import { useBalanceFilter } from "../../hooks/useBalanceFilter";
+import type { FilterOption } from "../../hooks/useBalanceFilter";
 import type { DailyBalanceItem } from "../../interfaces/GetAllDailyBalancesService.interface";
-import { formatFullDate } from "../../utils/date";
+import { formatFullDate, getTodayIsoDate } from "../../utils/date";
+import type { FilterPeriod } from "./Balance";
+import { BalanceFilterMenu } from "./BalanceFilterMenu";
+import { DetailsChartModal } from "./DetailsChartModal";
 import { Skeleton } from "../shared/Skeleton";
 import "./styles/HistoryTable.css";
 
@@ -37,6 +43,38 @@ type AmountTone = "positive" | "negative" | "neutral";
 const PAGE_SIZE_OPTIONS: number[] = [10, 50, 100];
 const DEFAULT_PAGE = 1;
 const DEFAULT_LIMIT = 10;
+const DEFAULT_FILTER: FilterPeriod = "day";
+
+interface DateRange {
+    startDate: string;
+    endDate: string;
+}
+
+const getMonthStartIsoDate = (): string => {
+    const now = new Date();
+    const year = now.getFullYear();
+    const month = String(now.getMonth() + 1).padStart(2, "0");
+    return `${year}-${month}-01`;
+};
+
+const getYearStartIsoDate = (): string => {
+    const now = new Date();
+    return `${now.getFullYear()}-01-01`;
+};
+
+const getDateRangeForPeriod = (period: FilterPeriod): DateRange => {
+    const today = getTodayIsoDate();
+
+    if (period === "month") {
+        return { startDate: getMonthStartIsoDate(), endDate: today };
+    }
+
+    if (period === "year") {
+        return { startDate: getYearStartIsoDate(), endDate: today };
+    }
+
+    return { startDate: today, endDate: today };
+};
 
 const getAmountTone = (value: number): AmountTone => {
     if (value > 0) return "positive";
@@ -80,8 +118,42 @@ export const HistoryTable = () => {
     const [limit, setLimit] = useState<number>(DEFAULT_LIMIT);
     const [openMenuRowId, setOpenMenuRowId] = useState<string | null>(null);
     const popoverRef = useRef<HTMLDivElement | null>(null);
+    const [filter, setFilter] = useState<FilterPeriod>(DEFAULT_FILTER);
+    const [isChartModalOpen, setIsChartModalOpen] = useState<boolean>(false);
 
-    const { data, isLoading, isError } = useAllDailyBalances({ page, limit });
+    const { isOpen, containerRef, toggle, select } = useBalanceFilter(
+        filter,
+        setFilter,
+    );
+
+    const filterOptions = useMemo<FilterOption[]>(
+        () => [
+            { value: "day", label: t("DetailsScreen.filterDay") },
+            { value: "month", label: t("DetailsScreen.filterMonth") },
+            { value: "year", label: t("DetailsScreen.filterYear") },
+        ],
+        [t],
+    );
+
+    const dateRange = useMemo<DateRange>(
+        () => getDateRangeForPeriod(filter),
+        [filter],
+    );
+
+    const { data, isLoading, isError } = useAllDailyBalances({
+        startDate: dateRange.startDate,
+        endDate: dateRange.endDate,
+        page,
+        limit,
+    });
+
+    const openChartModal = (): void => setIsChartModalOpen(true);
+    const closeChartModal = (): void => setIsChartModalOpen(false);
+
+    const handleFilterSelect = (nextFilter: FilterPeriod): void => {
+        select(nextFilter);
+        setPage(DEFAULT_PAGE);
+    };
 
     const records = useMemo<HistoryRecord[]>(
         () =>
@@ -158,6 +230,29 @@ export const HistoryTable = () => {
                 <h2 id="history-table-title" className="history-table__title">
                     {t("DetailsScreen.historyTitle")}
                 </h2>
+
+                <div className="history-table__actions">
+                    <button
+                        type="button"
+                        className="history-table__chart-button"
+                        onClick={openChartModal}
+                    >
+                        <ChartLine size={18} aria-hidden="true" />
+                        <span>{t("DetailsScreen.viewChart")}</span>
+                    </button>
+
+                    <BalanceFilterMenu
+                        options={filterOptions}
+                        selected={filter}
+                        isOpen={isOpen}
+                        containerRef={containerRef}
+                        menuId="history-table-filter-menu"
+                        triggerLabel={t("DetailsScreen.balanceFilterLabel")}
+                        note={t("DetailsScreen.filterNote")}
+                        onToggle={toggle}
+                        onSelect={handleFilterSelect}
+                    />
+                </div>
             </header>
 
             <div className="history-table__container">
@@ -342,6 +437,13 @@ export const HistoryTable = () => {
                     </button>
                 </div>
             </footer>
+
+            <DetailsChartModal
+                isOpen={isChartModalOpen}
+                onClose={closeChartModal}
+                currentFilter={filter}
+                onFilterChange={handleFilterSelect}
+            />
         </section>
     );
 };
