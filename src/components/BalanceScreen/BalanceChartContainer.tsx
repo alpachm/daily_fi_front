@@ -7,6 +7,7 @@ import { useRecentDailyBalances } from "../../hooks/useRecentDailyBalances";
 import { formatShortDate } from "../../utils/date";
 import { Skeleton } from "../shared/Skeleton";
 import { BalanceChart } from "./BalanceChart";
+import type { BalanceDataPoint } from "./BalanceChart";
 import { NetBalanceChart } from "./NetBalanceChart";
 import type { NetBalanceDataPoint } from "./NetBalanceChart";
 
@@ -70,6 +71,19 @@ export const BalanceChartContainer = ({
             }));
     }, [recentBalances, i18n.language]);
 
+    const balanceData = useMemo<BalanceDataPoint[]>(() => {
+        if (!recentBalances || recentBalances.length === 0) {
+            return [];
+        }
+
+        return [...recentBalances]
+            .sort((a, b) => a.date.localeCompare(b.date))
+            .map((item) => ({
+                date: formatShortDate(item.date, i18n.language),
+                amount: item.closingBalance,
+            }));
+    }, [recentBalances, i18n.language]);
+
     return (
         <section className="balance-chart">
             <div className="balance-chart__header">
@@ -123,17 +137,23 @@ export const BalanceChartContainer = ({
                 </div>
             </div>
 
-            {activeTab === "general" ? (
-                <BalanceChart />
-            ) : isLoading ? (
+            {isLoading ? (
                 <div className="balance-chart__state" role="status" aria-live="polite" aria-busy="true">
                     <Skeleton className="balance-chart__state-skeleton" />
                     <span className="balance-chart__state-label">{t("Common.loading")}</span>
                 </div>
             ) : isError ? (
                 <div className="balance-chart__state" role="status" aria-live="polite">
-                    <span className="balance-chart__state-label">{t("Common.error")}</span>
+                    <span className="balance-chart__state-label">{t("BalanceScreen.chartLoadError")}</span>
                 </div>
+            ) : activeTab === "general" ? (
+                balanceData.length === 0 ? (
+                    <div className="balance-chart__state" role="status" aria-live="polite">
+                        <span className="balance-chart__state-label">{t("BalanceScreen.chartEmpty")}</span>
+                    </div>
+                ) : (
+                    <BalanceChart data={balanceData} />
+                )
             ) : netBalanceData.length === 0 ? (
                 <div className="balance-chart__state" role="status" aria-live="polite">
                     <span className="balance-chart__state-label">{t("BalanceScreen.chartEmpty")}</span>
