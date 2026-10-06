@@ -4,20 +4,21 @@ import { useTranslation } from "react-i18next";
 import { Check, LoaderCircle, TriangleAlert } from "lucide-react";
 import { AmountField } from "./AmountField";
 import { AutomaticAlertModal } from "../shared/AutomaticAlertModal";
+import { Skeleton } from "../shared/Skeleton";
 import "./styles/DayEntryBlock.css";
+import { resolveNetBalance } from "../../hooks/useDailyBalance";
 import type {
     AmountFieldState,
     BalanceBlock,
     BalanceField,
-    BalanceTone,
 } from "../../hooks/useDailyBalance";
+
+export type HistoricalStatus = "loading" | "success" | "empty" | "error";
 
 interface DayEntryBlockProps {
     block: BalanceBlock;
     title: string;
     subtitle: string;
-    tone: BalanceTone;
-    net: number;
     started: AmountFieldState;
     finished: AmountFieldState;
     isConfirmed: boolean;
@@ -25,12 +26,13 @@ interface DayEntryBlockProps {
     isSubmitting?: boolean;
     errorMessage?: string | null;
     successMessage?: string | null;
-    onBeginEdit: (block: BalanceBlock, field: BalanceField) => void;
-    onChangeDraft: (block: BalanceBlock, field: BalanceField, raw: string) => void;
-    onCancel: (block: BalanceBlock, field: BalanceField) => void;
+    onBeginEdit: (field: BalanceField) => void;
+    onChangeDraft: (field: BalanceField, raw: string) => void;
+    onCancel: (field: BalanceField) => void;
     onConfirmBlock?: () => Promise<void>;
     formatAmount: (value: number) => string;
     formatSignedAmount: (value: number) => string;
+    historicalStatus?: HistoricalStatus;
 }
 
 interface FieldPresentation {
@@ -51,8 +53,6 @@ export const DayEntryBlock = ({
     block,
     title,
     subtitle,
-    tone,
-    net,
     started,
     finished,
     isConfirmed,
@@ -66,6 +66,7 @@ export const DayEntryBlock = ({
     onConfirmBlock,
     formatAmount,
     formatSignedAmount,
+    historicalStatus,
 }: DayEntryBlockProps) => {
     const { t } = useTranslation("");
 
@@ -91,7 +92,20 @@ export const DayEntryBlock = ({
     // The net balance is only meaningful once the closing balance ("Terminé")
     // has been submitted for the current day. While only the opening balance
     // ("Empecé") is being entered, we must not render (nor flash) a net value.
-    const showNetBalance = isPrevious || (isConfirmed && !finished.isEditing);
+    // For the previous (historical) day, the net is only shown once its record
+    // has been fetched successfully.
+    const previousStatus = historicalStatus ?? "loading";
+    const showNetBalance = isPrevious
+        ? previousStatus === "success"
+        : isConfirmed && !finished.isEditing;
+
+    // The net is resolved from the persisted opening/closing balances so both
+    // the "today" and "previous" blocks follow one unified rule:
+    //   - closingBalance === 0               -> "Sin dato" (day not closed yet)
+    //   - closingBalance === openingBalance  -> neutral "0" (no gain/loss)
+    //   - closingBalance  >  openingBalance  -> positive gain (green)
+    //   - closingBalance  <  openingBalance  -> negative loss (red)
+    const netBalance = resolveNetBalance(started.value, finished.value);
 
     // A closing balance ("Terminé") is considered "already saved" once its
     // persisted value differs from the initial zero sentinel set by
@@ -136,40 +150,84 @@ export const DayEntryBlock = ({
                 <p className="day-entry-block__subtitle">{subtitle}</p>
             </header>
 
-            <div className="day-entry-block__fields">
-                <AmountField
-                    label={t("BalanceScreen.startedLabel")}
-                    value={started.value}
-                    draft={started.draft}
-                    isEditing={startedPresentation.isEditing}
-                    disabled={startedPresentation.disabled}
-                    showEditIcon={startedPresentation.showEditIcon}
-                    showCancelButton={startedPresentation.showCancelButton}
-                    onBeginEdit={() => onBeginEdit(block, "started")}
-                    onChangeDraft={(raw) => onChangeDraft(block, "started", raw)}
-                    onCancel={() => onCancel(block, "started")}
-                    formatAmount={formatAmount}
-                />
-                <AmountField
-                    label={t("BalanceScreen.finishedLabel")}
-                    value={finished.value}
-                    draft={finished.draft}
-                    isEditing={finishedPresentation.isEditing}
-                    disabled={finishedPresentation.disabled}
-                    showEditIcon={finishedPresentation.showEditIcon}
-                    showCancelButton={finishedPresentation.showCancelButton}
-                    onBeginEdit={() => onBeginEdit(block, "finished")}
-                    onChangeDraft={(raw) => onChangeDraft(block, "finished", raw)}
-                    onCancel={() => onCancel(block, "finished")}
-                    formatAmount={formatAmount}
-                />
-            </div>
+            {isPrevious && previousStatus === "loading" ? (
+                <div
+                    className="day-entry-block__skeleton"
+                    role="status"
+                    aria-live="polite"
+                    aria-busy="true"
+                >
+                    <span className="day-entry-block__sr-only">
+                        {t("Common.loading")}
+                    </span>
+                    <div className="day-entry-block__skeleton-field">
+                        <Skeleton className="day-entry-block__skeleton-label" />
+                        <Skeleton className="day-entry-block__skeleton-value" />
+                    </div>
+                    <div className="day-entry-block__skeleton-field">
+                        <Skeleton className="day-entry-block__skeleton-label" />
+                        <Skeleton className="day-entry-block__skeleton-value" />
+                    </div>
+                </div>
+            ) : null}
+
+            {isPrevious && previousStatus === "empty" ? (
+                <div className="day-entry-block__message" role="status">
+                    <p className="day-entry-block__message-text">
+                        {t("BalanceScreen.previousDayEmpty")}
+                    </p>
+                </div>
+            ) : null}
+
+            {isPrevious && previousStatus === "error" ? (
+                <div
+                    className="day-entry-block__message day-entry-block__message--error"
+                    role="alert"
+                >
+                    <p className="day-entry-block__message-text">
+                        {t("BalanceScreen.previousDayError")}
+                    </p>
+                </div>
+            ) : null}
+
+            {!isPrevious || previousStatus === "success" ? (
+                <div className="day-entry-block__fields">
+                    <AmountField
+                        label={t("BalanceScreen.startedLabel")}
+                        value={started.value}
+                        draft={started.draft}
+                        isEditing={startedPresentation.isEditing}
+                        disabled={startedPresentation.disabled}
+                        showEditIcon={startedPresentation.showEditIcon}
+                        showCancelButton={startedPresentation.showCancelButton}
+                        onBeginEdit={() => onBeginEdit("started")}
+                        onChangeDraft={(raw) => onChangeDraft("started", raw)}
+                        onCancel={() => onCancel("started")}
+                        formatAmount={formatAmount}
+                    />
+                    <AmountField
+                        label={t("BalanceScreen.finishedLabel")}
+                        value={finished.value}
+                        draft={finished.draft}
+                        isEditing={finishedPresentation.isEditing}
+                        disabled={finishedPresentation.disabled}
+                        showEditIcon={finishedPresentation.showEditIcon}
+                        showCancelButton={finishedPresentation.showCancelButton}
+                        onBeginEdit={() => onBeginEdit("finished")}
+                        onChangeDraft={(raw) => onChangeDraft("finished", raw)}
+                        onCancel={() => onCancel("finished")}
+                        formatAmount={formatAmount}
+                    />
+                </div>
+            ) : null}
 
             {showNetBalance ? (
                 <footer className="day-entry-block__footer">
                     <span className="day-entry-block__net-label">{t("BalanceScreen.netLabel")}</span>
-                    <span className={`day-entry-block__net day-entry-block__net--${tone}`}>
-                        {formatSignedAmount(net)}
+                    <span className={`day-entry-block__net day-entry-block__net--${netBalance.tone}`}>
+                        {netBalance.hasData
+                            ? formatSignedAmount(netBalance.net)
+                            : t("BalanceScreen.noData")}
                     </span>
                 </footer>
             ) : null}

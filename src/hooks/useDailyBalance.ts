@@ -25,11 +25,6 @@ export interface DayBlockState {
   finished: AmountFieldState;
 }
 
-const MOCK_PREVIOUS_DAY = {
-  started: 1000,
-  finished: 1150,
-} as const;
-
 const createInitialField = (value: number, isEditing = false): AmountFieldState => ({
   value,
   draft: "",
@@ -50,18 +45,28 @@ const isValidAmount = (raw: string): boolean => {
   return Number.isFinite(parsed) && parsed >= 0;
 };
 
-const effectiveValue = (field: AmountFieldState): number =>
-  field.isEditing ? parseAmount(field.draft) : field.value;
-
 const getBalanceTone = (net: number): BalanceTone => {
   if (net > 0) return "positive";
   if (net < 0) return "negative";
   return "neutral";
 };
 
-const computePercentageChange = (started: number, net: number): number => {
-  if (started === 0) return 0;
-  return (net / started) * 100;
+export interface NetBalancePresentation {
+  readonly hasData: boolean;
+  readonly net: number;
+  readonly tone: BalanceTone;
+}
+
+export const resolveNetBalance = (
+  openingBalance: number,
+  closingBalance: number,
+): NetBalancePresentation => {
+  if (closingBalance === 0) {
+    return { hasData: false, net: 0, tone: "neutral" };
+  }
+
+  const net = closingBalance - openingBalance;
+  return { hasData: true, net, tone: getBalanceTone(net) };
 };
 
 const updateField = (
@@ -83,11 +88,6 @@ export const useDailyBalance = () => {
     isPending: isSubmittingToday,
   } = useCreateDailyBalance();
 
-  const [previous, setPrevious] = useState<DayBlockState>({
-    started: createInitialField(MOCK_PREVIOUS_DAY.started),
-    finished: createInitialField(MOCK_PREVIOUS_DAY.finished),
-  });
-
   const [today, setToday] = useState<DayBlockState>({
     started: createInitialField(0, true),
     finished: createInitialField(0, false),
@@ -97,9 +97,8 @@ export const useDailyBalance = () => {
   const [todayError, setTodayError] = useState<string | null>(null);
   const [todaySuccess, setTodaySuccess] = useState<string | null>(null);
 
-  const beginEdit = useCallback((block: BalanceBlock, field: BalanceField): void => {
-    const setState = block === "previous" ? setPrevious : setToday;
-    setState((current) =>
+  const beginEdit = useCallback((field: BalanceField): void => {
+    setToday((current) =>
       updateField(current, field, {
         draft: String(current[field].value),
         isEditing: true,
@@ -108,16 +107,14 @@ export const useDailyBalance = () => {
   }, []);
 
   const changeDraft = useCallback(
-    (block: BalanceBlock, field: BalanceField, raw: string): void => {
-      const setState = block === "previous" ? setPrevious : setToday;
-      setState((current) => updateField(current, field, { draft: raw }));
+    (field: BalanceField, raw: string): void => {
+      setToday((current) => updateField(current, field, { draft: raw }));
     },
     [],
   );
 
-  const cancel = useCallback((block: BalanceBlock, field: BalanceField): void => {
-    const setState = block === "previous" ? setPrevious : setToday;
-    setState((current) =>
+  const cancel = useCallback((field: BalanceField): void => {
+    setToday((current) =>
       updateField(current, field, { draft: "", isEditing: false }),
     );
   }, []);
@@ -225,29 +222,17 @@ export const useDailyBalance = () => {
     [formatSignedAmount],
   );
 
-  const todayNet = effectiveValue(today.finished) - effectiveValue(today.started);
-  const previousNet = effectiveValue(previous.finished) - effectiveValue(previous.started);
-  const percentageChange = computePercentageChange(effectiveValue(today.started), todayNet);
-  const todayTone = getBalanceTone(todayNet);
-  const previousTone = getBalanceTone(previousNet);
-
   const canConfirmToday = isTodayConfirmed
     ? (today.started.isEditing ? isValidAmount(today.started.draft) : true) &&
       (today.finished.isEditing ? isValidAmount(today.finished.draft) : true)
     : isValidAmount(today.started.draft);
 
   return {
-    previous,
     today,
     isTodayConfirmed,
     isSubmittingToday,
     todayError,
     todaySuccess,
-    todayNet,
-    previousNet,
-    percentageChange,
-    todayTone,
-    previousTone,
     canConfirmToday,
     beginEdit,
     changeDraft,

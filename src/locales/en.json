@@ -85,6 +85,8 @@
     "editLabel": "Edit",
     "openingSuccess": "Today's balance was recorded successfully.",
     "noData": "No data",
+    "previousDayEmpty": "No data was recorded for the previous day",
+    "previousDayError": "An error occurred while loading the previous day's data",
     "errors": {
       "invalidOpeningBalance": "The entered opening amount is invalid.",
       "unauthorized": "Your session is invalid. Please sign in again.",

@@ -1,11 +1,13 @@
 // src/screens/_authenticated/BalanceScreen.tsx
-import { useEffect } from "react";
+import { useEffect, useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import "../../styles/BalanceScreen.css";
 import { useDailyBalance } from "../../hooks/useDailyBalance";
 import { useGetBalancePerDay } from "../../hooks/useGetBalancePerDay";
+import { getYesterdayIsoDate } from "../../utils/date";
 import { BalanceChartContainer } from "../../components/BalanceScreen/BalanceChartContainer";
 import { DayEntryBlock } from "../../components/BalanceScreen/DayEntryBlock";
+import type { HistoricalStatus } from "../../components/BalanceScreen/DayEntryBlock";
 import { BalanceScreenSkeleton } from "../../components/BalanceScreen/BalanceScreenSkeleton";
 
 export const BalanceScreen = () => {
@@ -17,6 +19,9 @@ export const BalanceScreen = () => {
         percentageChange,
         tone,
     } = useGetBalancePerDay();
+
+    const yesterdayDate = useMemo(() => getYesterdayIsoDate(), []);
+    const previousDayQuery = useGetBalancePerDay(yesterdayDate);
 
     const { hydrateToday } = balance;
 
@@ -37,6 +42,16 @@ export const BalanceScreen = () => {
     if (isLoading) {
         return <BalanceScreenSkeleton />;
     }
+
+    const previousData = previousDayQuery.data;
+
+    const previousStatus: HistoricalStatus = previousDayQuery.isLoading
+        ? "loading"
+        : previousDayQuery.isError
+            ? "error"
+            : previousData
+                ? "success"
+                : "empty";
 
     const openingBalance = balanceData?.openingBalance ?? null;
 
@@ -63,24 +78,29 @@ export const BalanceScreen = () => {
                     block="previous"
                     title={t("BalanceScreen.previousDayTitle")}
                     subtitle={t("BalanceScreen.previousDaySubtitle")}
-                    tone={balance.previousTone}
-                    net={balance.previousNet}
-                    started={balance.previous.started}
-                    finished={balance.previous.finished}
+                    started={{
+                        value: previousData?.openingBalance ?? 0,
+                        draft: "",
+                        isEditing: false,
+                    }}
+                    finished={{
+                        value: previousData?.closingBalance ?? 0,
+                        draft: "",
+                        isEditing: false,
+                    }}
                     isConfirmed
                     onBeginEdit={balance.beginEdit}
                     onChangeDraft={balance.changeDraft}
                     onCancel={balance.cancel}
                     formatAmount={balance.formatAmount}
                     formatSignedAmount={balance.formatSignedAmount}
+                    historicalStatus={previousStatus}
                 />
 
                 <DayEntryBlock
                     block="today"
                     title={t("BalanceScreen.todayTitle")}
                     subtitle={t("BalanceScreen.todaySubtitle")}
-                    tone={balance.todayTone}
-                    net={balance.todayNet}
                     started={balance.today.started}
                     finished={balance.today.finished}
                     isConfirmed={balance.isTodayConfirmed}
