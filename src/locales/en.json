@@ -143,7 +143,8 @@
     "optionShowSaleVouchers": "Show sale vouchers",
     "optionViewMonthDetails": "View month details",
     "optionViewYearDetails": "Show year details",
-    "tableEmptyState": "No records available"
+    "tableEmptyState": "No records available",
+    "noData": "No data"
   },
   "ProfileScreen": {
     "title": "Profile",

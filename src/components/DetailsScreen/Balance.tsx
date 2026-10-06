@@ -4,6 +4,7 @@ import type { LucideIcon } from "lucide-react";
 import { TrendingDown, TrendingUp } from "lucide-react";
 import type { BalanceTone } from "../../hooks/useDailyBalance";
 import { useDetailsBalance } from "../../hooks/useDetailsBalance";
+import { formatShortDate } from "../../utils/date";
 import { Skeleton } from "../shared/Skeleton";
 import "./styles/Balance.css";
 
@@ -18,6 +19,7 @@ interface MetricItem {
     value: string;
     tone: BalanceTone;
     icon?: LucideIcon;
+    date?: string;
 }
 
 const METRIC_SKELETON_KEYS: MetricItem["key"][] = ["total", "best", "worst"];
@@ -52,6 +54,23 @@ export const Balance = () => {
     const { t, i18n } = useTranslation("");
     const { metrics, isLoading, isError } = useDetailsBalance();
 
+    const noDataLabel = t("DetailsScreen.noData");
+
+    const bestDayTone: BalanceTone =
+        metrics.bestDay.date === null ? "neutral" : "positive";
+    const worstDayTone: BalanceTone =
+        metrics.worstDay.date === null ? "neutral" : "negative";
+
+    const bestDayDate =
+        metrics.bestDay.date === null
+            ? noDataLabel
+            : formatShortDate(metrics.bestDay.date, i18n.language);
+
+    const worstDayDate =
+        metrics.worstDay.date === null
+            ? noDataLabel
+            : formatShortDate(metrics.worstDay.date, i18n.language);
+
     const metricItems: MetricItem[] = [
         {
             key: "total",
@@ -62,16 +81,18 @@ export const Balance = () => {
         {
             key: "best",
             label: t("DetailsScreen.bestDay"),
-            value: formatSignedCurrency(metrics.bestDay, i18n.language),
-            tone: "positive",
+            value: formatSignedCurrency(metrics.bestDay.value, i18n.language),
+            tone: bestDayTone,
             icon: TrendingUp,
+            date: bestDayDate,
         },
         {
             key: "worst",
             label: t("DetailsScreen.worstDay"),
-            value: formatSignedCurrency(metrics.worstDay, i18n.language),
-            tone: "negative",
+            value: formatSignedCurrency(metrics.worstDay.value, i18n.language),
+            tone: worstDayTone,
             icon: TrendingDown,
+            date: worstDayDate,
         },
     ];
 
@@ -108,7 +129,7 @@ export const Balance = () => {
                 </p>
             ) : (
                 <div className="balance-summary__metrics">
-                    {metricItems.map(({ key, label, value, tone, icon: Icon }) => (
+                    {metricItems.map(({ key, label, value, tone, icon: Icon, date }) => (
                         <div key={key} className="balance-summary__metric">
                             <span className="balance-summary__metric-label">{label}</span>
                             <span
@@ -117,6 +138,9 @@ export const Balance = () => {
                                 {Icon ? <Icon size={20} aria-hidden="true" /> : null}
                                 {value}
                             </span>
+                            {date ? (
+                                <span className="balance-summary__metric-date">{date}</span>
+                            ) : null}
                         </div>
                     ))}
                 </div>
