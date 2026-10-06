@@ -79,6 +79,8 @@
     "incomeLegend": "Ganancias",
     "expensesLegend": "Pérdidas",
     "incomeExpensesAriaLabel": "Gráfica de ganancias y pérdidas",
+    "netResultLabel": "Resultado Neto del Día",
+    "netBalanceAriaLabel": "Gráfica de resultado neto diario",
     "chartEmpty": "No hay datos para mostrar",
     "totalNetLabel": "Balance Neto Total",
     "percentageChangeLabel": "Cambio Porcentual",

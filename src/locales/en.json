@@ -79,6 +79,8 @@
     "incomeLegend": "Income",
     "expensesLegend": "Expenses",
     "incomeExpensesAriaLabel": "Income vs. expenses chart",
+    "netResultLabel": "Daily Net Result",
+    "netBalanceAriaLabel": "Daily net result chart",
     "chartEmpty": "No data to display",
     "totalNetLabel": "Total Net Balance",
     "percentageChangeLabel": "Percentage Change",

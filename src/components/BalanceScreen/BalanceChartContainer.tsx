@@ -7,8 +7,8 @@ import { useRecentDailyBalances } from "../../hooks/useRecentDailyBalances";
 import { formatShortDate } from "../../utils/date";
 import { Skeleton } from "../shared/Skeleton";
 import { BalanceChart } from "./BalanceChart";
-import { IncomeExpensesChart } from "./IncomeExpensesChart";
-import type { IncomeExpenseDataPoint } from "./IncomeExpensesChart";
+import { NetBalanceChart } from "./NetBalanceChart";
+import type { NetBalanceDataPoint } from "./NetBalanceChart";
 
 type BalanceChartTab = "general" | "income";
 
@@ -57,7 +57,7 @@ export const BalanceChartContainer = ({
 
     const { data: recentBalances, isLoading, isError } = useRecentDailyBalances();
 
-    const incomeExpenseData = useMemo<IncomeExpenseDataPoint[]>(() => {
+    const netBalanceData = useMemo<NetBalanceDataPoint[]>(() => {
         if (!recentBalances || recentBalances.length === 0) {
             return [];
         }
@@ -66,8 +66,7 @@ export const BalanceChartContainer = ({
             .sort((a, b) => a.date.localeCompare(b.date))
             .map((item) => ({
                 date: formatShortDate(item.date, i18n.language),
-                income: item.totalIncome,
-                expenses: item.totalExpenses,
+                netValue: item.totalIncome - item.totalExpenses,
             }));
     }, [recentBalances, i18n.language]);
 
@@ -135,12 +134,12 @@ export const BalanceChartContainer = ({
                 <div className="balance-chart__state" role="status" aria-live="polite">
                     <span className="balance-chart__state-label">{t("Common.error")}</span>
                 </div>
-            ) : incomeExpenseData.length === 0 ? (
+            ) : netBalanceData.length === 0 ? (
                 <div className="balance-chart__state" role="status" aria-live="polite">
                     <span className="balance-chart__state-label">{t("BalanceScreen.chartEmpty")}</span>
                 </div>
             ) : (
-                <IncomeExpensesChart data={incomeExpenseData} />
+                <NetBalanceChart data={netBalanceData} />
             )}
         </section>
     );
