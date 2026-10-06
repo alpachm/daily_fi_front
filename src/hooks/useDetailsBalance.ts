@@ -1,9 +1,6 @@
 // src/hooks/useDetailsBalance.ts
 import { useMemo } from "react";
-import type { DailyBalanceItem } from "../interfaces/GetRecentDailyBalanceService.interface";
-import { useRecentDailyBalances } from "./useRecentDailyBalances";
-
-const LAST_100_DAYS_COUNT = 100;
+import type { DailyBalanceItem } from "../interfaces/GetAllDailyBalancesService.interface";
 
 export interface MetricDay {
     value: number;
@@ -32,76 +29,67 @@ const sortByDateAscending = (
     second: DailyBalanceItem,
 ): number => first.date.localeCompare(second.date);
 
-/**
- * Balance Total: the latest available closing balance. If the most recent
- * record is still open (closingBalance === 0), fall back to the most recent
- * record that already has a closing balance.
- */
-const findLatestClosingBalance = (sorted: DailyBalanceItem[]): number => {
-    for (let index = sorted.length - 1; index >= 0; index -= 1) {
-        const record = sorted[index];
-        if (record.closingBalance !== 0) {
-            return record.closingBalance;
-        }
-    }
-    return 0;
-};
-
-const findBestDay = (sorted: DailyBalanceItem[]): DailyBalanceItem =>
-    sorted.reduce((best, current) =>
+const findBestDay = (records: DailyBalanceItem[]): DailyBalanceItem =>
+    records.reduce((best, current) =>
         current.totalIncome > best.totalIncome ? current : best,
     );
 
-const findWorstExpenseDay = (sorted: DailyBalanceItem[]): DailyBalanceItem =>
-    sorted.reduce((worst, current) =>
+const findWorstExpenseDay = (records: DailyBalanceItem[]): DailyBalanceItem =>
+    records.reduce((worst, current) =>
         current.totalExpenses > worst.totalExpenses ? current : worst,
     );
 
-const findLowestIncomeDay = (sorted: DailyBalanceItem[]): DailyBalanceItem =>
-    sorted.reduce((lowest, current) =>
+const findLowestIncomeDay = (records: DailyBalanceItem[]): DailyBalanceItem =>
+    records.reduce((lowest, current) =>
         current.totalIncome < lowest.totalIncome ? current : lowest,
     );
 
-export const useDetailsBalance = () => {
-    const { data: recentBalances, isLoading, isError } =
-        useRecentDailyBalances(LAST_100_DAYS_COUNT);
+const deriveSummaryMetrics = (
+    records: DailyBalanceItem[] | undefined,
+): SummaryMetrics => {
+    if (!records || records.length === 0) {
+        return EMPTY_METRICS;
+    }
 
-    const metrics = useMemo<SummaryMetrics>(() => {
-        if (!recentBalances || recentBalances.length === 0) {
-            return EMPTY_METRICS;
-        }
+    const sorted = [...records].sort(sortByDateAscending);
 
-        const sorted = [...recentBalances].sort(sortByDateAscending);
+    // Balance Total: closingBalance of the most recent record.
+    const mostRecent = sorted[sorted.length - 1];
 
-        const bestDayRecord = findBestDay(sorted);
+    const bestDayRecord = findBestDay(sorted);
 
-        // Peor Día: highest operational loss. Prefer the day with the maximum
-        // expense; when no day has expenses, fall back to the lowest income day.
-        const worstExpenseDay = findWorstExpenseDay(sorted);
-        const hasAnyExpense = worstExpenseDay.totalExpenses > 0;
+    // Peor Día: highest operational expense. When no record has expenses,
+    // fall back to the day with the lowest income.
+    const worstExpenseDay = findWorstExpenseDay(sorted);
+    const hasAnyExpense = worstExpenseDay.totalExpenses > 0;
 
-        let worstDay: MetricDay;
-        if (hasAnyExpense) {
-            worstDay = {
-                value: -worstExpenseDay.totalExpenses,
-                date: worstExpenseDay.date,
-            };
-        } else {
-            const lowestIncomeDay = findLowestIncomeDay(sorted);
-            worstDay = {
-                value: -lowestIncomeDay.totalIncome,
-                date: lowestIncomeDay.date,
-            };
-        }
-
-        return {
-            totalBalance: findLatestClosingBalance(sorted),
-            bestDay: { value: bestDayRecord.totalIncome, date: bestDayRecord.date },
-            worstDay,
+    let worstDay: MetricDay;
+    if (hasAnyExpense) {
+        worstDay = {
+            value: -worstExpenseDay.totalExpenses,
+            date: worstExpenseDay.date,
         };
-    }, [recentBalances]);
+    } else {
+        const lowestIncomeDay = findLowestIncomeDay(sorted);
+        worstDay = {
+            value: -lowestIncomeDay.totalIncome,
+            date: lowestIncomeDay.date,
+        };
+    }
 
-    return { metrics, isLoading, isError };
+    return {
+        totalBalance: mostRecent.closingBalance,
+        bestDay: { value: bestDayRecord.totalIncome, date: bestDayRecord.date },
+        worstDay,
+    };
 };
+
+/**
+ * Derives the details balance summary metrics from the provided daily
+ * balances array. The derivation is memoized against the input reference.
+ */
+export const useDetailsBalance = (
+    records: DailyBalanceItem[] | undefined,
+): SummaryMetrics => useMemo(() => deriveSummaryMetrics(records), [records]);
 
 export default useDetailsBalance;

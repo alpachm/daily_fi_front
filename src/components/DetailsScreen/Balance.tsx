@@ -3,6 +3,7 @@ import { useTranslation } from "react-i18next";
 import type { LucideIcon } from "lucide-react";
 import { TrendingDown, TrendingUp } from "lucide-react";
 import type { BalanceTone } from "../../hooks/useDailyBalance";
+import { useAllDailyBalances } from "../../hooks/useAllDailyBalances";
 import { useDetailsBalance } from "../../hooks/useDetailsBalance";
 import { formatShortDate } from "../../utils/date";
 import { Skeleton } from "../shared/Skeleton";
@@ -52,7 +53,9 @@ const formatSignedCurrency = (value: number, locale: string): string => {
 
 export const Balance = () => {
     const { t, i18n } = useTranslation("");
-    const { metrics, isLoading, isError } = useDetailsBalance();
+    const { data, isLoading, isError } = useAllDailyBalances({ page: 1, limit: 100 });
+
+    const metrics = useDetailsBalance(data);
 
     const noDataLabel = t("DetailsScreen.noData");
 
