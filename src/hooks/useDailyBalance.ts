@@ -45,18 +45,28 @@ const isValidAmount = (raw: string): boolean => {
   return Number.isFinite(parsed) && parsed >= 0;
 };
 
-const effectiveValue = (field: AmountFieldState): number =>
-  field.isEditing ? parseAmount(field.draft) : field.value;
-
 const getBalanceTone = (net: number): BalanceTone => {
   if (net > 0) return "positive";
   if (net < 0) return "negative";
   return "neutral";
 };
 
-const computePercentageChange = (started: number, net: number): number => {
-  if (started === 0) return 0;
-  return (net / started) * 100;
+export interface NetBalancePresentation {
+  readonly hasData: boolean;
+  readonly net: number;
+  readonly tone: BalanceTone;
+}
+
+export const resolveNetBalance = (
+  openingBalance: number,
+  closingBalance: number,
+): NetBalancePresentation => {
+  if (closingBalance === 0) {
+    return { hasData: false, net: 0, tone: "neutral" };
+  }
+
+  const net = closingBalance - openingBalance;
+  return { hasData: true, net, tone: getBalanceTone(net) };
 };
 
 const updateField = (
@@ -212,10 +222,6 @@ export const useDailyBalance = () => {
     [formatSignedAmount],
   );
 
-  const todayNet = effectiveValue(today.finished) - effectiveValue(today.started);
-  const percentageChange = computePercentageChange(effectiveValue(today.started), todayNet);
-  const todayTone = getBalanceTone(todayNet);
-
   const canConfirmToday = isTodayConfirmed
     ? (today.started.isEditing ? isValidAmount(today.started.draft) : true) &&
       (today.finished.isEditing ? isValidAmount(today.finished.draft) : true)
@@ -227,9 +233,6 @@ export const useDailyBalance = () => {
     isSubmittingToday,
     todayError,
     todaySuccess,
-    todayNet,
-    percentageChange,
-    todayTone,
     canConfirmToday,
     beginEdit,
     changeDraft,

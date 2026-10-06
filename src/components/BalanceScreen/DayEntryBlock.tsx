@@ -6,11 +6,11 @@ import { AmountField } from "./AmountField";
 import { AutomaticAlertModal } from "../shared/AutomaticAlertModal";
 import { Skeleton } from "../shared/Skeleton";
 import "./styles/DayEntryBlock.css";
+import { resolveNetBalance } from "../../hooks/useDailyBalance";
 import type {
     AmountFieldState,
     BalanceBlock,
     BalanceField,
-    BalanceTone,
 } from "../../hooks/useDailyBalance";
 
 export type HistoricalStatus = "loading" | "success" | "empty" | "error";
@@ -19,8 +19,6 @@ interface DayEntryBlockProps {
     block: BalanceBlock;
     title: string;
     subtitle: string;
-    tone: BalanceTone;
-    net: number;
     started: AmountFieldState;
     finished: AmountFieldState;
     isConfirmed: boolean;
@@ -55,8 +53,6 @@ export const DayEntryBlock = ({
     block,
     title,
     subtitle,
-    tone,
-    net,
     started,
     finished,
     isConfirmed,
@@ -102,6 +98,14 @@ export const DayEntryBlock = ({
     const showNetBalance = isPrevious
         ? previousStatus === "success"
         : isConfirmed && !finished.isEditing;
+
+    // The net is resolved from the persisted opening/closing balances so both
+    // the "today" and "previous" blocks follow one unified rule:
+    //   - closingBalance === 0               -> "Sin dato" (day not closed yet)
+    //   - closingBalance === openingBalance  -> neutral "0" (no gain/loss)
+    //   - closingBalance  >  openingBalance  -> positive gain (green)
+    //   - closingBalance  <  openingBalance  -> negative loss (red)
+    const netBalance = resolveNetBalance(started.value, finished.value);
 
     // A closing balance ("Terminé") is considered "already saved" once its
     // persisted value differs from the initial zero sentinel set by
@@ -220,8 +224,10 @@ export const DayEntryBlock = ({
             {showNetBalance ? (
                 <footer className="day-entry-block__footer">
                     <span className="day-entry-block__net-label">{t("BalanceScreen.netLabel")}</span>
-                    <span className={`day-entry-block__net day-entry-block__net--${tone}`}>
-                        {formatSignedAmount(net)}
+                    <span className={`day-entry-block__net day-entry-block__net--${netBalance.tone}`}>
+                        {netBalance.hasData
+                            ? formatSignedAmount(netBalance.net)
+                            : t("BalanceScreen.noData")}
                     </span>
                 </footer>
             ) : null}

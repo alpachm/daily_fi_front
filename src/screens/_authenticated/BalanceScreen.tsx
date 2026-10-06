@@ -53,10 +53,6 @@ export const BalanceScreen = () => {
                 ? "success"
                 : "empty";
 
-    const previousNet = previousData
-        ? previousData.closingBalance - previousData.openingBalance
-        : 0;
-
     const openingBalance = balanceData?.openingBalance ?? null;
 
     const totalNetDisplay =
@@ -82,8 +78,6 @@ export const BalanceScreen = () => {
                     block="previous"
                     title={t("BalanceScreen.previousDayTitle")}
                     subtitle={t("BalanceScreen.previousDaySubtitle")}
-                    tone={previousDayQuery.tone}
-                    net={previousNet}
                     started={{
                         value: previousData?.openingBalance ?? 0,
                         draft: "",
@@ -107,8 +101,6 @@ export const BalanceScreen = () => {
                     block="today"
                     title={t("BalanceScreen.todayTitle")}
                     subtitle={t("BalanceScreen.todaySubtitle")}
-                    tone={balance.todayTone}
-                    net={balance.todayNet}
                     started={balance.today.started}
                     finished={balance.today.finished}
                     isConfirmed={balance.isTodayConfirmed}
