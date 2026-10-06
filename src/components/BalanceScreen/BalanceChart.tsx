@@ -18,24 +18,9 @@ export interface BalanceDataPoint {
 }
 
 interface BalanceChartProps {
-    data?: BalanceDataPoint[];
+    data: BalanceDataPoint[];
     height?: number;
 }
-
-const MOCK_BALANCE_DATA: BalanceDataPoint[] = [
-    { date: "01 Sep", amount: 1000 },
-    { date: "03 Sep", amount: 1120 },
-    { date: "05 Sep", amount: 1085 },
-    { date: "07 Sep", amount: 1250 },
-    { date: "09 Sep", amount: 1180 },
-    { date: "11 Sep", amount: 1320 },
-    { date: "13 Sep", amount: 1410 },
-    { date: "15 Sep", amount: 1350 },
-    { date: "17 Sep", amount: 1480 },
-    { date: "19 Sep", amount: 1560 },
-    { date: "21 Sep", amount: 1495 },
-    { date: "23 Sep", amount: 1620 },
-];
 
 const TOOLTIP_CONTENT_STYLE: CSSProperties = {
     backgroundColor: "var(--card-background)",
@@ -70,10 +55,7 @@ const formatTooltipAmount = (
     }).format(numeric);
 };
 
-export const BalanceChart = ({
-    data = MOCK_BALANCE_DATA,
-    height = 300,
-}: BalanceChartProps) => {
+export const BalanceChart = ({ data, height = 300 }: BalanceChartProps) => {
     const { t } = useTranslation("");
 
     return (
