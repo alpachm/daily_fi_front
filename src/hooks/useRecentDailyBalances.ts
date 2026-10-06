@@ -9,20 +9,21 @@ import type {
 const FIVE_MINUTES_MS = 1000 * 60 * 5;
 
 /**
- * Canonical query key for the list of recent daily balances.
+ * Shared prefix of the recent daily balances query key.
  *
- * It is exported so future mutations can invalidate or update the exact same
- * cache entry this read query subscribes to.
+ * It is exported so mutations can invalidate every cached window at once
+ * (e.g. `limit=14` for the chart and `limit=100` for the details view) through
+ * TanStack Query's default prefix matching, regardless of the requested range.
  */
 export const recentDailyBalancesQueryKey = (): readonly [string, string] => [
     "daily-balances",
     "recent",
 ];
 
-export const useRecentDailyBalances = () => {
+export const useRecentDailyBalances = (limit: number = 14) => {
     return useQuery<DailyBalanceItem[], GetRecentDailyBalancesApiError>({
-        queryKey: recentDailyBalancesQueryKey(),
-        queryFn: () => GetRecentDailyBalanceService.getRecentDailyBalances(),
+        queryKey: ["daily-balances", "recent", limit],
+        queryFn: () => GetRecentDailyBalanceService.getRecentDailyBalances(limit),
         staleTime: FIVE_MINUTES_MS,
         retry: 1,
     });
