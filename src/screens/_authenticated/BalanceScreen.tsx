@@ -1,5 +1,5 @@
 // src/screens/_authenticated/BalanceScreen.tsx
-import { useEffect, useMemo } from "react";
+import { useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import "../../styles/BalanceScreen.css";
 import { useDailyBalance } from "../../hooks/useDailyBalance";
@@ -22,18 +22,6 @@ export const BalanceScreen = () => {
 
     const yesterdayDate = useMemo(() => getYesterdayIsoDate(), []);
     const previousDayQuery = useGetBalancePerDay(yesterdayDate);
-
-    const { hydrateToday } = balance;
-
-    // Reactive binding: any cache update produced by the creation mutation
-    // (or a refetch) flows into the local "Empecé"/"Terminé" fields without a
-    // manual refresh. The header reads `balanceData` directly, so it updates in
-    // the same render.
-    useEffect(() => {
-        if (balanceData != null) {
-            hydrateToday(balanceData);
-        }
-    }, [balanceData, hydrateToday]);
 
     // `isLoading` is only true while the query has no cached data and is
     // fetching for the first time (it already implies `isFetching`). Rendering
