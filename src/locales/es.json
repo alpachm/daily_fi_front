@@ -84,12 +84,16 @@
     "netLabel": "Neto",
     "editLabel": "Editar",
     "openingSuccess": "El balance del día se registró correctamente.",
+    "closingSuccess": "La jornada se cerró correctamente.",
     "noData": "Sin datos",
     "previousDayEmpty": "No se registraron datos correspondientes al día anterior",
     "previousDayError": "Ocurrió un error al cargar los datos del día anterior",
     "errors": {
       "invalidOpeningBalance": "El monto de inicio ingresado no es válido.",
+      "invalidClosingBalance": "El monto de cierre ingresado no es válido.",
       "unauthorized": "Tu sesión no es válida. Vuelve a iniciar sesión.",
+      "forbidden": "No tienes permiso para cerrar esta jornada.",
+      "notFound": "No se encontró el balance del día. Ábrelo antes de cerrarlo.",
       "conflict": "Ya existe un balance para el día de hoy. Cierra la jornada antes de abrir una nueva.",
       "network": "No se pudo conectar con el servidor. Inténtalo de nuevo.",
       "generic": "Ocurrió un error inesperado. Inténtalo de nuevo."
