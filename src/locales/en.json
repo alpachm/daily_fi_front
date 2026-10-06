@@ -84,12 +84,16 @@
     "netLabel": "Net",
     "editLabel": "Edit",
     "openingSuccess": "Today's balance was recorded successfully.",
+    "closingSuccess": "The day was closed successfully.",
     "noData": "No data",
     "previousDayEmpty": "No data was recorded for the previous day",
     "previousDayError": "An error occurred while loading the previous day's data",
     "errors": {
       "invalidOpeningBalance": "The entered opening amount is invalid.",
+      "invalidClosingBalance": "The entered closing amount is invalid.",
       "unauthorized": "Your session is invalid. Please sign in again.",
+      "forbidden": "You don't have permission to close this day.",
+      "notFound": "No daily balance was found. Open it before closing it.",
       "conflict": "A balance already exists for today. Close the current shift before opening a new one.",
       "network": "Unable to reach the server. Please try again.",
       "generic": "An unexpected error occurred. Please try again."
