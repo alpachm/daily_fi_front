@@ -1,5 +1,5 @@
 // src/hooks/useAllDailyBalances.ts
-import { useQuery } from "@tanstack/react-query";
+import { keepPreviousData, useQuery } from "@tanstack/react-query";
 import { GetAllDailyBalancesService } from "../services/GetAllDailyBalancesService";
 import type {
     DailyBalanceItem,
@@ -17,6 +17,7 @@ export const useAllDailyBalances = (params?: DailyBalanceQueryParams) => {
     return useQuery<DailyBalanceItem[], GetAllDailyBalancesApiError>({
         queryKey: ["daily-balances", params],
         queryFn: () => GetAllDailyBalancesService.getAllDailyBalances(params),
+        placeholderData: keepPreviousData,
         staleTime: FIVE_MINUTES_MS,
         retry: 1,
     });

@@ -1,29 +1,20 @@
 // src/components/DetailsScreen/HistoryTable.tsx
 import { useEffect, useMemo, useRef, useState } from "react";
+import type { ChangeEvent } from "react";
 import { useTranslation } from "react-i18next";
-import {
-    createColumnHelper,
-    flexRender,
-    getCoreRowModel,
-    getPaginationRowModel,
-    useReactTable,
-} from "@tanstack/react-table";
 import type { LucideIcon } from "lucide-react";
 import {
     BadgeDollarSign,
-    BarChart3,
-    CalendarDays,
-    ChartLine,
+    ChevronDown,
+    ChevronLeft,
+    ChevronRight,
     MoreHorizontal,
     ShoppingCart,
 } from "lucide-react";
-import type { FilterPeriod } from "./Balance";
-import { BalanceFilterMenu } from "./BalanceFilterMenu";
-import { DetailsChartModal } from "./DetailsChartModal";
-import { useBalanceFilter } from "../../hooks/useBalanceFilter";
-import type { FilterOption } from "../../hooks/useBalanceFilter";
-import { useLocalStorage } from "../../hooks/useLocalStorage";
-import { TablePagination } from "../shared/TablePagination";
+import { useAllDailyBalances } from "../../hooks/useAllDailyBalances";
+import type { DailyBalanceItem } from "../../interfaces/GetAllDailyBalancesService.interface";
+import { formatFullDate } from "../../utils/date";
+import { Skeleton } from "../shared/Skeleton";
 import "./styles/HistoryTable.css";
 
 export interface HistoryRecord {
@@ -43,119 +34,9 @@ interface ActionMenuItem {
 
 type AmountTone = "positive" | "negative" | "neutral";
 
-const columnHelper = createColumnHelper<HistoryRecord>();
-
-const PAGE_SIZE_STORAGE_KEY = "daily_fi_history_page_size" as const;
-const FILTER_STORAGE_KEY = "daily_fi_details_filter" as const;
-
-const PERIOD_HEADER_KEYS: Record<FilterPeriod, string> = {
-    day: "DetailsScreen.tableHeaderDate",
-    month: "DetailsScreen.tableHeaderMonth",
-    year: "DetailsScreen.tableHeaderYear",
-};
-
-const MOCK_DAILY_RECORDS: HistoryRecord[] = [
-    { id: "daily-026", date: "26-09-2026", amount: 345.2 },
-    { id: "daily-025", date: "25-09-2026", amount: -112.4 },
-    { id: "daily-024", date: "24-09-2026", amount: 289.75 },
-    { id: "daily-023", date: "23-09-2026", amount: -45.3 },
-    { id: "daily-022", date: "22-09-2026", amount: 178.9 },
-    { id: "daily-021", date: "21-09-2026", amount: 96.4 },
-    { id: "daily-020", date: "20-09-2026", amount: -62.15 },
-    { id: "daily-019", date: "19-09-2026", amount: 210.3 },
-    { id: "daily-018", date: "18-09-2026", amount: 54.6 },
-    { id: "daily-017", date: "17-09-2026", amount: -28.9 },
-    { id: "daily-026", date: "26-09-2026", amount: 345.2 },
-    { id: "daily-025", date: "25-09-2026", amount: -112.4 },
-    { id: "daily-024", date: "24-09-2026", amount: 289.75 },
-    { id: "daily-023", date: "23-09-2026", amount: -45.3 },
-    { id: "daily-022", date: "22-09-2026", amount: 178.9 },
-    { id: "daily-021", date: "21-09-2026", amount: 96.4 },
-    { id: "daily-020", date: "20-09-2026", amount: -62.15 },
-    { id: "daily-019", date: "19-09-2026", amount: 210.3 },
-    { id: "daily-018", date: "18-09-2026", amount: 54.6 },
-    { id: "daily-017", date: "17-09-2026", amount: -28.9 },
-    { id: "daily-026", date: "26-09-2026", amount: 345.2 },
-    { id: "daily-025", date: "25-09-2026", amount: -112.4 },
-    { id: "daily-024", date: "24-09-2026", amount: 289.75 },
-    { id: "daily-023", date: "23-09-2026", amount: -45.3 },
-    { id: "daily-022", date: "22-09-2026", amount: 178.9 },
-    { id: "daily-021", date: "21-09-2026", amount: 96.4 },
-    { id: "daily-020", date: "20-09-2026", amount: -62.15 },
-    { id: "daily-019", date: "19-09-2026", amount: 210.3 },
-    { id: "daily-018", date: "18-09-2026", amount: 54.6 },
-    { id: "daily-017", date: "17-09-2026", amount: -28.9 },
-    { id: "daily-026", date: "26-09-2026", amount: 345.2 },
-    { id: "daily-025", date: "25-09-2026", amount: -112.4 },
-    { id: "daily-024", date: "24-09-2026", amount: 289.75 },
-    { id: "daily-023", date: "23-09-2026", amount: -45.3 },
-    { id: "daily-022", date: "22-09-2026", amount: 178.9 },
-    { id: "daily-021", date: "21-09-2026", amount: 96.4 },
-    { id: "daily-020", date: "20-09-2026", amount: -62.15 },
-    { id: "daily-019", date: "19-09-2026", amount: 210.3 },
-    { id: "daily-018", date: "18-09-2026", amount: 54.6 },
-    { id: "daily-017", date: "17-09-2026", amount: -28.9 },
-    { id: "daily-026", date: "26-09-2026", amount: 345.2 },
-    { id: "daily-025", date: "25-09-2026", amount: -112.4 },
-    { id: "daily-024", date: "24-09-2026", amount: 289.75 },
-    { id: "daily-023", date: "23-09-2026", amount: -45.3 },
-    { id: "daily-022", date: "22-09-2026", amount: 178.9 },
-    { id: "daily-021", date: "21-09-2026", amount: 96.4 },
-    { id: "daily-020", date: "20-09-2026", amount: -62.15 },
-    { id: "daily-019", date: "19-09-2026", amount: 210.3 },
-    { id: "daily-018", date: "18-09-2026", amount: 54.6 },
-    { id: "daily-017", date: "17-09-2026", amount: -28.9 },
-    { id: "daily-026", date: "26-09-2026", amount: 345.2 },
-    { id: "daily-025", date: "25-09-2026", amount: -112.4 },
-    { id: "daily-024", date: "24-09-2026", amount: 289.75 },
-    { id: "daily-023", date: "23-09-2026", amount: -45.3 },
-    { id: "daily-022", date: "22-09-2026", amount: 178.9 },
-    { id: "daily-021", date: "21-09-2026", amount: 96.4 },
-    { id: "daily-020", date: "20-09-2026", amount: -62.15 },
-    { id: "daily-019", date: "19-09-2026", amount: 210.3 },
-    { id: "daily-018", date: "18-09-2026", amount: 54.6 },
-    { id: "daily-017", date: "17-09-2026", amount: -28.9 },
-    { id: "daily-026", date: "26-09-2026", amount: 345.2 },
-    { id: "daily-025", date: "25-09-2026", amount: -112.4 },
-    { id: "daily-024", date: "24-09-2026", amount: 289.75 },
-    { id: "daily-023", date: "23-09-2026", amount: -45.3 },
-    { id: "daily-022", date: "22-09-2026", amount: 178.9 },
-    { id: "daily-021", date: "21-09-2026", amount: 96.4 },
-    { id: "daily-020", date: "20-09-2026", amount: -62.15 },
-    { id: "daily-019", date: "19-09-2026", amount: 210.3 },
-    { id: "daily-018", date: "18-09-2026", amount: 54.6 },
-    { id: "daily-017", date: "17-09-2026", amount: -28.9 },
-];
-
-const MOCK_MONTHLY_RECORDS: HistoryRecord[] = [
-    { id: "month-2026-09", date: "Septiembre 2026", amount: 4210.45 },
-    { id: "month-2026-08", date: "Agosto 2026", amount: 3860.2 },
-    { id: "month-2026-07", date: "Julio 2026", amount: 3540.8 },
-    { id: "month-2026-06", date: "Junio 2026", amount: 3280.5 },
-    { id: "month-2026-05", date: "Mayo 2026", amount: 3120.3 },
-    { id: "month-2026-04", date: "Abril 2026", amount: 2980.1 },
-    { id: "month-2026-03", date: "Marzo 2026", amount: 2760.9 },
-    { id: "month-2026-02", date: "Febrero 2026", amount: 2540.4 },
-    { id: "month-2026-01", date: "Enero 2026", amount: 2310.2 },
-    { id: "month-2025-12", date: "Diciembre 2025", amount: 2180.75 },
-    { id: "month-2025-11", date: "Noviembre 2025", amount: 1980.6 },
-    { id: "month-2025-10", date: "Octubre 2025", amount: 1750.3 },
-];
-
-const MOCK_YEARLY_RECORDS: HistoryRecord[] = [
-    { id: "year-2026", date: "Año 2026", amount: 48250.15 },
-    { id: "year-2025", date: "Año 2025", amount: 39800.5 },
-    { id: "year-2024", date: "Año 2024", amount: 31500.2 },
-    { id: "year-2023", date: "Año 2023", amount: 24750.9 },
-    { id: "year-2022", date: "Año 2022", amount: 18200.4 },
-    { id: "year-2021", date: "Año 2021", amount: 12450.3 },
-];
-
-const HISTORY_RECORDS_BY_PERIOD: Record<FilterPeriod, HistoryRecord[]> = {
-    day: MOCK_DAILY_RECORDS,
-    month: MOCK_MONTHLY_RECORDS,
-    year: MOCK_YEARLY_RECORDS,
-};
+const PAGE_SIZE_OPTIONS: number[] = [10, 50, 100];
+const DEFAULT_PAGE = 1;
+const DEFAULT_LIMIT = 10;
 
 const getAmountTone = (value: number): AmountTone => {
     if (value > 0) return "positive";
@@ -176,6 +57,15 @@ const formatSignedCurrency = (value: number, locale: string): string => {
     return absolute;
 };
 
+const mapDailyBalanceToHistoryRecord = (
+    item: DailyBalanceItem,
+    locale: string,
+): HistoryRecord => ({
+    id: String(item.id),
+    date: formatFullDate(item.date, locale),
+    amount: item.totalIncome - item.totalExpenses,
+});
+
 const handleShowPurchaseVouchers: ActionMenuHandler = (record) => {
     console.log("HistoryTable: show purchase vouchers", record.id);
 };
@@ -184,83 +74,65 @@ const handleShowSaleVouchers: ActionMenuHandler = (record) => {
     console.log("HistoryTable: show sale vouchers", record.id);
 };
 
-const handleViewMonthDetails: ActionMenuHandler = (record) => {
-    console.log("HistoryTable: view month details", record.id);
-};
-
-const handleViewYearDetails: ActionMenuHandler = (record) => {
-    console.log("HistoryTable: view year details", record.id);
-};
-
 export const HistoryTable = () => {
     const { t, i18n } = useTranslation("");
-    const [pageSize, setPageSize] = useLocalStorage<number>(PAGE_SIZE_STORAGE_KEY, 10);
-    const [filter, setFilter] = useLocalStorage<FilterPeriod>(FILTER_STORAGE_KEY, "month");
+    const [page, setPage] = useState<number>(DEFAULT_PAGE);
+    const [limit, setLimit] = useState<number>(DEFAULT_LIMIT);
     const [openMenuRowId, setOpenMenuRowId] = useState<string | null>(null);
     const popoverRef = useRef<HTMLDivElement | null>(null);
 
-    const { isOpen, containerRef, toggle, select } = useBalanceFilter(filter, setFilter);
+    const { data, isLoading, isError } = useAllDailyBalances({ page, limit });
 
-    const [isChartModalOpen, setIsChartModalOpen] = useState(false);
+    const records = useMemo<HistoryRecord[]>(
+        () =>
+            (data ?? []).map((item) =>
+                mapDailyBalanceToHistoryRecord(item, i18n.language),
+            ),
+        [data, i18n.language],
+    );
 
-    const openChartModal = (): void => setIsChartModalOpen(true);
-    const closeChartModal = (): void => setIsChartModalOpen(false);
-
-    const filterOptions = useMemo<FilterOption[]>(
+    const actionItems = useMemo<ActionMenuItem[]>(
         () => [
-            { value: "day", label: t("DetailsScreen.filterDay") },
-            { value: "month", label: t("DetailsScreen.filterMonth") },
-            { value: "year", label: t("DetailsScreen.filterYear") },
+            {
+                id: "purchase-vouchers",
+                label: t("DetailsScreen.optionShowPurchaseVouchers"),
+                icon: ShoppingCart,
+                onSelect: handleShowPurchaseVouchers,
+            },
+            {
+                id: "sale-vouchers",
+                label: t("DetailsScreen.optionShowSaleVouchers"),
+                icon: BadgeDollarSign,
+                onSelect: handleShowSaleVouchers,
+            },
         ],
         [t],
     );
 
-    const records = useMemo<HistoryRecord[]>(() => HISTORY_RECORDS_BY_PERIOD[filter], [filter]);
+    const hasPreviousPage = page > DEFAULT_PAGE;
+    const hasNextPage = records.length === limit;
 
-    const actionItems = useMemo<ActionMenuItem[]>(() => {
-        if (filter === "day") {
-            return [
-                {
-                    id: "purchase-vouchers",
-                    label: t("DetailsScreen.optionShowPurchaseVouchers"),
-                    icon: ShoppingCart,
-                    onSelect: handleShowPurchaseVouchers,
-                },
-                {
-                    id: "sale-vouchers",
-                    label: t("DetailsScreen.optionShowSaleVouchers"),
-                    icon: BadgeDollarSign,
-                    onSelect: handleShowSaleVouchers,
-                },
-            ];
-        }
+    const handleLimitChange = (event: ChangeEvent<HTMLSelectElement>): void => {
+        setLimit(Number(event.target.value));
+        setPage(DEFAULT_PAGE);
+    };
 
-        if (filter === "month") {
-            return [
-                {
-                    id: "month-details",
-                    label: t("DetailsScreen.optionViewMonthDetails"),
-                    icon: CalendarDays,
-                    onSelect: handleViewMonthDetails,
-                },
-            ];
-        }
+    const handlePreviousPage = (): void => {
+        setPage((current) => Math.max(DEFAULT_PAGE, current - 1));
+    };
 
-        return [
-            {
-                id: "year-details",
-                label: t("DetailsScreen.optionViewYearDetails"),
-                icon: BarChart3,
-                onSelect: handleViewYearDetails,
-            },
-        ];
-    }, [filter, t]);
+    const handleNextPage = (): void => {
+        setPage((current) => current + 1);
+    };
 
     useEffect(() => {
         if (openMenuRowId === null) return;
 
         const handleOutsidePointerDown = (event: MouseEvent): void => {
-            if (popoverRef.current && !popoverRef.current.contains(event.target as Node)) {
+            if (
+                popoverRef.current &&
+                !popoverRef.current.contains(event.target as Node)
+            ) {
                 setOpenMenuRowId(null);
             }
         };
@@ -280,169 +152,131 @@ export const HistoryTable = () => {
         };
     }, [openMenuRowId]);
 
-    const columns = useMemo(
-        () => [
-            columnHelper.accessor("date", {
-                header: t(PERIOD_HEADER_KEYS[filter]),
-                cell: (info) => info.getValue(),
-            }),
-            columnHelper.accessor("amount", {
-                header: t("DetailsScreen.tableHeaderAmount"),
-                cell: (info) => {
-                    const value = info.getValue();
-                    const tone = getAmountTone(value);
-
-                    return (
-                        <span className={`history-table__amount history-table__amount--${tone}`}>
-                            {formatSignedCurrency(value, i18n.language)}
-                        </span>
-                    );
-                },
-            }),
-            columnHelper.display({
-                id: "options",
-                header: t("DetailsScreen.tableHeaderOptions"),
-                cell: (info) => {
-                    const record = info.row.original;
-                    const isOpen = openMenuRowId === record.id;
-
-                    return (
-                        <div
-                            className="history-table__options-cell"
-                            ref={isOpen ? popoverRef : undefined}
-                        >
-                            <button
-                                type="button"
-                                className="history-table__options-button"
-                                aria-label={t("DetailsScreen.tableOptionsMenuLabel")}
-                                aria-haspopup="menu"
-                                aria-expanded={isOpen}
-                                onClick={() =>
-                                    setOpenMenuRowId((current) =>
-                                        current === record.id ? null : record.id,
-                                    )
-                                }
-                            >
-                                <MoreHorizontal size={18} aria-hidden="true" />
-                            </button>
-
-                            {isOpen ? (
-                                <div
-                                    className="history-table__action-popover"
-                                    role="menu"
-                                    aria-label={t("DetailsScreen.tableOptionsMenuLabel")}
-                                >
-                                    {actionItems.map((item) => (
-                                        <button
-                                            key={item.id}
-                                            type="button"
-                                            className="history-table__action-item"
-                                            role="menuitem"
-                                            onClick={() => {
-                                                item.onSelect(record);
-                                                setOpenMenuRowId(null);
-                                            }}
-                                        >
-                                            <item.icon size={16} aria-hidden="true" />
-                                            <span>{item.label}</span>
-                                        </button>
-                                    ))}
-                                </div>
-                            ) : null}
-                        </div>
-                    );
-                },
-            }),
-        ],
-        [t, i18n.language, filter, actionItems, openMenuRowId],
-    );
-    const table = useReactTable({
-        data: records,
-        columns,
-        getCoreRowModel: getCoreRowModel(),
-        getPaginationRowModel: getPaginationRowModel(),
-        initialState: {
-            pagination: { pageSize },
-        },
-    });
-
-    useEffect(() => {
-        table.setPageIndex(0);
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [filter]);
-
-    const rows = table.getRowModel().rows;
-
     return (
         <section className="history-table" aria-labelledby="history-table-title">
             <header className="history-table__header">
                 <h2 id="history-table-title" className="history-table__title">
                     {t("DetailsScreen.historyTitle")}
                 </h2>
-
-                <div className="history-table__actions">
-                    <button
-                        type="button"
-                        className="history-table__chart-button"
-                        onClick={openChartModal}
-                    >
-                        <ChartLine size={18} aria-hidden="true" />
-                        <span>{t("DetailsScreen.viewChart")}</span>
-                    </button>
-
-                    <BalanceFilterMenu
-                        options={filterOptions}
-                        selected={filter}
-                        isOpen={isOpen}
-                        containerRef={containerRef}
-                        menuId="history-table-filter-menu"
-                        triggerLabel={t("DetailsScreen.balanceFilterLabel")}
-                        note={t("DetailsScreen.filterNote")}
-                        onToggle={toggle}
-                        onSelect={select}
-                    />
-                </div>
             </header>
 
             <div className="history-table__container">
                 <table className="history-table__table">
                     <thead>
-                        {table.getHeaderGroups().map((headerGroup) => (
-                            <tr key={headerGroup.id}>
-                                {headerGroup.headers.map((header) => (
-                                    <th key={header.id} className="history-table__header-cell">
-                                        {header.isPlaceholder
-                                            ? null
-                                            : flexRender(
-                                                  header.column.columnDef.header,
-                                                  header.getContext(),
-                                              )}
-                                    </th>
-                                ))}
-                            </tr>
-                        ))}
+                        <tr>
+                            <th scope="col" className="history-table__header-cell">
+                                {t("DetailsScreen.tableHeaderDate")}
+                            </th>
+                            <th scope="col" className="history-table__header-cell">
+                                {t("DetailsScreen.tableHeaderAmount")}
+                            </th>
+                            <th scope="col" className="history-table__header-cell">
+                                {t("DetailsScreen.tableHeaderOptions")}
+                            </th>
+                        </tr>
                     </thead>
                     <tbody>
-                        {rows.length === 0 ? (
-                            <tr>
-                                <td
-                                    className="history-table__empty"
-                                    colSpan={table.getAllLeafColumns().length}
+                        {isLoading ? (
+                            Array.from({ length: limit }, (_, index) => (
+                                <tr
+                                    key={`history-table-skeleton-${index}`}
+                                    className="history-table__row"
                                 >
+                                    <td className="history-table__cell">
+                                        <Skeleton className="history-table__skeleton history-table__skeleton--date" />
+                                    </td>
+                                    <td className="history-table__cell">
+                                        <Skeleton className="history-table__skeleton history-table__skeleton--amount" />
+                                    </td>
+                                    <td className="history-table__cell">
+                                        <Skeleton className="history-table__skeleton history-table__skeleton--action" />
+                                    </td>
+                                </tr>
+                            ))
+                        ) : isError ? (
+                            <tr>
+                                <td className="history-table__empty" colSpan={3}>
+                                    {t("Common.error")}
+                                </td>
+                            </tr>
+                        ) : records.length === 0 ? (
+                            <tr>
+                                <td className="history-table__empty" colSpan={3}>
                                     {t("DetailsScreen.tableEmptyState")}
                                 </td>
                             </tr>
                         ) : (
-                            rows.map((row) => (
-                                <tr key={row.id} className="history-table__row">
-                                    {row.getVisibleCells().map((cell) => (
-                                        <td key={cell.id} className="history-table__cell">
-                                            {flexRender(
-                                                cell.column.columnDef.cell,
-                                                cell.getContext(),
+                            records.map((record) => (
+                                <tr key={record.id} className="history-table__row">
+                                    <td className="history-table__cell">{record.date}</td>
+                                    <td className="history-table__cell">
+                                        <span
+                                            className={`history-table__amount history-table__amount--${getAmountTone(record.amount)}`}
+                                        >
+                                            {formatSignedCurrency(
+                                                record.amount,
+                                                i18n.language,
                                             )}
-                                        </td>
-                                    ))}
+                                        </span>
+                                    </td>
+                                    <td className="history-table__cell">
+                                        <div
+                                            className="history-table__options-cell"
+                                            ref={
+                                                openMenuRowId === record.id
+                                                    ? popoverRef
+                                                    : undefined
+                                            }
+                                        >
+                                            <button
+                                                type="button"
+                                                className="history-table__options-button"
+                                                aria-label={t(
+                                                    "DetailsScreen.tableOptionsMenuLabel",
+                                                )}
+                                                aria-haspopup="menu"
+                                                aria-expanded={openMenuRowId === record.id}
+                                                onClick={() =>
+                                                    setOpenMenuRowId((current) =>
+                                                        current === record.id
+                                                            ? null
+                                                            : record.id,
+                                                    )
+                                                }
+                                            >
+                                                <MoreHorizontal size={18} aria-hidden="true" />
+                                            </button>
+
+                                            {openMenuRowId === record.id ? (
+                                                <div
+                                                    className="history-table__action-popover"
+                                                    role="menu"
+                                                    aria-label={t(
+                                                        "DetailsScreen.tableOptionsMenuLabel",
+                                                    )}
+                                                >
+                                                    {actionItems.map((item) => (
+                                                        <button
+                                                            key={item.id}
+                                                            type="button"
+                                                            className="history-table__action-item"
+                                                            role="menuitem"
+                                                            onClick={() => {
+                                                                item.onSelect(record);
+                                                                setOpenMenuRowId(null);
+                                                            }}
+                                                        >
+                                                            <item.icon
+                                                                size={16}
+                                                                aria-hidden="true"
+                                                            />
+                                                            <span>{item.label}</span>
+                                                        </button>
+                                                    ))}
+                                                </div>
+                                            ) : null}
+                                        </div>
+                                    </td>
                                 </tr>
                             ))
                         )}
@@ -450,26 +284,64 @@ export const HistoryTable = () => {
                 </table>
             </div>
 
-            <TablePagination
-                currentPage={table.getState().pagination.pageIndex + 1}
-                totalPages={table.getPageCount()}
-                pageSize={table.getState().pagination.pageSize}
-                canPreviousPage={table.getCanPreviousPage()}
-                canNextPage={table.getCanNextPage()}
-                onPageChange={(page) => table.setPageIndex(page - 1)}
-                onPageSizeChange={(size) => {
-                    table.setPageSize(size);
-                    table.setPageIndex(0);
-                    setPageSize(size);
-                }}
-            />
+            <footer className="history-table__pagination">
+                <div className="history-table__page-size">
+                    <label
+                        className="history-table__page-size-label"
+                        htmlFor="history-table-page-size"
+                    >
+                        {t("TablePagination.rowsPerPageLabel")}
+                    </label>
+                    <div className="history-table__select-wrapper">
+                        <select
+                            id="history-table-page-size"
+                            className="history-table__select"
+                            value={limit}
+                            onChange={handleLimitChange}
+                        >
+                            {PAGE_SIZE_OPTIONS.map((size) => (
+                                <option key={size} value={size}>
+                                    {size}
+                                </option>
+                            ))}
+                        </select>
+                        <ChevronDown
+                            size={16}
+                            className="history-table__select-chevron"
+                            aria-hidden="true"
+                        />
+                    </div>
+                </div>
 
-            <DetailsChartModal
-                isOpen={isChartModalOpen}
-                onClose={closeChartModal}
-                currentFilter={filter}
-                onFilterChange={select}
-            />
+                <div className="history-table__pager">
+                    <button
+                        type="button"
+                        className="history-table__page-btn"
+                        onClick={handlePreviousPage}
+                        disabled={!hasPreviousPage}
+                        aria-label={t("TablePagination.prevPageLabel")}
+                    >
+                        <ChevronLeft size={18} aria-hidden="true" />
+                    </button>
+
+                    <span
+                        className="history-table__page-indicator"
+                        aria-live="polite"
+                    >
+                        {t("DetailsScreen.paginationPageLabel", { page })}
+                    </span>
+
+                    <button
+                        type="button"
+                        className="history-table__page-btn"
+                        onClick={handleNextPage}
+                        disabled={!hasNextPage}
+                        aria-label={t("TablePagination.nextPageLabel")}
+                    >
+                        <ChevronRight size={18} aria-hidden="true" />
+                    </button>
+                </div>
+            </footer>
         </section>
     );
 };

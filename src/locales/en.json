@@ -144,7 +144,8 @@
     "optionViewMonthDetails": "View month details",
     "optionViewYearDetails": "Show year details",
     "tableEmptyState": "No records available",
-    "noData": "No data"
+    "noData": "No data",
+    "paginationPageLabel": "Page {{page}}"
   },
   "ProfileScreen": {
     "title": "Profile",
