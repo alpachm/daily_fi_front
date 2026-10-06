@@ -57,3 +57,60 @@
 .balance-chart__metric-value--neutral {
     color: var(--text-secondary);
 }
+
+.balance-chart__tabs {
+    display: flex;
+    gap: 0.5rem;
+    padding: 0.25rem;
+    background-color: var(--background);
+    border-radius: 12px;
+    transition: background-color 0.3s ease;
+}
+
+.balance-chart__tab {
+    flex: 1;
+    padding: 0.5rem 0.75rem;
+    border: none;
+    border-radius: 9px;
+    background-color: transparent;
+    color: var(--text-secondary);
+    font-size: 0.875rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition:
+        background-color 0.15s ease,
+        color 0.15s ease;
+}
+
+.balance-chart__tab:hover {
+    color: var(--text-primary);
+}
+
+.balance-chart__tab:focus-visible {
+    outline: 2px solid var(--btn-primary);
+    outline-offset: 2px;
+}
+
+.balance-chart__tab--active {
+    background-color: var(--btn-primary);
+    color: var(--btn-text);
+}
+
+.balance-chart__state {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 0.75rem;
+    min-height: 300px;
+}
+
+.balance-chart__state-skeleton {
+    width: 100%;
+    height: 300px;
+}
+
+.balance-chart__state-label {
+    font-size: 0.875rem;
+    color: var(--text-secondary);
+}

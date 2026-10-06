@@ -1,41 +1,28 @@
-// src/components/BalanceScreen/BalanceChart.tsx
+// src/components/BalanceScreen/IncomeExpensesChart.tsx
 import type { CSSProperties } from "react";
 import { useTranslation } from "react-i18next";
 import {
     Area,
     AreaChart,
     CartesianGrid,
+    Legend,
     ResponsiveContainer,
     Tooltip,
     XAxis,
     YAxis,
 } from "recharts";
-import "./styles/BalanceChart.css";
+import "./styles/IncomeExpensesChart.css";
 
-export interface BalanceDataPoint {
+export interface IncomeExpenseDataPoint {
     date: string;
-    amount: number;
+    income: number;
+    expenses: number;
 }
 
-interface BalanceChartProps {
-    data?: BalanceDataPoint[];
+interface IncomeExpensesChartProps {
+    data: IncomeExpenseDataPoint[];
     height?: number;
 }
-
-const MOCK_BALANCE_DATA: BalanceDataPoint[] = [
-    { date: "01 Sep", amount: 1000 },
-    { date: "03 Sep", amount: 1120 },
-    { date: "05 Sep", amount: 1085 },
-    { date: "07 Sep", amount: 1250 },
-    { date: "09 Sep", amount: 1180 },
-    { date: "11 Sep", amount: 1320 },
-    { date: "13 Sep", amount: 1410 },
-    { date: "15 Sep", amount: 1350 },
-    { date: "17 Sep", amount: 1480 },
-    { date: "19 Sep", amount: 1560 },
-    { date: "21 Sep", amount: 1495 },
-    { date: "23 Sep", amount: 1620 },
-];
 
 const TOOLTIP_CONTENT_STYLE: CSSProperties = {
     backgroundColor: "var(--card-background)",
@@ -70,14 +57,17 @@ const formatTooltipAmount = (
     }).format(numeric);
 };
 
-export const BalanceChart = ({ data = MOCK_BALANCE_DATA, height = 300 }: BalanceChartProps) => {
+export const IncomeExpensesChart = ({
+    data,
+    height = 300,
+}: IncomeExpensesChartProps) => {
     const { t } = useTranslation("");
 
     return (
         <div
-            className="balance-chart__plot"
+            className="income-expenses-chart__plot"
             role="img"
-            aria-label={t("BalanceScreen.chartAriaLabel")}
+            aria-label={t("BalanceScreen.incomeExpensesAriaLabel")}
         >
             <ResponsiveContainer width="100%" height={height}>
                 <AreaChart data={data} margin={{ top: 10, right: 16, bottom: 0, left: 8 }}>
@@ -103,13 +93,28 @@ export const BalanceChart = ({ data = MOCK_BALANCE_DATA, height = 300 }: Balance
                         labelStyle={TOOLTIP_LABEL_STYLE}
                         itemStyle={TOOLTIP_ITEM_STYLE}
                     />
+                    <Legend verticalAlign="top" height={36} />
                     <Area
                         type="monotone"
-                        dataKey="amount"
-                        name={t("BalanceScreen.chartSeriesName")}
+                        dataKey="income"
+                        name={t("BalanceScreen.incomeLegend")}
+                        className="income-expenses-chart__area--income"
+                        stroke="var(--status-success)"
+                        fill="var(--status-success)"
                         strokeWidth={2}
                         dot={false}
-                        activeDot={{ r: 4 }}
+                        activeDot={{ r: 4, stroke: "var(--card-background)" }}
+                    />
+                    <Area
+                        type="monotone"
+                        dataKey="expenses"
+                        name={t("BalanceScreen.expensesLegend")}
+                        className="income-expenses-chart__area--expenses"
+                        stroke="var(--status-error)"
+                        fill="var(--status-error)"
+                        strokeWidth={2}
+                        dot={false}
+                        activeDot={{ r: 4, stroke: "var(--card-background)" }}
                     />
                 </AreaChart>
             </ResponsiveContainer>
@@ -117,4 +122,4 @@ export const BalanceChart = ({ data = MOCK_BALANCE_DATA, height = 300 }: Balance
     );
 };
 
-export default BalanceChart;
+export default IncomeExpensesChart;

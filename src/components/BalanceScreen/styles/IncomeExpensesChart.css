@@ -1,0 +1,58 @@
+/* ============================================================
+   src/components/BalanceScreen/styles/IncomeExpensesChart.css
+   Recharts income vs. expenses chart
+   ============================================================ */
+
+.income-expenses-chart__plot {
+    width: 100%;
+}
+
+/* Axis tick labels */
+.income-expenses-chart__plot .recharts-cartesian-axis-tick-value {
+    fill: var(--text-secondary);
+    font-size: 0.75rem;
+    transition: fill 0.3s ease;
+}
+
+/* Horizontal grid lines */
+.income-expenses-chart__plot .recharts-cartesian-grid line {
+    stroke: var(--text-secondary);
+    stroke-opacity: 0.2;
+}
+
+/* Tooltip cursor line */
+.income-expenses-chart__plot .recharts-tooltip-cursor {
+    stroke: var(--text-secondary);
+    stroke-opacity: 0.35;
+}
+
+/* Income series (earnings) */
+.income-expenses-chart__plot .income-expenses-chart__area--income .recharts-area-curve {
+    stroke: var(--status-success);
+    transition: stroke 0.3s ease;
+}
+
+.income-expenses-chart__plot .income-expenses-chart__area--income .recharts-area-area {
+    fill: var(--status-success);
+}
+
+/* Expenses series (losses) */
+.income-expenses-chart__plot .income-expenses-chart__area--expenses .recharts-area-curve {
+    stroke: var(--status-error);
+    transition: stroke 0.3s ease;
+}
+
+.income-expenses-chart__plot .income-expenses-chart__area--expenses .recharts-area-area {
+    fill: var(--status-error);
+}
+
+/* Shared area fill opacity */
+.income-expenses-chart__plot .recharts-area-area {
+    fill-opacity: 0.15;
+    transition: fill 0.3s ease;
+}
+
+/* Legend labels */
+.income-expenses-chart__plot .recharts-legend-item-text {
+    font-size: 0.8125rem;
+}
