@@ -20,6 +20,7 @@
 
 .history-table__title {
     margin: 0;
+    width: 100%;
     font-size: 1.125rem;
     font-weight: 700;
     color: var(--text-primary);
@@ -28,8 +29,8 @@
 
 .history-table__header {
     display: flex;
-    align-items: center;
-    justify-content: space-between;
+    flex-direction: column;
+    align-items: stretch;
     gap: 1rem;
 }
 
@@ -38,6 +39,8 @@
     align-items: center;
     gap: 0.5rem;
     flex-shrink: 0;
+    width: 100%;
+    justify-content: space-between;
 }
 
 .history-table__chart-button {
@@ -221,4 +224,24 @@
 
 .history-table__action-item:hover svg {
     color: var(--text-primary);
+}
+
+/* ------------------------------------------------------------
+   Desktop: restore side-by-side horizontal header alignment
+   ------------------------------------------------------------ */
+@media (min-width: 768px) {
+    .history-table__header {
+        flex-direction: row;
+        align-items: center;
+        justify-content: space-between;
+    }
+
+    .history-table__title {
+        width: auto;
+    }
+
+    .history-table__actions {
+        width: auto;
+        justify-content: flex-end;
+    }
 }
