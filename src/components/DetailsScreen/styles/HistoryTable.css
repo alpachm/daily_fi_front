@@ -26,6 +26,52 @@
     transition: color 0.3s ease;
 }
 
+.history-table__header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+}
+
+.history-table__actions {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    flex-shrink: 0;
+}
+
+.history-table__chart-button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    height: 40px;
+    padding: 0 0.875rem;
+    border: 1px solid var(--btn-primary);
+    border-radius: 10px;
+    background-color: var(--btn-primary);
+    color: var(--btn-text);
+    font-size: 0.875rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition:
+        opacity 0.15s ease,
+        transform 0.15s ease;
+}
+
+.history-table__chart-button:hover {
+    opacity: 0.9;
+}
+
+.history-table__chart-button:active {
+    transform: translateY(1px);
+}
+
+.history-table__chart-button:focus-visible {
+    outline: 2px solid var(--btn-primary);
+    outline-offset: 2px;
+}
+
 .history-table__container {
     width: 100%;
     overflow-x: auto;

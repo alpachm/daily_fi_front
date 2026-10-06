@@ -13,10 +13,15 @@ import {
     BadgeDollarSign,
     BarChart3,
     CalendarDays,
+    ChartLine,
     MoreHorizontal,
     ShoppingCart,
 } from "lucide-react";
 import type { FilterPeriod } from "./Balance";
+import { BalanceFilterMenu } from "./BalanceFilterMenu";
+import { DetailsChartModal } from "./DetailsChartModal";
+import { useBalanceFilter } from "../../hooks/useBalanceFilter";
+import type { FilterOption } from "../../hooks/useBalanceFilter";
 import { useLocalStorage } from "../../hooks/useLocalStorage";
 import { TablePagination } from "../shared/TablePagination";
 import "./styles/HistoryTable.css";
@@ -25,10 +30,6 @@ export interface HistoryRecord {
     id: string;
     date: string;
     amount: number;
-}
-
-export interface HistoryTableProps {
-    filter: FilterPeriod;
 }
 
 type ActionMenuHandler = (record: HistoryRecord) => void;
@@ -45,6 +46,7 @@ type AmountTone = "positive" | "negative" | "neutral";
 const columnHelper = createColumnHelper<HistoryRecord>();
 
 const PAGE_SIZE_STORAGE_KEY = "daily_fi_history_page_size" as const;
+const FILTER_STORAGE_KEY = "daily_fi_details_filter" as const;
 
 const PERIOD_HEADER_KEYS: Record<FilterPeriod, string> = {
     day: "DetailsScreen.tableHeaderDate",
@@ -190,11 +192,28 @@ const handleViewYearDetails: ActionMenuHandler = (record) => {
     console.log("HistoryTable: view year details", record.id);
 };
 
-export const HistoryTable = ({ filter }: HistoryTableProps) => {
+export const HistoryTable = () => {
     const { t, i18n } = useTranslation("");
     const [pageSize, setPageSize] = useLocalStorage<number>(PAGE_SIZE_STORAGE_KEY, 10);
+    const [filter, setFilter] = useLocalStorage<FilterPeriod>(FILTER_STORAGE_KEY, "month");
     const [openMenuRowId, setOpenMenuRowId] = useState<string | null>(null);
     const popoverRef = useRef<HTMLDivElement | null>(null);
+
+    const { isOpen, containerRef, toggle, select } = useBalanceFilter(filter, setFilter);
+
+    const [isChartModalOpen, setIsChartModalOpen] = useState(false);
+
+    const openChartModal = (): void => setIsChartModalOpen(true);
+    const closeChartModal = (): void => setIsChartModalOpen(false);
+
+    const filterOptions = useMemo<FilterOption[]>(
+        () => [
+            { value: "day", label: t("DetailsScreen.filterDay") },
+            { value: "month", label: t("DetailsScreen.filterMonth") },
+            { value: "year", label: t("DetailsScreen.filterYear") },
+        ],
+        [t],
+    );
 
     const records = useMemo<HistoryRecord[]>(() => HISTORY_RECORDS_BY_PERIOD[filter], [filter]);
 
@@ -356,9 +375,34 @@ export const HistoryTable = ({ filter }: HistoryTableProps) => {
 
     return (
         <section className="history-table" aria-labelledby="history-table-title">
-            <h2 id="history-table-title" className="history-table__title">
-                {t("DetailsScreen.historyTitle")}
-            </h2>
+            <header className="history-table__header">
+                <h2 id="history-table-title" className="history-table__title">
+                    {t("DetailsScreen.historyTitle")}
+                </h2>
+
+                <div className="history-table__actions">
+                    <button
+                        type="button"
+                        className="history-table__chart-button"
+                        onClick={openChartModal}
+                    >
+                        <ChartLine size={18} aria-hidden="true" />
+                        <span>{t("DetailsScreen.viewChart")}</span>
+                    </button>
+
+                    <BalanceFilterMenu
+                        options={filterOptions}
+                        selected={filter}
+                        isOpen={isOpen}
+                        containerRef={containerRef}
+                        menuId="history-table-filter-menu"
+                        triggerLabel={t("DetailsScreen.balanceFilterLabel")}
+                        note={t("DetailsScreen.filterNote")}
+                        onToggle={toggle}
+                        onSelect={select}
+                    />
+                </div>
+            </header>
 
             <div className="history-table__container">
                 <table className="history-table__table">
@@ -418,6 +462,13 @@ export const HistoryTable = ({ filter }: HistoryTableProps) => {
                     table.setPageIndex(0);
                     setPageSize(size);
                 }}
+            />
+
+            <DetailsChartModal
+                isOpen={isChartModalOpen}
+                onClose={closeChartModal}
+                currentFilter={filter}
+                onFilterChange={select}
             />
         </section>
     );
