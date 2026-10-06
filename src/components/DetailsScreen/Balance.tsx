@@ -1,30 +1,16 @@
 // src/components/DetailsScreen/Balance.tsx
-import { useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import type { LucideIcon } from "lucide-react";
-import { ChartLine, TrendingDown, TrendingUp } from "lucide-react";
+import { TrendingDown, TrendingUp } from "lucide-react";
 import type { BalanceTone } from "../../hooks/useDailyBalance";
-import { useBalanceFilter } from "../../hooks/useBalanceFilter";
-import type { FilterOption } from "../../hooks/useBalanceFilter";
-import { BalanceFilterMenu } from "./BalanceFilterMenu";
-import { DetailsChartModal } from "./DetailsChartModal";
+import { useDetailsBalance } from "../../hooks/useDetailsBalance";
+import { Skeleton } from "../shared/Skeleton";
 import "./styles/Balance.css";
 
+// Kept in this module because the details screen's filter controls
+// (BalanceFilterMenu, useBalanceFilter, DetailsChartModal and HistoryTable)
+// still import it from here while the filter is moved to the history table.
 export type FilterPeriod = "day" | "month" | "year";
-
-export interface SummaryMetrics {
-    totalBalance: number;
-    bestDay: number;
-    worstDay: number;
-}
-
-export type SummaryMetricsByPeriod = Record<FilterPeriod, SummaryMetrics>;
-
-interface BalanceProps {
-    metrics?: SummaryMetricsByPeriod;
-    currentFilter: FilterPeriod;
-    onFilterChange: (period: FilterPeriod) => void;
-}
 
 interface MetricItem {
     key: "total" | "best" | "worst";
@@ -34,17 +20,7 @@ interface MetricItem {
     icon?: LucideIcon;
 }
 
-const MOCK_SUMMARY_METRICS: SummaryMetricsByPeriod = {
-    day: { totalBalance: 345.2, bestDay: 119.2, worstDay: -35.7 },
-    month: { totalBalance: 4210.45, bestDay: 320.8, worstDay: -112.4 },
-    year: { totalBalance: 48250.15, bestDay: 980, worstDay: -450.25 },
-};
-
-const BALANCE_TITLE_KEYS: Record<FilterPeriod, string> = {
-    day: "DetailsScreen.balanceTitleDay",
-    month: "DetailsScreen.balanceTitleMonth",
-    year: "DetailsScreen.balanceTitleYear",
-};
+const METRIC_SKELETON_KEYS: MetricItem["key"][] = ["total", "best", "worst"];
 
 const getTone = (value: number): BalanceTone => {
     if (value > 0) return "positive";
@@ -72,54 +48,32 @@ const formatSignedCurrency = (value: number, locale: string): string => {
     return absolute;
 };
 
-export const Balance = ({
-    metrics = MOCK_SUMMARY_METRICS,
-    currentFilter,
-    onFilterChange,
-}: BalanceProps) => {
+export const Balance = () => {
     const { t, i18n } = useTranslation("");
-    const { period, isOpen, containerRef, toggle, select } = useBalanceFilter(
-        currentFilter,
-        onFilterChange,
-    );
-    const [isChartModalOpen, setIsChartModalOpen] = useState(false);
-
-    const currentMetrics = metrics[period];
-
-    const filterOptions: FilterOption[] = useMemo(
-        () => [
-            { value: "day", label: t("DetailsScreen.filterDay") },
-            { value: "month", label: t("DetailsScreen.filterMonth") },
-            { value: "year", label: t("DetailsScreen.filterYear") },
-        ],
-        [t],
-    );
+    const { metrics, isLoading, isError } = useDetailsBalance();
 
     const metricItems: MetricItem[] = [
         {
             key: "total",
             label: t("DetailsScreen.totalBalance"),
-            value: formatCurrency(currentMetrics.totalBalance, i18n.language),
-            tone: getTone(currentMetrics.totalBalance),
+            value: formatCurrency(metrics.totalBalance, i18n.language),
+            tone: getTone(metrics.totalBalance),
         },
         {
             key: "best",
             label: t("DetailsScreen.bestDay"),
-            value: formatSignedCurrency(currentMetrics.bestDay, i18n.language),
+            value: formatSignedCurrency(metrics.bestDay, i18n.language),
             tone: "positive",
             icon: TrendingUp,
         },
         {
             key: "worst",
             label: t("DetailsScreen.worstDay"),
-            value: formatSignedCurrency(currentMetrics.worstDay, i18n.language),
+            value: formatSignedCurrency(metrics.worstDay, i18n.language),
             tone: "negative",
             icon: TrendingDown,
         },
     ];
-
-    const openChartModal = (): void => setIsChartModalOpen(true);
-    const closeChartModal = (): void => setIsChartModalOpen(false);
 
     return (
         <section className="balance-summary" aria-labelledby="balance-summary-title">
@@ -128,53 +82,45 @@ export const Balance = ({
                     <h2 id="balance-summary-title" className="balance-summary__title">
                         {t("DetailsScreen.balanceSummaryTitle")}
                     </h2>
-                    <p className="balance-summary__period">{t(BALANCE_TITLE_KEYS[period])}</p>
-                </div>
-
-                <div className="balance-summary__actions">
-                    <button
-                        type="button"
-                        className="balance-summary__chart-button"
-                        onClick={openChartModal}
-                    >
-                        <ChartLine size={18} aria-hidden="true" />
-                        <span>{t("DetailsScreen.viewChart")}</span>
-                    </button>
-
-                    <BalanceFilterMenu
-                        options={filterOptions}
-                        selected={period}
-                        isOpen={isOpen}
-                        containerRef={containerRef}
-                        menuId="balance-summary-filter-menu"
-                        triggerLabel={t("DetailsScreen.balanceFilterLabel")}
-                        note={t("DetailsScreen.filterNote")}
-                        onToggle={toggle}
-                        onSelect={select}
-                    />
+                    <p className="balance-summary__period">
+                        {t("DetailsScreen.balanceTitleDay")}
+                    </p>
                 </div>
             </header>
 
-            <div className="balance-summary__metrics">
-                {metricItems.map(({ key, label, value, tone, icon: Icon }) => (
-                    <div key={key} className="balance-summary__metric">
-                        <span className="balance-summary__metric-label">{label}</span>
-                        <span
-                            className={`balance-summary__metric-value balance-summary__metric-value--${tone}`}
-                        >
-                            {Icon ? <Icon size={20} aria-hidden="true" /> : null}
-                            {value}
-                        </span>
-                    </div>
-                ))}
-            </div>
-
-            <DetailsChartModal
-                isOpen={isChartModalOpen}
-                onClose={closeChartModal}
-                currentFilter={period}
-                onFilterChange={select}
-            />
+            {isLoading ? (
+                <div
+                    className="balance-summary__metrics"
+                    role="status"
+                    aria-live="polite"
+                    aria-busy="true"
+                >
+                    {METRIC_SKELETON_KEYS.map((key) => (
+                        <div key={key} className="balance-summary__metric">
+                            <Skeleton className="balance-summary__metric-skeleton balance-summary__metric-skeleton--label" />
+                            <Skeleton className="balance-summary__metric-skeleton balance-summary__metric-skeleton--value" />
+                        </div>
+                    ))}
+                </div>
+            ) : isError ? (
+                <p className="balance-summary__state" role="status" aria-live="polite">
+                    {t("Common.error")}
+                </p>
+            ) : (
+                <div className="balance-summary__metrics">
+                    {metricItems.map(({ key, label, value, tone, icon: Icon }) => (
+                        <div key={key} className="balance-summary__metric">
+                            <span className="balance-summary__metric-label">{label}</span>
+                            <span
+                                className={`balance-summary__metric-value balance-summary__metric-value--${tone}`}
+                            >
+                                {Icon ? <Icon size={20} aria-hidden="true" /> : null}
+                                {value}
+                            </span>
+                        </div>
+                    ))}
+                </div>
+            )}
         </section>
     );
 };

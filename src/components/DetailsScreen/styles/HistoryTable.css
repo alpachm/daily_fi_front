@@ -20,10 +20,59 @@
 
 .history-table__title {
     margin: 0;
+    width: 100%;
     font-size: 1.125rem;
     font-weight: 700;
     color: var(--text-primary);
     transition: color 0.3s ease;
+}
+
+.history-table__header {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 1rem;
+}
+
+.history-table__actions {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    flex-shrink: 0;
+    width: 100%;
+    justify-content: space-between;
+}
+
+.history-table__chart-button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    height: 40px;
+    padding: 0 0.875rem;
+    border: 1px solid var(--btn-primary);
+    border-radius: 10px;
+    background-color: var(--btn-primary);
+    color: var(--btn-text);
+    font-size: 0.875rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition:
+        opacity 0.15s ease,
+        transform 0.15s ease;
+}
+
+.history-table__chart-button:hover {
+    opacity: 0.9;
+}
+
+.history-table__chart-button:active {
+    transform: translateY(1px);
+}
+
+.history-table__chart-button:focus-visible {
+    outline: 2px solid var(--btn-primary);
+    outline-offset: 2px;
 }
 
 .history-table__container {
@@ -175,4 +224,24 @@
 
 .history-table__action-item:hover svg {
     color: var(--text-primary);
+}
+
+/* ------------------------------------------------------------
+   Desktop: restore side-by-side horizontal header alignment
+   ------------------------------------------------------------ */
+@media (min-width: 768px) {
+    .history-table__header {
+        flex-direction: row;
+        align-items: center;
+        justify-content: space-between;
+    }
+
+    .history-table__title {
+        width: auto;
+    }
+
+    .history-table__actions {
+        width: auto;
+        justify-content: flex-end;
+    }
 }

@@ -135,3 +135,25 @@
     outline: 2px solid var(--btn-primary);
     outline-offset: 2px;
 }
+
+/* Loading & error states */
+.balance-summary__state {
+    margin: 0;
+    font-size: 0.875rem;
+    color: var(--text-secondary);
+    transition: color 0.3s ease;
+}
+
+.balance-summary__metric-skeleton {
+    border-radius: 8px;
+}
+
+.balance-summary__metric-skeleton--label {
+    width: 60%;
+    height: 0.875rem;
+}
+
+.balance-summary__metric-skeleton--value {
+    width: 85%;
+    height: 1.5rem;
+}
