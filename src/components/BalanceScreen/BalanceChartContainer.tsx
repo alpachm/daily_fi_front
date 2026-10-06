@@ -12,6 +12,23 @@ import type { IncomeExpenseDataPoint } from "./IncomeExpensesChart";
 
 type BalanceChartTab = "general" | "income";
 
+const BALANCE_CHART_TAB_STORAGE_KEY = "selected_balance_chart_tab";
+
+const readStoredTab = (): BalanceChartTab => {
+    try {
+        const stored = window.localStorage.getItem(BALANCE_CHART_TAB_STORAGE_KEY);
+        if (stored === "general" || stored === "income") {
+            return stored;
+        }
+    } catch (error) {
+        console.warn(
+            `BalanceChartContainer: failed to read "${BALANCE_CHART_TAB_STORAGE_KEY}"`,
+            error,
+        );
+    }
+    return "general";
+};
+
 interface BalanceChartContainerProps {
     totalNetDisplay: string;
     percentageChangeDisplay: string;
@@ -24,7 +41,19 @@ export const BalanceChartContainer = ({
     percentageChangeTone,
 }: BalanceChartContainerProps) => {
     const { t, i18n } = useTranslation("");
-    const [activeTab, setActiveTab] = useState<BalanceChartTab>("general");
+    const [activeTab, setActiveTab] = useState<BalanceChartTab>(readStoredTab);
+
+    const selectTab = (tab: BalanceChartTab): void => {
+        setActiveTab(tab);
+        try {
+            window.localStorage.setItem(BALANCE_CHART_TAB_STORAGE_KEY, tab);
+        } catch (error) {
+            console.warn(
+                `BalanceChartContainer: failed to write "${BALANCE_CHART_TAB_STORAGE_KEY}"`,
+                error,
+            );
+        }
+    };
 
     const { data: recentBalances, isLoading, isError } = useRecentDailyBalances();
 
@@ -44,53 +73,55 @@ export const BalanceChartContainer = ({
 
     return (
         <section className="balance-chart">
-            <div className="balance-chart__summary">
-                <div className="balance-chart__metric">
-                    <span className="balance-chart__metric-label">
-                        {t("BalanceScreen.totalNetLabel")}
-                    </span>
-                    <span className="balance-chart__metric-value balance-chart__metric-value--neutral">
-                        {totalNetDisplay}
-                    </span>
+            <div className="balance-chart__header">
+                <div className="balance-chart__summary">
+                    <div className="balance-chart__metric">
+                        <span className="balance-chart__metric-label">
+                            {t("BalanceScreen.totalNetLabel")}
+                        </span>
+                        <span className="balance-chart__metric-value balance-chart__metric-value--neutral">
+                            {totalNetDisplay}
+                        </span>
+                    </div>
+
+                    <div className="balance-chart__metric">
+                        <span className="balance-chart__metric-label">
+                            {t("BalanceScreen.percentageChangeLabel")}
+                        </span>
+                        <span
+                            className={`balance-chart__metric-value balance-chart__metric-value--${percentageChangeTone}`}
+                        >
+                            {percentageChangeDisplay}
+                        </span>
+                    </div>
                 </div>
 
-                <div className="balance-chart__metric">
-                    <span className="balance-chart__metric-label">
-                        {t("BalanceScreen.percentageChangeLabel")}
-                    </span>
-                    <span
-                        className={`balance-chart__metric-value balance-chart__metric-value--${percentageChangeTone}`}
+                <div
+                    className="balance-chart__tabs"
+                    role="group"
+                    aria-label={t("BalanceScreen.chartTypeLabel")}
+                >
+                    <button
+                        type="button"
+                        className={`balance-chart__tab${
+                            activeTab === "general" ? " balance-chart__tab--active" : ""
+                        }`}
+                        aria-pressed={activeTab === "general"}
+                        onClick={() => selectTab("general")}
                     >
-                        {percentageChangeDisplay}
-                    </span>
+                        {t("BalanceScreen.tabGeneral")}
+                    </button>
+                    <button
+                        type="button"
+                        className={`balance-chart__tab${
+                            activeTab === "income" ? " balance-chart__tab--active" : ""
+                        }`}
+                        aria-pressed={activeTab === "income"}
+                        onClick={() => selectTab("income")}
+                    >
+                        {t("BalanceScreen.tabIncome")}
+                    </button>
                 </div>
-            </div>
-
-            <div
-                className="balance-chart__tabs"
-                role="group"
-                aria-label={t("BalanceScreen.chartTypeLabel")}
-            >
-                <button
-                    type="button"
-                    className={`balance-chart__tab${
-                        activeTab === "general" ? " balance-chart__tab--active" : ""
-                    }`}
-                    aria-pressed={activeTab === "general"}
-                    onClick={() => setActiveTab("general")}
-                >
-                    {t("BalanceScreen.tabGeneral")}
-                </button>
-                <button
-                    type="button"
-                    className={`balance-chart__tab${
-                        activeTab === "income" ? " balance-chart__tab--active" : ""
-                    }`}
-                    aria-pressed={activeTab === "income"}
-                    onClick={() => setActiveTab("income")}
-                >
-                    {t("BalanceScreen.tabIncome")}
-                </button>
             </div>
 
             {activeTab === "general" ? (
