@@ -87,6 +87,7 @@
     "closingSuccess": "The day was closed successfully.",
     "openingUpdateSuccess": "The opening balance was updated successfully.",
     "closingUpdateSuccess": "The closing balance was updated successfully.",
+    "balanceUpdateSuccess": "The daily balance was updated successfully.",
     "noData": "No data",
     "previousDayEmpty": "No data was recorded for the previous day",
     "previousDayError": "An error occurred while loading the previous day's data",

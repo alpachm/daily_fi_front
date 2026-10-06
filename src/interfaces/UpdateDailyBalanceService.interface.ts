@@ -5,12 +5,11 @@ export type { DailyBalanceData };
 
 /**
  * Payload accepted by the update daily balance endpoint. Both fields are
- * optional: a PATCH request may update the opening balance, the closing
- * balance, or both.
+ * required: a PATCH request must always send the opening and closing balances.
  */
 export interface UpdateDailyBalancePayload {
-    opening_balance?: number;
-    closing_balance?: number;
+    opening_balance: number;
+    closing_balance: number;
 }
 
 /**

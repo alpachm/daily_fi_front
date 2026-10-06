@@ -73,21 +73,6 @@ export const resolveNetBalance = (
 export const useDailyBalance = () => {
   const { t, i18n } = useTranslation("");
 
-  const {
-    mutateAsync: createDailyBalanceAsync,
-    isPending: isCreatingToday,
-  } = useCreateDailyBalance();
-
-  const {
-    mutateAsync: closeDailyBalanceAsync,
-    isPending: isClosingToday,
-  } = useCloseDailyBalance();
-
-  const {
-    mutateAsync: updateDailyBalanceAsync,
-    isPending: isUpdatingToday,
-  } = useUpdateDailyBalance();
-
   const { data: balanceData } = useGetBalancePerDay();
 
   // Transient form state: only drafts and edit flags live locally. Persisted
@@ -100,6 +85,32 @@ export const useDailyBalance = () => {
   const [finishedEditing, setFinishedEditing] = useState(false);
   const [todayError, setTodayError] = useState<string | null>(null);
   const [todaySuccess, setTodaySuccess] = useState<string | null>(null);
+
+  const {
+    mutateAsync: createDailyBalanceAsync,
+    isPending: isCreatingToday,
+  } = useCreateDailyBalance();
+
+  const {
+    mutateAsync: closeDailyBalanceAsync,
+    isPending: isClosingToday,
+  } = useCloseDailyBalance();
+
+  // After a successful PATCH both inputs must exit edit mode and drop any
+  // stale draft text. The displayed values re-sync automatically because the
+  // mutation writes the authoritative server response into the cache and the
+  // inputs read their `value` straight from it.
+  const handleUpdateSuccess = useCallback((): void => {
+    setStartedDraft("");
+    setFinishedDraft("");
+    setStartedEditing(false);
+    setFinishedEditing(false);
+  }, []);
+
+  const {
+    mutateAsync: updateDailyBalanceAsync,
+    isPending: isUpdatingToday,
+  } = useUpdateDailyBalance({ onSuccess: handleUpdateSuccess });
 
   const isTodayConfirmed = balanceData != null;
 
@@ -192,15 +203,27 @@ export const useDailyBalance = () => {
 
     // Scenario 2: editing the opening balance -> update it.
     if (startedEditing) {
-      const payload: UpdateDailyBalancePayload = {
-        opening_balance: parseAmount(startedDraft),
-      };
+      // When both "Empecé" and "Terminé" are being edited at the same time,
+      // build the payload from both draft values. Reading `closing_balance`
+      // from the query cache here would send the previously persisted value
+      // and silently discard whatever the user typed into "Terminé".
+      const payload: UpdateDailyBalancePayload = finishedEditing
+        ? {
+            opening_balance: parseAmount(startedDraft),
+            closing_balance: parseAmount(finishedDraft),
+          }
+        : {
+            opening_balance: parseAmount(startedDraft),
+            closing_balance: balanceData.closingBalance,
+          };
 
       try {
         await updateDailyBalanceAsync({ id: recordId, payload });
-        setStartedDraft("");
-        setStartedEditing(false);
-        setTodaySuccess(t("BalanceScreen.openingUpdateSuccess"));
+        setTodaySuccess(
+          finishedEditing
+            ? t("BalanceScreen.balanceUpdateSuccess")
+            : t("BalanceScreen.openingUpdateSuccess"),
+        );
       } catch (error: unknown) {
         let message = t("BalanceScreen.errors.generic");
 
@@ -257,13 +280,12 @@ export const useDailyBalance = () => {
 
     // Scenario 4: editing an already closed balance -> update it.
     const payload: UpdateDailyBalancePayload = {
+      opening_balance: balanceData.openingBalance,
       closing_balance: parseAmount(finishedDraft),
     };
 
     try {
       await updateDailyBalanceAsync({ id: recordId, payload });
-      setFinishedDraft("");
-      setFinishedEditing(false);
       setTodaySuccess(t("BalanceScreen.closingUpdateSuccess"));
     } catch (error: unknown) {
       let message = t("BalanceScreen.errors.generic");
@@ -287,6 +309,7 @@ export const useDailyBalance = () => {
   }, [
     balanceData,
     startedEditing,
+    finishedEditing,
     startedDraft,
     finishedDraft,
     t,
@@ -326,11 +349,13 @@ export const useDailyBalance = () => {
 
   const canConfirmToday = balanceData == null
     ? isValidAmount(today.started.draft)
-    : today.started.isEditing
-      ? isValidAmount(today.started.draft)
-      : today.finished.isEditing
-        ? isValidAmount(today.finished.draft)
-        : false;
+    : startedEditing && finishedEditing
+      ? isValidAmount(today.started.draft) && isValidAmount(today.finished.draft)
+      : today.started.isEditing
+        ? isValidAmount(today.started.draft)
+        : today.finished.isEditing
+          ? isValidAmount(today.finished.draft)
+          : false;
 
   return {
     today,

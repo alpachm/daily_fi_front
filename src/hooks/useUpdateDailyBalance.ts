@@ -17,14 +17,29 @@ interface UpdateDailyBalanceVariables {
     payload: UpdateDailyBalancePayload;
 }
 
+interface UseUpdateDailyBalanceOptions {
+    /**
+     * Invoked after the mutation succeeds and the cache has been updated with
+     * the authoritative server response. The UI layer uses it to reset its
+     * transient form state (edit flags / drafts) for both inputs.
+     */
+    onSuccess?: (response: UpdateDailyBalanceSuccessResponse) => void;
+}
+
 /**
  * Wraps `UpdateDailyBalanceService.updateDailyBalance` in a TanStack Query
  * mutation and keeps the `daily-balance` cache entry in sync with the server
  * response so the UI reacts without a manual refresh.
+ *
+ * The optional `onSuccess` callback runs right after the cache write, so every
+ * caller can re-synchronize local form state with the returned data.
  */
-export const useUpdateDailyBalance = () => {
+export const useUpdateDailyBalance = (
+    options: UseUpdateDailyBalanceOptions = {},
+) => {
     const queryClient = useQueryClient();
     const date = useMemo(() => getTodayIsoDate(), []);
+    const { onSuccess } = options;
 
     return useMutation<
         UpdateDailyBalanceSuccessResponse,
@@ -41,6 +56,8 @@ export const useUpdateDailyBalance = () => {
                 dailyBalanceQueryKey(date),
                 response.data,
             );
+
+            onSuccess?.(response);
         },
     });
 };
