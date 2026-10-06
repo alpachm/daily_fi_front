@@ -88,8 +88,10 @@ const mapErrorResponse = (
     );
 };
 
-const getRecentDailyBalances = async (): Promise<DailyBalanceItem[]> => {
-    const url = `${API_BASE_URL}${GET_RECENT_DAILY_BALANCES_ENDPOINT}`;
+const getRecentDailyBalances = async (
+    limit: number = 14,
+): Promise<DailyBalanceItem[]> => {
+    const url = `${API_BASE_URL}${GET_RECENT_DAILY_BALANCES_ENDPOINT}?limit=${limit}`;
     const accessToken = getAccessToken();
 
     let response: Response;
