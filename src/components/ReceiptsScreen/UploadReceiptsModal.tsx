@@ -100,9 +100,27 @@ export const UploadReceiptsModal = ({
     };
 
     const handleFileChange = (event: ChangeEvent<HTMLInputElement>): void => {
-        const files = Array.from(event.target.files ?? []);
-        if (files.length === 0) return;
-        setSelectedFiles(files);
+        const newFiles = Array.from(event.target.files ?? []);
+        event.target.value = "";
+
+        if (newFiles.length === 0) return;
+
+        setSelectedFiles((previousFiles) => {
+            const existingKeys = new Set(
+                previousFiles.map(
+                    (file) => `${file.name}-${file.size}-${file.lastModified}`,
+                ),
+            );
+
+            const uniqueFiles = newFiles.filter(
+                (file) =>
+                    !existingKeys.has(
+                        `${file.name}-${file.size}-${file.lastModified}`,
+                    ),
+            );
+
+            return [...previousFiles, ...uniqueFiles];
+        });
     };
 
     const handleRemoveFile = (
