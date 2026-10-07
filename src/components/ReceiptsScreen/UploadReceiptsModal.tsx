@@ -17,6 +17,7 @@ import {
 import { getTodayIsoDate } from "../../utils/date";
 import { AutomaticAlertModal } from "../shared/AutomaticAlertModal";
 import { DatePickerInput } from "../shared/DatePickerInput";
+import { BatchUploadProgress } from "./BatchUploadProgress";
 import "./styles/UploadReceiptsModal.css";
 
 export interface UploadReceiptsModalProps {
@@ -51,24 +52,26 @@ export const UploadReceiptsModal = ({
     const {
         uploadReceipts: uploadReceiptsAsync,
         isPending,
-        progress,
+        batches,
+        resetBatches,
     } = useUploadReceipts();
 
     const today = useMemo(() => getTodayIsoDate(), []);
 
     // Reset local state every time the modal closes so it opens fresh next time.
     const handleClose = useCallback((): void => {
+        resetBatches();
         setSelectedDate(getTodayIsoDate());
         setSelectedFiles([]);
         setReceiptType("buy");
         onClose();
-    }, [onClose]);
+    }, [onClose, resetBatches]);
 
     useEffect(() => {
         if (!isOpen) return;
 
         const handleKeyDown = (event: KeyboardEvent): void => {
-            if (event.key === "Escape") {
+            if (event.key === "Escape" && !isPending) {
                 handleClose();
             }
         };
@@ -81,7 +84,7 @@ export const UploadReceiptsModal = ({
             document.removeEventListener("keydown", handleKeyDown);
             document.body.style.overflow = previousOverflow;
         };
-    }, [isOpen, handleClose]);
+    }, [isOpen, handleClose, isPending]);
 
     useEffect(() => {
         if (isOpen) {
@@ -177,13 +180,23 @@ export const UploadReceiptsModal = ({
         }
     };
 
+    const totalBatches = batches.length;
+    const currentBatch = batches.find((batch) => batch.status === "uploading");
+    const uploadedFiles = batches.reduce(
+        (total, batch) =>
+            batch.status === "completed" || batch.status === "uploading"
+                ? total + batch.totalFiles
+                : total,
+        0,
+    );
+
     const uploadingMessage =
-        progress !== null
+        currentBatch !== undefined
             ? t("ReceiptsScreen.uploadModalUploadingBatch", {
-                  batch: progress.batchIndex,
-                  totalBatches: progress.totalBatches,
-                  uploaded: progress.uploadedFiles,
-                  total: progress.totalFiles,
+                  batch: currentBatch.id,
+                  totalBatches,
+                  uploaded: uploadedFiles,
+                  total: selectedFiles.length,
               })
             : t("ReceiptsScreen.uploadModalUploading");
 
@@ -223,6 +236,8 @@ export const UploadReceiptsModal = ({
                         <X size={20} aria-hidden="true" />
                     </button>
                 </header>
+
+                <BatchUploadProgress batches={batches} />
 
                 <div className="upload-receipts-modal__body">
                     <section className="upload-receipts-modal__date-section">

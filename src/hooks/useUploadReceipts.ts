@@ -1,5 +1,5 @@
 // src/hooks/useUploadReceipts.ts
-import { useState } from "react";
+import { useCallback, useState } from "react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 
 import { UploadReceiptsService } from "../services/UploadReceiptsService";
@@ -18,19 +18,22 @@ import { chunkArray } from "../utils/chunkArray";
 export const RECEIPT_UPLOAD_BATCH_SIZE = 50;
 
 /**
- * Live snapshot of a sequential batch upload. The UI consumes this to render
- * a dynamic progress message such as
- * "Subiendo lote 2 de 3 (100/120 comprobantes)...".
+ * Lifecycle status of a single receipt upload batch.
  */
-export interface UploadReceiptsProgress {
-    /** 1-based index of the batch currently being uploaded. */
-    batchIndex: number;
-    /** Total number of batches derived from the selected files. */
-    totalBatches: number;
-    /** Running total of files covered up to and including the current batch. */
-    uploadedFiles: number;
-    /** Total number of files selected for upload. */
+export type BatchStatusKind = "pending" | "uploading" | "completed" | "error";
+
+/**
+ * Breakdown row for a single batch of the receipt upload. The UI consumes
+ * this to render a checklist that advances in real time as the sequential
+ * HTTP requests resolve.
+ */
+export interface BatchStatus {
+    /** 1-based identifier of the batch within the current upload. */
+    id: number;
+    /** Number of files that belong to this batch. */
     totalFiles: number;
+    /** Current lifecycle status of the batch. */
+    status: BatchStatusKind;
 }
 
 /**
@@ -43,7 +46,22 @@ export interface UploadReceiptsProgress {
  */
 export const useUploadReceipts = () => {
     const queryClient = useQueryClient();
-    const [progress, setProgress] = useState<UploadReceiptsProgress | null>(null);
+    const [batches, setBatches] = useState<BatchStatus[]>([]);
+
+    const updateBatchStatus = useCallback(
+        (batchId: number, status: BatchStatusKind): void => {
+            setBatches((previous) =>
+                previous.map((item) =>
+                    item.id === batchId ? { ...item, status } : item,
+                ),
+            );
+        },
+        [],
+    );
+
+    const resetBatches = useCallback((): void => {
+        setBatches([]);
+    }, []);
 
     const mutation = useMutation<
         UploadReceiptsSuccessResponse,
@@ -53,35 +71,43 @@ export const useUploadReceipts = () => {
         mutationFn: async (
             payload: UploadReceiptsPayload,
         ): Promise<UploadReceiptsSuccessResponse> => {
-            const batches = chunkArray(payload.receipts, RECEIPT_UPLOAD_BATCH_SIZE);
+            const chunks = chunkArray(payload.receipts, RECEIPT_UPLOAD_BATCH_SIZE);
 
-            let uploadedFiles = 0;
+            // Seed the breakdown as all-pending so the UI can render the full
+            // checklist before the first request starts.
+            setBatches(
+                chunks.map((chunk, index): BatchStatus => ({
+                    id: index + 1,
+                    totalFiles: chunk.length,
+                    status: "pending",
+                })),
+            );
+
             let lastResponse: UploadReceiptsSuccessResponse | null = null;
 
-            for (let index = 0; index < batches.length; index += 1) {
-                const batch = batches[index];
+            for (let index = 0; index < chunks.length; index += 1) {
+                const batch = chunks[index];
+                const batchId = index + 1;
 
-                // Update progress before the request so the UI reflects the
-                // current batch immediately (uploadedFiles is the running total
-                // including the batch about to be sent).
-                uploadedFiles += batch.length;
-                setProgress({
-                    batchIndex: index + 1,
-                    totalBatches: batches.length,
-                    uploadedFiles,
-                    totalFiles: payload.receipts.length,
-                });
+                updateBatchStatus(batchId, "uploading");
 
                 const batchPayload: UploadReceiptsPayload = {
                     ...payload,
                     receipts: batch,
                 };
 
-                // Sequential await: each batch completes before the next starts.
-                // A rejected request throws here and aborts the remaining batches.
-                const response =
-                    await UploadReceiptsService.uploadReceipts(batchPayload);
-                lastResponse = response;
+                try {
+                    // Sequential await: each batch completes before the next
+                    // starts. A rejected request marks this batch as failed and
+                    // aborts the remaining batches.
+                    const response =
+                        await UploadReceiptsService.uploadReceipts(batchPayload);
+                    lastResponse = response;
+                    updateBatchStatus(batchId, "completed");
+                } catch (error: unknown) {
+                    updateBatchStatus(batchId, "error");
+                    throw error;
+                }
             }
 
             if (lastResponse === null) {
@@ -99,17 +125,14 @@ export const useUploadReceipts = () => {
             queryClient.invalidateQueries({ queryKey: ["daily-balances"] });
             queryClient.invalidateQueries({ queryKey: ["monthly-balances"] });
             queryClient.invalidateQueries({ queryKey: ["yearly-balances"] });
-            setProgress(null);
-        },
-        onError: () => {
-            setProgress(null);
         },
     });
 
     return {
         uploadReceipts: mutation.mutateAsync,
         isPending: mutation.isPending,
-        progress,
+        batches,
+        resetBatches,
     };
 };
 

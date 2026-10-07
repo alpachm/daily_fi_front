@@ -1,0 +1,143 @@
+/* ============================================================
+   src/components/ReceiptsScreen/styles/BatchUploadProgress.css
+   Batch upload breakdown — overall progress bar + checklist
+   ============================================================ */
+
+.batch-upload-progress {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    padding: 1rem;
+    margin-bottom: 1.25rem;
+    background-color: var(--background);
+    border-radius: 12px;
+    transition: background-color 0.3s ease;
+}
+
+.batch-upload-progress__header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.5rem;
+}
+
+.batch-upload-progress__title {
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: var(--text-primary);
+    transition: color 0.3s ease;
+}
+
+.batch-upload-progress__percent {
+    font-size: 0.875rem;
+    font-weight: 700;
+    font-variant-numeric: tabular-nums;
+    color: var(--btn-primary);
+    transition: color 0.3s ease;
+}
+
+.batch-upload-progress__track {
+    width: 100%;
+    height: 8px;
+    overflow: hidden;
+    background-color: var(--card-background);
+    border-radius: 999px;
+    transition: background-color 0.3s ease;
+}
+
+.batch-upload-progress__fill {
+    height: 100%;
+    background-color: var(--btn-primary);
+    border-radius: inherit;
+    transition:
+        width 0.25s ease,
+        background-color 0.3s ease;
+}
+
+.batch-upload-progress__list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+.batch-upload-progress__item {
+    display: flex;
+    align-items: center;
+    gap: 0.625rem;
+    padding: 0.625rem 0.75rem;
+    background-color: var(--card-background);
+    border: 1px solid transparent;
+    border-radius: 10px;
+    transition:
+        background-color 0.3s ease,
+        border-color 0.15s ease;
+}
+
+.batch-upload-progress__icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    color: var(--text-secondary);
+    transition: color 0.15s ease;
+}
+
+.batch-upload-progress__label {
+    flex: 1;
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: var(--text-primary);
+    transition: color 0.3s ease;
+}
+
+.batch-upload-progress__files {
+    font-size: 0.8125rem;
+    font-variant-numeric: tabular-nums;
+    color: var(--text-secondary);
+    transition: color 0.3s ease;
+}
+
+.batch-upload-progress__status {
+    font-size: 0.75rem;
+    font-weight: 600;
+    letter-spacing: 0.02em;
+    text-transform: uppercase;
+    color: var(--text-secondary);
+    transition: color 0.15s ease;
+}
+
+.batch-upload-progress__item--uploading {
+    border-color: var(--btn-primary);
+}
+
+.batch-upload-progress__item--uploading .batch-upload-progress__icon,
+.batch-upload-progress__item--uploading .batch-upload-progress__status {
+    color: var(--btn-primary);
+}
+
+.batch-upload-progress__item--completed .batch-upload-progress__icon,
+.batch-upload-progress__item--completed .batch-upload-progress__status {
+    color: var(--status-success);
+}
+
+.batch-upload-progress__item--error .batch-upload-progress__icon,
+.batch-upload-progress__item--error .batch-upload-progress__status {
+    color: var(--status-error);
+}
+
+.batch-upload-progress__spinner {
+    flex-shrink: 0;
+    animation: batch-upload-progress__spin 0.8s linear infinite;
+}
+
+@keyframes batch-upload-progress__spin {
+    from {
+        transform: rotate(0deg);
+    }
+    to {
+        transform: rotate(360deg);
+    }
+}
