@@ -102,22 +102,30 @@ export const BatchUploadProgress = ({
                         key={batch.id}
                         className={`batch-upload-progress__item batch-upload-progress__item--${batch.status}`}
                     >
-                        <span className="batch-upload-progress__icon">
-                            {statusIcon(batch.status)}
-                        </span>
-                        <span className="batch-upload-progress__label">
-                            {t("ReceiptsScreen.uploadModalBatchLabel", {
-                                batch: batch.id,
-                            })}
-                        </span>
-                        <span className="batch-upload-progress__files">
-                            {t("ReceiptsScreen.uploadModalBatchFiles", {
-                                count: batch.totalFiles,
-                            })}
-                        </span>
-                        <span className="batch-upload-progress__status">
-                            {t(statusLabelKey(batch.status))}
-                        </span>
+                        <div className="batch-upload-progress__row">
+                            <span className="batch-upload-progress__icon">
+                                {statusIcon(batch.status)}
+                            </span>
+                            <span className="batch-upload-progress__label">
+                                {t("ReceiptsScreen.uploadModalBatchLabel", {
+                                    batch: batch.id,
+                                })}
+                            </span>
+                            <span className="batch-upload-progress__files">
+                                {t("ReceiptsScreen.uploadModalBatchFiles", {
+                                    count: batch.totalFiles,
+                                })}
+                            </span>
+                            <span className="batch-upload-progress__status">
+                                {t(statusLabelKey(batch.status))}
+                            </span>
+                        </div>
+                        {batch.status === "error" &&
+                        batch.errorKey !== undefined ? (
+                            <span className="batch-upload-progress__error-message">
+                                {t(batch.errorKey)}
+                            </span>
+                        ) : null}
                     </li>
                 ))}
             </ul>

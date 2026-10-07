@@ -9,6 +9,8 @@ import type {
     UploadReceiptsSuccessResponse,
 } from "../interfaces/UploadReceiptsService.interface";
 import { chunkArray } from "../utils/chunkArray";
+import { getUploadReceiptsErrorKey } from "../utils/uploadReceiptsError";
+import type { UploadReceiptsErrorKey } from "../utils/uploadReceiptsError";
 
 /**
  * Maximum number of receipt files sent in a single `POST /receipts/bulk`
@@ -34,6 +36,8 @@ export interface BatchStatus {
     totalFiles: number;
     /** Current lifecycle status of the batch. */
     status: BatchStatusKind;
+    /** Localized error key when the batch fails, resolved by the UI. */
+    errorKey?: UploadReceiptsErrorKey;
 }
 
 /**
@@ -49,10 +53,20 @@ export const useUploadReceipts = () => {
     const [batches, setBatches] = useState<BatchStatus[]>([]);
 
     const updateBatchStatus = useCallback(
-        (batchId: number, status: BatchStatusKind): void => {
+        (
+            batchId: number,
+            status: BatchStatusKind,
+            errorKey?: UploadReceiptsErrorKey,
+        ): void => {
             setBatches((previous) =>
                 previous.map((item) =>
-                    item.id === batchId ? { ...item, status } : item,
+                    item.id === batchId
+                        ? {
+                              ...item,
+                              status,
+                              ...(errorKey !== undefined ? { errorKey } : {}),
+                          }
+                        : item,
                 ),
             );
         },
@@ -105,7 +119,11 @@ export const useUploadReceipts = () => {
                     lastResponse = response;
                     updateBatchStatus(batchId, "completed");
                 } catch (error: unknown) {
-                    updateBatchStatus(batchId, "error");
+                    updateBatchStatus(
+                        batchId,
+                        "error",
+                        getUploadReceiptsErrorKey(error),
+                    );
                     throw error;
                 }
             }

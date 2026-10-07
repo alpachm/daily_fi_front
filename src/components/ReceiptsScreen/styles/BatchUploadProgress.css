@@ -65,8 +65,9 @@
 
 .batch-upload-progress__item {
     display: flex;
-    align-items: center;
-    gap: 0.625rem;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0.5rem;
     padding: 0.625rem 0.75rem;
     background-color: var(--card-background);
     border: 1px solid transparent;
@@ -74,6 +75,20 @@
     transition:
         background-color 0.3s ease,
         border-color 0.15s ease;
+}
+
+.batch-upload-progress__row {
+    display: flex;
+    align-items: center;
+    gap: 0.625rem;
+}
+
+.batch-upload-progress__error-message {
+    padding-left: calc(18px + 0.625rem);
+    font-size: 0.8125rem;
+    line-height: 1.4;
+    color: var(--status-error);
+    transition: color 0.3s ease;
 }
 
 .batch-upload-progress__icon {

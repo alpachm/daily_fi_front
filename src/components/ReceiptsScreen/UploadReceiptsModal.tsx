@@ -9,11 +9,9 @@ import { createPortal } from "react-dom";
 import { useTranslation } from "react-i18next";
 import { Check, LoaderCircle, TriangleAlert, Upload, X } from "lucide-react";
 import type { ReceiptType } from "../../hooks/useReceiptsMenu";
+import { useReceiptsUploadError } from "../../hooks/useReceiptsUploadError";
 import { useUploadReceipts } from "../../hooks/useUploadReceipts";
-import {
-    UploadReceiptsApiError,
-    type UploadReceiptsPayload,
-} from "../../interfaces/UploadReceiptsService.interface";
+import type { UploadReceiptsPayload } from "../../interfaces/UploadReceiptsService.interface";
 import { getTodayIsoDate } from "../../utils/date";
 import { AutomaticAlertModal } from "../shared/AutomaticAlertModal";
 import { DatePickerInput } from "../shared/DatePickerInput";
@@ -55,6 +53,7 @@ export const UploadReceiptsModal = ({
         batches,
         resetBatches,
     } = useUploadReceipts();
+    const translateUploadError = useReceiptsUploadError();
 
     const today = useMemo(() => getTodayIsoDate(), []);
 
@@ -156,27 +155,7 @@ export const UploadReceiptsModal = ({
             });
             handleClose();
         } catch (error: unknown) {
-            let message = t("ReceiptsScreen.uploadModalErrorGeneric");
-            let variant: UploadAlertVariant = "error";
-
-            if (error instanceof UploadReceiptsApiError) {
-                if (error.kind === "notFound") {
-                    variant = "warning";
-                }
-
-                // Surface the exact backend-provided error message so the user
-                // sees the same detail the API returned (404 missing balance,
-                // 400 validation, etc.).
-                if (error.fieldErrors.length > 0) {
-                    message = error.fieldErrors
-                        .map((fieldError) => fieldError.message)
-                        .join(" ");
-                } else if (error.message.trim() !== "") {
-                    message = error.message;
-                }
-            }
-
-            setAlert({ variant, message });
+            setAlert(translateUploadError(error));
         }
     };
 
