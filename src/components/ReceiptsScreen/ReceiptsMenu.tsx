@@ -45,46 +45,48 @@ export const ReceiptsMenu = ({
                 <h2 className="receipts-menu__title">{title}</h2>
 
                 <div className="receipts-menu__bar">
-                    <div
-                        className="receipts-menu__type-group"
-                        role="group"
-                        aria-label={t("ReceiptsScreen.menuTypeGroupLabel")}
-                    >
-                        <button
-                            type="button"
-                            className={`receipts-menu__type-btn${
-                                receiptType === "sell"
-                                    ? " receipts-menu__type-btn--active"
-                                    : ""
-                            }`}
-                            disabled={!hasSelectedDate}
-                            aria-pressed={receiptType === "sell"}
-                            onClick={() => onTypeChange("sell")}
+                    <div className="receipts-menu__filters">
+                        <div
+                            className="receipts-menu__type-group"
+                            role="group"
+                            aria-label={t("ReceiptsScreen.menuTypeGroupLabel")}
                         >
-                            {t("ReceiptsScreen.saleLabel")}
-                        </button>
+                            <button
+                                type="button"
+                                className={`receipts-menu__type-btn${
+                                    receiptType === "sell"
+                                        ? " receipts-menu__type-btn--active"
+                                        : ""
+                                }`}
+                                disabled={!hasSelectedDate}
+                                aria-pressed={receiptType === "sell"}
+                                onClick={() => onTypeChange("sell")}
+                            >
+                                {t("ReceiptsScreen.saleLabel")}
+                            </button>
 
-                        <button
-                            type="button"
-                            className={`receipts-menu__type-btn${
-                                receiptType === "buy"
-                                    ? " receipts-menu__type-btn--active"
-                                    : ""
-                            }`}
-                            disabled={!hasSelectedDate}
-                            aria-pressed={receiptType === "buy"}
-                            onClick={() => onTypeChange("buy")}
-                        >
-                            {t("ReceiptsScreen.purchaseLabel")}
-                        </button>
+                            <button
+                                type="button"
+                                className={`receipts-menu__type-btn${
+                                    receiptType === "buy"
+                                        ? " receipts-menu__type-btn--active"
+                                        : ""
+                                }`}
+                                disabled={!hasSelectedDate}
+                                aria-pressed={receiptType === "buy"}
+                                onClick={() => onTypeChange("buy")}
+                            >
+                                {t("ReceiptsScreen.purchaseLabel")}
+                            </button>
+                        </div>
+
+                        <DatePickerInput
+                            value={selectedDate}
+                            max={today}
+                            ariaLabel={t("ReceiptsScreen.menuDateLabel")}
+                            onChange={onDateChange}
+                        />
                     </div>
-
-                    <DatePickerInput
-                        value={selectedDate}
-                        max={today}
-                        ariaLabel={t("ReceiptsScreen.menuDateLabel")}
-                        onChange={onDateChange}
-                    />
 
                     <button
                         type="button"
