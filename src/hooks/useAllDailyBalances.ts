@@ -9,14 +9,22 @@ import type {
 
 const FIVE_MINUTES_MS = 1000 * 60 * 5;
 
+interface UseAllDailyBalancesOptions {
+    enabled?: boolean;
+}
+
 /**
  * Wraps `GetAllDailyBalancesService.getAllDailyBalances` in a TanStack Query
  * read query, keyed by the optional filter/pagination params.
  */
-export const useAllDailyBalances = (params?: DailyBalanceQueryParams) => {
+export const useAllDailyBalances = (
+    params?: DailyBalanceQueryParams,
+    options: UseAllDailyBalancesOptions = {},
+) => {
     return useQuery<DailyBalanceItem[], GetAllDailyBalancesApiError>({
         queryKey: ["daily-balances", params],
         queryFn: () => GetAllDailyBalancesService.getAllDailyBalances(params),
+        enabled: options.enabled,
         placeholderData: keepPreviousData,
         staleTime: FIVE_MINUTES_MS,
         retry: 1,

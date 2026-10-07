@@ -13,10 +13,12 @@ import {
     ShoppingCart,
 } from "lucide-react";
 import { useAllDailyBalances } from "../../hooks/useAllDailyBalances";
+import { useMonthlyBalances } from "../../hooks/useMonthlyBalances";
 import { useBalanceFilter } from "../../hooks/useBalanceFilter";
 import type { FilterOption } from "../../hooks/useBalanceFilter";
 import type { DailyBalanceItem } from "../../interfaces/GetAllDailyBalancesService.interface";
-import { formatFullDate, getTodayIsoDate } from "../../utils/date";
+import type { MonthlyBalanceItem } from "../../interfaces/GetMonthlyBalancesService.interface";
+import { formatFullDate } from "../../utils/date";
 import type { FilterPeriod } from "./Balance";
 import { BalanceFilterMenu } from "./BalanceFilterMenu";
 import { DetailsChartModal } from "./DetailsChartModal";
@@ -25,8 +27,20 @@ import "./styles/HistoryTable.css";
 
 export interface HistoryRecord {
     id: string;
+    isoDate: string;
     date: string;
-    amount: number;
+    openingBalance: number;
+    closingBalance: number;
+    totalIncome: number;
+    totalExpenses: number;
+}
+
+interface MonthlyHistoryRecord {
+    id: string;
+    period: string;
+    totalIncome: number;
+    totalExpenses: number;
+    netProfit: number;
 }
 
 type ActionMenuHandler = (record: HistoryRecord) => void;
@@ -40,40 +54,18 @@ interface ActionMenuItem {
 
 type AmountTone = "positive" | "negative" | "neutral";
 
+type ViewMode = "days" | "months" | "years";
+
 const PAGE_SIZE_OPTIONS: number[] = [10, 50, 100];
 const DEFAULT_PAGE = 1;
 const DEFAULT_LIMIT = 10;
 const DEFAULT_FILTER: FilterPeriod = "day";
+const DEFAULT_VIEW_MODE: ViewMode = "days";
 
-interface DateRange {
-    startDate: string;
-    endDate: string;
-}
-
-const getMonthStartIsoDate = (): string => {
-    const now = new Date();
-    const year = now.getFullYear();
-    const month = String(now.getMonth() + 1).padStart(2, "0");
-    return `${year}-${month}-01`;
-};
-
-const getYearStartIsoDate = (): string => {
-    const now = new Date();
-    return `${now.getFullYear()}-01-01`;
-};
-
-const getDateRangeForPeriod = (period: FilterPeriod): DateRange => {
-    const today = getTodayIsoDate();
-
-    if (period === "month") {
-        return { startDate: getMonthStartIsoDate(), endDate: today };
-    }
-
-    if (period === "year") {
-        return { startDate: getYearStartIsoDate(), endDate: today };
-    }
-
-    return { startDate: today, endDate: today };
+const FILTER_TO_VIEW_MODE: Record<FilterPeriod, ViewMode> = {
+    day: "days",
+    month: "months",
+    year: "years",
 };
 
 const getAmountTone = (value: number): AmountTone => {
@@ -95,13 +87,42 @@ const formatSignedCurrency = (value: number, locale: string): string => {
     return absolute;
 };
 
+const formatCurrency = (value: number, locale: string): string =>
+    new Intl.NumberFormat(locale, {
+        style: "currency",
+        currency: "USD",
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2,
+    }).format(value);
+
+const formatMonthPeriod = (year: number, month: number, locale: string): string =>
+    new Intl.DateTimeFormat(locale, {
+        month: "long",
+        year: "numeric",
+    }).format(new Date(year, month - 1, 1));
+
+const mapMonthlyBalanceToHistoryRecord = (
+    item: MonthlyBalanceItem,
+    locale: string,
+): MonthlyHistoryRecord => ({
+    id: String(item.id),
+    period: formatMonthPeriod(item.year, item.month, locale),
+    totalIncome: item.totalIncome,
+    totalExpenses: item.totalExpenses,
+    netProfit: item.netProfit,
+});
+
 const mapDailyBalanceToHistoryRecord = (
     item: DailyBalanceItem,
     locale: string,
 ): HistoryRecord => ({
     id: String(item.id),
+    isoDate: item.date,
     date: formatFullDate(item.date, locale),
-    amount: item.totalIncome - item.totalExpenses,
+    openingBalance: item.openingBalance,
+    closingBalance: item.closingBalance,
+    totalIncome: item.totalIncome,
+    totalExpenses: item.totalExpenses,
 });
 
 const handleShowPurchaseVouchers: ActionMenuHandler = (record) => {
@@ -119,6 +140,7 @@ export const HistoryTable = () => {
     const [openMenuRowId, setOpenMenuRowId] = useState<string | null>(null);
     const popoverRef = useRef<HTMLDivElement | null>(null);
     const [filter, setFilter] = useState<FilterPeriod>(DEFAULT_FILTER);
+    const [viewMode, setViewMode] = useState<ViewMode>(DEFAULT_VIEW_MODE);
     const [isChartModalOpen, setIsChartModalOpen] = useState<boolean>(false);
 
     const { isOpen, containerRef, toggle, select } = useBalanceFilter(
@@ -128,40 +150,70 @@ export const HistoryTable = () => {
 
     const filterOptions = useMemo<FilterOption[]>(
         () => [
-            { value: "day", label: t("DetailsScreen.filterDay") },
-            { value: "month", label: t("DetailsScreen.filterMonth") },
-            { value: "year", label: t("DetailsScreen.filterYear") },
+            { value: "day", label: t("DetailsScreen.filterDays") },
+            { value: "month", label: t("DetailsScreen.filterMonths") },
+            { value: "year", label: t("DetailsScreen.filterYears") },
         ],
         [t],
     );
 
-    const dateRange = useMemo<DateRange>(
-        () => getDateRangeForPeriod(filter),
-        [filter],
+    const dailyQuery = useAllDailyBalances(
+        { page, limit },
+        { enabled: viewMode === "days" },
     );
 
-    const { data, isLoading, isError } = useAllDailyBalances({
-        startDate: dateRange.startDate,
-        endDate: dateRange.endDate,
-        page,
-        limit,
-    });
+    const monthlyQuery = useMonthlyBalances(
+        { page, limit },
+        { enabled: viewMode === "months" },
+    );
 
     const openChartModal = (): void => setIsChartModalOpen(true);
     const closeChartModal = (): void => setIsChartModalOpen(false);
 
     const handleFilterSelect = (nextFilter: FilterPeriod): void => {
         select(nextFilter);
+        setViewMode(FILTER_TO_VIEW_MODE[nextFilter]);
         setPage(DEFAULT_PAGE);
     };
 
-    const records = useMemo<HistoryRecord[]>(
+    const dailyRecords = useMemo<HistoryRecord[]>(
         () =>
-            (data ?? []).map((item) =>
+            (dailyQuery.data ?? []).map((item) =>
                 mapDailyBalanceToHistoryRecord(item, i18n.language),
             ),
-        [data, i18n.language],
+        [dailyQuery.data, i18n.language],
     );
+
+    const monthlyRecords = useMemo<MonthlyHistoryRecord[]>(
+        () =>
+            (monthlyQuery.data ?? []).map((item) =>
+                mapMonthlyBalanceToHistoryRecord(item, i18n.language),
+            ),
+        [monthlyQuery.data, i18n.language],
+    );
+
+    // Placeholder: the "years" aggregation endpoint is not available yet.
+    const yearsRecords: MonthlyHistoryRecord[] = [];
+
+    const aggregatedRecords: MonthlyHistoryRecord[] =
+        viewMode === "months" ? monthlyRecords : yearsRecords;
+
+    const activeRecords =
+        viewMode === "days" ? dailyRecords : aggregatedRecords;
+
+    const isLoading =
+        viewMode === "days"
+            ? dailyQuery.isLoading
+            : viewMode === "months"
+              ? monthlyQuery.isLoading
+              : false;
+
+    const isError =
+        viewMode === "days"
+            ? dailyQuery.isError
+            : viewMode === "months"
+              ? monthlyQuery.isError
+              : false;
 
     const actionItems = useMemo<ActionMenuItem[]>(
         () => [
@@ -182,7 +234,7 @@ export const HistoryTable = () => {
     );
 
     const hasPreviousPage = page > DEFAULT_PAGE;
-    const hasNextPage = records.length === limit;
+    const hasNextPage = activeRecords.length === limit;
 
     const handleLimitChange = (event: ChangeEvent<HTMLSelectElement>): void => {
         setLimit(Number(event.target.value));
@@ -259,57 +311,115 @@ export const HistoryTable = () => {
                 <table className="history-table__table">
                     <thead>
                         <tr>
-                            <th scope="col" className="history-table__header-cell">
-                                {t("DetailsScreen.tableHeaderDate")}
-                            </th>
-                            <th scope="col" className="history-table__header-cell">
-                                {t("DetailsScreen.tableHeaderAmount")}
-                            </th>
-                            <th scope="col" className="history-table__header-cell">
-                                {t("DetailsScreen.tableHeaderOptions")}
-                            </th>
+                            {viewMode === "days" ? (
+                                <>
+                                    <th scope="col" className="history-table__header-cell">
+                                        {t("DetailsScreen.tableHeaderDate")}
+                                    </th>
+                                    <th scope="col" className="history-table__header-cell">
+                                        {t("DetailsScreen.tableHeaderOpeningBalance")}
+                                    </th>
+                                    <th scope="col" className="history-table__header-cell">
+                                        {t("DetailsScreen.tableHeaderClosingBalance")}
+                                    </th>
+                                    <th scope="col" className="history-table__header-cell">
+                                        {t("DetailsScreen.tableHeaderIncome")}
+                                    </th>
+                                    <th scope="col" className="history-table__header-cell">
+                                        {t("DetailsScreen.tableHeaderExpenses")}
+                                    </th>
+                                    <th scope="col" className="history-table__header-cell">
+                                        {t("DetailsScreen.tableHeaderOptions")}
+                                    </th>
+                                </>
+                            ) : (
+                                <>
+                                    <th scope="col" className="history-table__header-cell">
+                                        {t("DetailsScreen.tableHeaderPeriod")}
+                                    </th>
+                                    <th scope="col" className="history-table__header-cell">
+                                        {t("DetailsScreen.tableHeaderTotalIncome")}
+                                    </th>
+                                    <th scope="col" className="history-table__header-cell">
+                                        {t("DetailsScreen.tableHeaderTotalExpenses")}
+                                    </th>
+                                    <th scope="col" className="history-table__header-cell">
+                                        {t("DetailsScreen.tableHeaderNetProfit")}
+                                    </th>
+                                </>
+                            )}
                         </tr>
                     </thead>
                     <tbody>
                         {isLoading ? (
-                            Array.from({ length: limit }, (_, index) => (
+                            Array.from({ length: limit }, (_, rowIndex) => (
                                 <tr
-                                    key={`history-table-skeleton-${index}`}
+                                    key={`history-table-skeleton-${rowIndex}`}
                                     className="history-table__row"
                                 >
-                                    <td className="history-table__cell">
-                                        <Skeleton className="history-table__skeleton history-table__skeleton--date" />
-                                    </td>
-                                    <td className="history-table__cell">
-                                        <Skeleton className="history-table__skeleton history-table__skeleton--amount" />
-                                    </td>
-                                    <td className="history-table__cell">
-                                        <Skeleton className="history-table__skeleton history-table__skeleton--action" />
-                                    </td>
+                                    {Array.from(
+                                        { length: viewMode === "days" ? 6 : 4 },
+                                        (_, cellIndex) => (
+                                            <td
+                                                key={`history-table-skeleton-cell-${cellIndex}`}
+                                                className="history-table__cell"
+                                            >
+                                                <Skeleton className="history-table__skeleton" />
+                                            </td>
+                                        ),
+                                    )}
                                 </tr>
                             ))
                         ) : isError ? (
                             <tr>
-                                <td className="history-table__empty" colSpan={3}>
+                                <td
+                                    className="history-table__empty"
+                                    colSpan={viewMode === "days" ? 6 : 4}
+                                >
                                     {t("Common.error")}
                                 </td>
                             </tr>
-                        ) : records.length === 0 ? (
+                        ) : activeRecords.length === 0 ? (
                             <tr>
-                                <td className="history-table__empty" colSpan={3}>
+                                <td
+                                    className="history-table__empty"
+                                    colSpan={viewMode === "days" ? 6 : 4}
+                                >
                                     {t("DetailsScreen.tableEmptyState")}
                                 </td>
                             </tr>
-                        ) : (
-                            records.map((record) => (
+                        ) : viewMode === "days" ? (
+                            dailyRecords.map((record) => (
                                 <tr key={record.id} className="history-table__row">
                                     <td className="history-table__cell">{record.date}</td>
                                     <td className="history-table__cell">
-                                        <span
-                                            className={`history-table__amount history-table__amount--${getAmountTone(record.amount)}`}
-                                        >
-                                            {formatSignedCurrency(
-                                                record.amount,
+                                        <span className="history-table__amount history-table__amount--neutral">
+                                            {formatCurrency(
+                                                record.openingBalance,
+                                                i18n.language,
+                                            )}
+                                        </span>
+                                    </td>
+                                    <td className="history-table__cell">
+                                        <span className="history-table__amount history-table__amount--neutral">
+                                            {formatCurrency(
+                                                record.closingBalance,
+                                                i18n.language,
+                                            )}
+                                        </span>
+                                    </td>
+                                    <td className="history-table__cell">
+                                        <span className="history-table__amount history-table__amount--positive">
+                                            {formatCurrency(
+                                                record.totalIncome,
+                                                i18n.language,
+                                            )}
+                                        </span>
+                                    </td>
+                                    <td className="history-table__cell">
+                                        <span className="history-table__amount history-table__amount--negative">
+                                            {formatCurrency(
+                                                record.totalExpenses,
                                                 i18n.language,
                                             )}
                                         </span>
@@ -371,6 +481,40 @@ export const HistoryTable = () => {
                                                 </div>
                                             ) : null}
                                         </div>
+                                    </td>
+                                </tr>
+                            ))
+                        ) : (
+                            aggregatedRecords.map((record) => (
+                                <tr key={record.id} className="history-table__row">
+                                    <td className="history-table__cell">{record.period}</td>
+                                    <td className="history-table__cell">
+                                        <span className="history-table__amount history-table__amount--positive">
+                                            {formatCurrency(
+                                                record.totalIncome,
+                                                i18n.language,
+                                            )}
+                                        </span>
+                                    </td>
+                                    <td className="history-table__cell">
+                                        <span className="history-table__amount history-table__amount--negative">
+                                            {formatCurrency(
+                                                record.totalExpenses,
+                                                i18n.language,
+                                            )}
+                                        </span>
+                                    </td>
+                                    <td className="history-table__cell">
+                                        <span
+                                            className={`history-table__amount history-table__amount--${getAmountTone(
+                                                record.netProfit,
+                                            )}`}
+                                        >
+                                            {formatSignedCurrency(
+                                                record.netProfit,
+                                                i18n.language,
+                                            )}
+                                        </span>
                                     </td>
                                 </tr>
                             ))
