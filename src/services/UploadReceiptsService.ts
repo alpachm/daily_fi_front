@@ -88,6 +88,20 @@ const mapErrorResponse = (
         });
     }
 
+    if (statusCode === 404 && isErrorResponse(body)) {
+        return new UploadReceiptsApiError(body.message, {
+            kind: "notFound",
+            statusCode,
+        });
+    }
+
+    if (statusCode === 415 && isErrorResponse(body)) {
+        return new UploadReceiptsApiError(body.message, {
+            kind: "unsupportedMediaType",
+            statusCode,
+        });
+    }
+
     return new UploadReceiptsApiError(
         "Upload receipts failed with an unexpected error.",
         {

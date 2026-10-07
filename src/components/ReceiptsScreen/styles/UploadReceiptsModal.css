@@ -248,6 +248,95 @@
     cursor: not-allowed;
 }
 
+.upload-receipts-modal__type-section {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.upload-receipts-modal__type-label {
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: var(--text-primary);
+    transition: color 0.3s ease;
+}
+
+.upload-receipts-modal__type-group {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+    padding: 0.25rem;
+    background-color: var(--background);
+    border-radius: 12px;
+    transition: background-color 0.3s ease;
+}
+
+.upload-receipts-modal__type-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex: 1;
+    height: 2rem;
+    padding: 0 0.875rem;
+    font-size: 0.875rem;
+    font-weight: 600;
+    font-family: inherit;
+    white-space: nowrap;
+    color: var(--text-secondary);
+    background-color: transparent;
+    border: none;
+    border-radius: 9px;
+    cursor: pointer;
+    transition:
+        background-color 0.15s ease,
+        color 0.15s ease,
+        opacity 0.15s ease;
+}
+
+.upload-receipts-modal__type-btn:hover:not(:disabled) {
+    color: var(--text-primary);
+}
+
+.upload-receipts-modal__type-btn:focus-visible {
+    outline: 2px solid var(--btn-primary);
+    outline-offset: 2px;
+}
+
+.upload-receipts-modal__type-btn--active {
+    background-color: var(--btn-primary);
+    color: var(--btn-text);
+}
+
+.upload-receipts-modal__type-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    pointer-events: none;
+}
+
+.upload-receipts-modal__spinner {
+    flex-shrink: 0;
+    animation: upload-receipts-modal__spin 0.8s linear infinite;
+}
+
+.upload-receipts-modal__cancel-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.upload-receipts-modal__close:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+@keyframes upload-receipts-modal__spin {
+    from {
+        transform: rotate(0deg);
+    }
+    to {
+        transform: rotate(360deg);
+    }
+}
+
 @keyframes upload-receipts-modal__fade-in {
     from {
         opacity: 0;

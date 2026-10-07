@@ -62,6 +62,8 @@ export type UploadReceiptsResponse =
 export type UploadReceiptsApiErrorKind =
     | "validation"
     | "unauthorized"
+    | "notFound"
+    | "unsupportedMediaType"
     | "network"
     | "unexpected";
 
