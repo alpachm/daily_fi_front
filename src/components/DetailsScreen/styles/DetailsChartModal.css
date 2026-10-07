@@ -124,6 +124,47 @@
     color: var(--btn-text);
 }
 
+.details-chart-modal__metrics {
+    display: flex;
+    gap: 0.5rem;
+    margin-bottom: 1.25rem;
+}
+
+.details-chart-modal__metric {
+    flex: 1;
+    min-width: 0;
+    padding: 0.5rem 0.75rem;
+    border: 1px solid var(--text-secondary);
+    border-radius: 9px;
+    background-color: transparent;
+    color: var(--text-secondary);
+    font-size: 0.875rem;
+    font-weight: 600;
+    text-align: center;
+    white-space: nowrap;
+    cursor: pointer;
+    transition:
+        background-color 0.15s ease,
+        border-color 0.15s ease,
+        color 0.15s ease;
+}
+
+.details-chart-modal__metric:hover {
+    color: var(--text-primary);
+    border-color: var(--text-primary);
+}
+
+.details-chart-modal__metric:focus-visible {
+    outline: 2px solid var(--btn-primary);
+    outline-offset: 2px;
+}
+
+.details-chart-modal__metric--active {
+    background-color: var(--btn-primary);
+    border-color: var(--btn-primary);
+    color: var(--btn-text);
+}
+
 .details-chart-modal__plot {
     width: 100%;
 }
@@ -179,6 +220,18 @@
     to {
         opacity: 1;
         transform: translateY(0) scale(1);
+    }
+}
+
+@media (min-width: 768px) {
+    .details-chart-modal__metrics {
+        justify-content: flex-end;
+    }
+
+    .details-chart-modal__metric {
+        flex: none;
+        width: auto;
+        padding: 0.5rem 1rem;
     }
 }
 

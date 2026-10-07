@@ -1,5 +1,5 @@
 // src/components/DetailsScreen/DetailsChartModal.tsx
-import { useEffect, useMemo, useRef } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import type { CSSProperties, MouseEvent } from "react";
 import { createPortal } from "react-dom";
 import { useTranslation } from "react-i18next";
@@ -33,6 +33,15 @@ interface PeriodFilterOption {
     label: string;
 }
 
+type MetricMode = "balance" | "profit";
+
+type ChartDataMap = Record<MetricMode, Record<FilterPeriod, ChartDataPoint[]>>;
+
+interface MetricOption {
+    value: MetricMode;
+    label: string;
+}
+
 const DAY_DATA: ChartDataPoint[] = [
     { label: "08:00", value: 320.5 },
     { label: "10:00", value: 335.2 },
@@ -55,6 +64,30 @@ const MONTH_DATA: ChartDataPoint[] = [
 
 const YEAR_VALUES: number[] = [
     18000, 19200, 18750, 21400, 22900, 24100, 23800, 25600, 27400, 28900, 30500, 31200,
+];
+
+const PROFIT_DAY_DATA: ChartDataPoint[] = [
+    { label: "08:00", value: 42.1 },
+    { label: "10:00", value: -18.4 },
+    { label: "12:00", value: 56.8 },
+    { label: "14:00", value: 23.9 },
+    { label: "16:00", value: 71.5 },
+    { label: "18:00", value: -12.3 },
+    { label: "20:00", value: 34.6 },
+];
+
+const PROFIT_MONTH_DATA: ChartDataPoint[] = [
+    { label: "01", value: 320 },
+    { label: "06", value: -145 },
+    { label: "11", value: 268 },
+    { label: "16", value: 412 },
+    { label: "21", value: -98 },
+    { label: "26", value: 351 },
+    { label: "30", value: 520.25 },
+];
+
+const PROFIT_YEAR_VALUES: number[] = [
+    1200, 980, -450, 1640, 1350, -320, 1810, 2140, 1900, -760, 2250, 2470,
 ];
 
 const TOOLTIP_CONTENT_STYLE: CSSProperties = {
@@ -98,6 +131,7 @@ export const DetailsChartModal = ({
 }: DetailsChartModalProps) => {
     const { t, i18n } = useTranslation("");
     const dialogRef = useRef<HTMLDivElement | null>(null);
+    const [metricMode, setMetricMode] = useState<MetricMode>("balance");
 
     const filterOptions: PeriodFilterOption[] = useMemo(
         () => [
@@ -108,14 +142,47 @@ export const DetailsChartModal = ({
         [t],
     );
 
-    const chartData = useMemo<Record<FilterPeriod, ChartDataPoint[]>>(() => {
-        const yearData: ChartDataPoint[] = YEAR_VALUES.map((value, index) => ({
-            label: new Intl.DateTimeFormat(i18n.language, { month: "short" }).format(
+    const metricOptions: MetricOption[] = useMemo(
+        () => [
+            { value: "balance", label: t("DetailsScreen.tabGeneral") },
+            { value: "profit", label: t("DetailsScreen.tabIncome") },
+        ],
+        [t],
+    );
+
+    const chartData = useMemo<ChartDataMap>(() => {
+        const yearLabels: string[] = YEAR_VALUES.map((_, index) =>
+            new Intl.DateTimeFormat(i18n.language, { month: "short" }).format(
                 new Date(2024, index, 1),
             ),
-            value,
-        }));
-        return { day: DAY_DATA, month: MONTH_DATA, year: yearData };
+        );
+
+        const balanceYearData: ChartDataPoint[] = YEAR_VALUES.map(
+            (value, index) => ({
+                label: yearLabels[index],
+                value,
+            }),
+        );
+
+        const profitYearData: ChartDataPoint[] = PROFIT_YEAR_VALUES.map(
+            (value, index) => ({
+                label: yearLabels[index],
+                value,
+            }),
+        );
+
+        return {
+            balance: {
+                day: DAY_DATA,
+                month: MONTH_DATA,
+                year: balanceYearData,
+            },
+            profit: {
+                day: PROFIT_DAY_DATA,
+                month: PROFIT_MONTH_DATA,
+                year: profitYearData,
+            },
+        };
     }, [i18n.language]);
 
     useEffect(() => {
@@ -208,13 +275,42 @@ export const DetailsChartModal = ({
                 </div>
 
                 <div
+                    className="details-chart-modal__metrics"
+                    role="group"
+                    aria-label={t("DetailsScreen.chartMetricLabel")}
+                >
+                    {metricOptions.map((option) => {
+                        const isActive = option.value === metricMode;
+                        return (
+                            <button
+                                key={option.value}
+                                type="button"
+                                className={`details-chart-modal__metric${
+                                    isActive
+                                        ? " details-chart-modal__metric--active"
+                                        : ""
+                                }`}
+                                aria-pressed={isActive}
+                                onClick={() => setMetricMode(option.value)}
+                            >
+                                {option.label}
+                            </button>
+                        );
+                    })}
+                </div>
+
+                <div
                     className="details-chart-modal__plot"
                     role="img"
-                    aria-label={t("DetailsScreen.chartAriaLabel")}
+                    aria-label={
+                        metricMode === "balance"
+                            ? t("DetailsScreen.chartAriaLabel")
+                            : t("DetailsScreen.chartProfitAriaLabel")
+                    }
                 >
                     <ResponsiveContainer width="100%" height={320}>
                         <AreaChart
-                            data={chartData[currentFilter]}
+                            data={chartData[metricMode][currentFilter]}
                             margin={{ top: 10, right: 16, bottom: 0, left: 8 }}
                         >
                             <CartesianGrid strokeDasharray="3 3" vertical={false} />
@@ -242,7 +338,11 @@ export const DetailsChartModal = ({
                             <Area
                                 type="monotone"
                                 dataKey="value"
-                                name={t("DetailsScreen.chartSeriesName")}
+                                name={
+                                    metricMode === "balance"
+                                        ? t("DetailsScreen.chartSeriesName")
+                                        : t("DetailsScreen.chartProfitSeriesName")
+                                }
                                 strokeWidth={2}
                                 dot={false}
                                 activeDot={{ r: 4 }}
