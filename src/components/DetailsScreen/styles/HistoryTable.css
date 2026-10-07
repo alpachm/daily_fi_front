@@ -101,6 +101,12 @@
         border-color 0.3s ease;
 }
 
+.history-table__header-label {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.375rem;
+}
+
 .history-table__cell {
     padding: 0.75rem 1rem;
     color: var(--text-primary);

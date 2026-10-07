@@ -161,7 +161,10 @@
     "optionViewYearDetails": "Show year details",
     "tableEmptyState": "No records available",
     "noData": "No data",
-    "paginationPageLabel": "Page {{page}}"
+    "paginationPageLabel": "Page {{page}}",
+    "tableHeaderAmountInfoLabel": "Information about Profit / Loss",
+    "tableHeaderAmountInfoMonth": "This value represents the cumulative net balance of gains and losses recorded throughout the month, not the direct difference between the opening and closing balance.",
+    "tableHeaderAmountInfoYear": "This value represents the cumulative net balance of gains and losses recorded throughout the year, not the direct difference between the opening and closing balance."
   },
   "ProfileScreen": {
     "title": "Profile",

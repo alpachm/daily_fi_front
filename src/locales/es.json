@@ -161,7 +161,10 @@
     "optionViewYearDetails": "Mostrar detalles de año",
     "tableEmptyState": "No hay registros disponibles",
     "noData": "Sin datos",
-    "paginationPageLabel": "Página {{page}}"
+    "paginationPageLabel": "Página {{page}}",
+    "tableHeaderAmountInfoLabel": "Información sobre Ganancias / Pérdidas",
+    "tableHeaderAmountInfoMonth": "Este valor representa el balance neto acumulado de ganancias y pérdidas registradas a lo largo del mes, no la diferencia directa entre el saldo inicial y final.",
+    "tableHeaderAmountInfoYear": "Este valor representa el balance neto acumulado de ganancias y pérdidas registradas a lo largo del año, no la diferencia directa entre el saldo inicial y final."
   },
   "ProfileScreen": {
     "title": "Perfil",

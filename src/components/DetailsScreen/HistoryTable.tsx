@@ -9,6 +9,7 @@ import {
     ChevronDown,
     ChevronLeft,
     ChevronRight,
+    Info,
     MoreHorizontal,
     ShoppingCart,
 } from "lucide-react";
@@ -25,6 +26,7 @@ import type { FilterPeriod } from "./Balance";
 import { BalanceFilterMenu } from "./BalanceFilterMenu";
 import { DetailsChartModal } from "./DetailsChartModal";
 import { Skeleton } from "../shared/Skeleton";
+import { InfoTooltip } from "../shared/InfoTooltip";
 import "./styles/HistoryTable.css";
 
 export interface HistoryRecord {
@@ -285,6 +287,13 @@ export const HistoryTable = () => {
               ? monthlyQuery.isError
               : yearlyQuery.isError;
 
+    const showNetAmountInfo = viewMode === "months" || viewMode === "years";
+
+    const netAmountInfoText =
+        viewMode === "months"
+            ? t("DetailsScreen.tableHeaderAmountInfoMonth")
+            : t("DetailsScreen.tableHeaderAmountInfoYear");
+
     const actionItems = useMemo<ActionMenuItem[]>(
         () => [
             {
@@ -452,7 +461,19 @@ export const HistoryTable = () => {
                                 {t("DetailsScreen.tableHeaderClosingBalance")}
                             </th>
                             <th scope="col" className="history-table__header-cell">
-                                {t("DetailsScreen.tableHeaderAmount")}
+                                <span className="history-table__header-label">
+                                    {t("DetailsScreen.tableHeaderAmount")}
+                                    {showNetAmountInfo ? (
+                                        <InfoTooltip
+                                            label={t(
+                                                "DetailsScreen.tableHeaderAmountInfoLabel",
+                                            )}
+                                            content={netAmountInfoText}
+                                        >
+                                            <Info size={14} aria-hidden="true" />
+                                        </InfoTooltip>
+                                    ) : null}
+                                </span>
                             </th>
                             <th scope="col" className="history-table__header-cell">
                                 {t("DetailsScreen.tableHeaderOptions")}
