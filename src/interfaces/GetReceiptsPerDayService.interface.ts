@@ -17,13 +17,37 @@ export interface ReceiptItem {
 }
 
 /**
+ * Request parameters accepted by `GetReceiptsPerDayService.getReceiptsPerDay`.
+ *
+ * `date` is required, while `page` and `limit` are optional and default to
+ * `1` and `20` respectively at the service layer.
+ */
+export interface GetReceiptsPerDayParams {
+    date: string;
+    page?: number;
+    limit?: number;
+}
+
+/**
+ * Server-side pagination metadata returned alongside a page of receipts.
+ */
+export interface PaginationMeta {
+    totalItems: number;
+    totalPages: number;
+    currentPage: number;
+    itemsPerPage: number;
+    hasNextPage: boolean;
+    hasPrevPage: boolean;
+}
+
+/**
  * Payload carried by the success response of the "get receipts per day"
  * endpoint.
  */
 export interface GetReceiptsPerDayResponseData {
     date: string;
-    count: number;
     receipts: ReceiptItem[];
+    pagination: PaginationMeta;
 }
 
 /**
@@ -44,8 +68,9 @@ export interface GetReceiptsPerDayFieldError {
 }
 
 /**
- * Response returned by the API when the `date` query parameter fails
- * validation (HTTP 400).
+ * Response returned by the API when the `date`, `page` or `limit` query
+ * parameters fail validation (HTTP 400), e.g. an invalid date, `page < 1`
+ * or `limit > 100`.
  */
 export interface GetReceiptsPerDayValidationError {
     status: "fail";

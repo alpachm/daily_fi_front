@@ -3,9 +3,11 @@ import {
     GetReceiptsPerDayApiError,
     type GetReceiptsPerDayFieldError,
     type GetReceiptsPerDayGenericErrorResponse,
+    type GetReceiptsPerDayParams,
     type GetReceiptsPerDayResponse,
     type GetReceiptsPerDayResponseData,
     type GetReceiptsPerDayValidationError,
+    type PaginationMeta,
     type ReceiptItem,
 } from "../interfaces/GetReceiptsPerDayService.interface";
 import { getAccessToken } from "../utils/auth";
@@ -20,6 +22,9 @@ import { getAccessToken } from "../utils/auth";
 const API_BASE_URL: string = import.meta.env.VITE_BASE_URL ?? "";
 
 const GET_RECEIPTS_PER_DAY_ENDPOINT = "/receipts/day";
+
+const DEFAULT_PAGE = 1;
+const DEFAULT_LIMIT = 20;
 
 const isObject = (value: unknown): value is Record<string, unknown> =>
     typeof value === "object" && value !== null;
@@ -39,6 +44,20 @@ const isReceiptItem = (value: unknown): value is ReceiptItem => {
         (value.category === null || typeof value.category === "string") &&
         typeof value.createdAt === "string" &&
         typeof value.updatedAt === "string"
+    );
+};
+
+const isPaginationMeta = (value: unknown): value is PaginationMeta => {
+    if (!isObject(value)) {
+        return false;
+    }
+    return (
+        typeof value.totalItems === "number" &&
+        typeof value.totalPages === "number" &&
+        typeof value.currentPage === "number" &&
+        typeof value.itemsPerPage === "number" &&
+        typeof value.hasNextPage === "boolean" &&
+        typeof value.hasPrevPage === "boolean"
     );
 };
 
@@ -86,9 +105,9 @@ const isSuccessResponse = (
     }
     return (
         typeof data.date === "string" &&
-        typeof data.count === "number" &&
         Array.isArray(data.receipts) &&
-        data.receipts.every(isReceiptItem)
+        data.receipts.every(isReceiptItem) &&
+        isPaginationMeta(data.pagination)
     );
 };
 
@@ -129,9 +148,11 @@ const mapErrorResponse = (
 };
 
 export const getReceiptsPerDay = async (
-    date: string,
+    params: GetReceiptsPerDayParams,
 ): Promise<GetReceiptsPerDayResponseData> => {
-    const url = `${API_BASE_URL}${GET_RECEIPTS_PER_DAY_ENDPOINT}?date=${encodeURIComponent(date)}`;
+    const page = params.page ?? DEFAULT_PAGE;
+    const limit = params.limit ?? DEFAULT_LIMIT;
+    const url = `${API_BASE_URL}${GET_RECEIPTS_PER_DAY_ENDPOINT}?date=${encodeURIComponent(params.date)}&page=${page}&limit=${limit}`;
     const accessToken = getAccessToken();
 
     let response: Response;
