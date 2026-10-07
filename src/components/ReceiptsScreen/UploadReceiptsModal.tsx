@@ -48,7 +48,11 @@ export const UploadReceiptsModal = ({
     const fileInputRef = useRef<HTMLInputElement | null>(null);
     const dialogRef = useRef<HTMLDivElement | null>(null);
 
-    const { mutateAsync: uploadReceiptsAsync, isPending } = useUploadReceipts();
+    const {
+        uploadReceipts: uploadReceiptsAsync,
+        isPending,
+        progress,
+    } = useUploadReceipts();
 
     const today = useMemo(() => getTodayIsoDate(), []);
 
@@ -130,6 +134,8 @@ export const UploadReceiptsModal = ({
     const handleUpload = async (): Promise<void> => {
         if (!selectedDate || selectedFiles.length === 0 || isPending) return;
 
+        const totalFiles = selectedFiles.length;
+
         const payload: UploadReceiptsPayload = {
             date: selectedDate,
             type: toUploadType(receiptType),
@@ -137,46 +143,49 @@ export const UploadReceiptsModal = ({
         };
 
         try {
-            const response = await uploadReceiptsAsync(payload);
-            const message =
-                response.message.trim() !== ""
-                    ? response.message
-                    : t("ReceiptsScreen.uploadModalSuccessFallback");
+            await uploadReceiptsAsync(payload);
 
-            setAlert({ variant: "success", message });
+            setAlert({
+                variant: "success",
+                message: t("ReceiptsScreen.uploadModalSuccessAll", {
+                    count: totalFiles,
+                }),
+            });
             handleClose();
         } catch (error: unknown) {
             let message = t("ReceiptsScreen.uploadModalErrorGeneric");
             let variant: UploadAlertVariant = "error";
 
             if (error instanceof UploadReceiptsApiError) {
-                if (error.kind === "validation") {
-                    message =
-                        error.fieldErrors.length > 0
-                            ? error.fieldErrors
-                                  .map((fieldError) => fieldError.message)
-                                  .join(" ")
-                            : error.message.trim() !== ""
-                              ? error.message
-                              : t("ReceiptsScreen.uploadModalErrorValidation");
-                } else if (error.kind === "unauthorized") {
-                    message = t("ReceiptsScreen.uploadModalErrorUnauthorized");
-                } else if (error.kind === "notFound") {
-                    message = t("ReceiptsScreen.uploadModalErrorNotFound");
+                if (error.kind === "notFound") {
                     variant = "warning";
-                } else if (error.kind === "unsupportedMediaType") {
-                    message =
-                        error.message.trim() !== ""
-                            ? error.message
-                            : t("ReceiptsScreen.uploadModalErrorFileType");
-                } else if (error.kind === "network") {
-                    message = t("ReceiptsScreen.uploadModalErrorNetwork");
+                }
+
+                // Surface the exact backend-provided error message so the user
+                // sees the same detail the API returned (404 missing balance,
+                // 400 validation, etc.).
+                if (error.fieldErrors.length > 0) {
+                    message = error.fieldErrors
+                        .map((fieldError) => fieldError.message)
+                        .join(" ");
+                } else if (error.message.trim() !== "") {
+                    message = error.message;
                 }
             }
 
             setAlert({ variant, message });
         }
     };
+
+    const uploadingMessage =
+        progress !== null
+            ? t("ReceiptsScreen.uploadModalUploadingBatch", {
+                  batch: progress.batchIndex,
+                  totalBatches: progress.totalBatches,
+                  uploaded: progress.uploadedFiles,
+                  total: progress.totalFiles,
+              })
+            : t("ReceiptsScreen.uploadModalUploading");
 
     const canUpload = selectedDate !== null && selectedFiles.length > 0;
 
@@ -363,7 +372,7 @@ export const UploadReceiptsModal = ({
                             />
                         ) : null}
                         {isPending
-                            ? t("ReceiptsScreen.uploadModalUploading")
+                            ? uploadingMessage
                             : t("ReceiptsScreen.uploadModalUploadButton")}
                     </button>
                 </footer>
