@@ -10,7 +10,6 @@ import type {
 import type { DailyBalanceData } from "../interfaces/DailyBalance.interface";
 import { getTodayIsoDate } from "../utils/date";
 import { dailyBalanceQueryKey } from "./useGetBalancePerDay";
-import { recentDailyBalancesQueryKey } from "./useRecentDailyBalances";
 
 interface CloseDailyBalanceVariables {
     id: number;
@@ -40,12 +39,11 @@ export const useCloseDailyBalance = () => {
                 response.data,
             );
 
-            // The closing balance feeds the "Balance general" chart, which reads
-            // from the recent list cache. Invalidating it triggers a background
-            // refetch so the chart re-renders with the new closingBalance.
-            queryClient.invalidateQueries({
-                queryKey: recentDailyBalancesQueryKey(),
-            });
+            // Invalidate daily, monthly, and yearly balance queries so the
+            // DetailsScreen table and charts refetch the updated values.
+            queryClient.invalidateQueries({ queryKey: ["daily-balances"] });
+            queryClient.invalidateQueries({ queryKey: ["monthly-balances"] });
+            queryClient.invalidateQueries({ queryKey: ["yearly-balances"] });
         },
     });
 };
