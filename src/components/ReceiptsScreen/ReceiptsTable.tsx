@@ -5,876 +5,35 @@ import {
     createColumnHelper,
     flexRender,
     getCoreRowModel,
-    getPaginationRowModel,
     useReactTable,
 } from "@tanstack/react-table";
-import type { OnChangeFn, PaginationState } from "@tanstack/react-table";
 import type { LucideIcon } from "lucide-react";
-import { Download, Eye, MoreHorizontal, Trash2 } from "lucide-react";
-import type { ReceiptType } from "../../hooks/useReceiptsMenu";
-import { useLocalStorage } from "../../hooks/useLocalStorage";
+import {
+    Download,
+    Eye,
+    MoreHorizontal,
+    Trash2,
+    TriangleAlert,
+} from "lucide-react";
+import type { ReceiptItem } from "../../interfaces/GetReceiptsPerDayService.interface";
+import type { UseGetReceiptsPerDayResult } from "../../hooks/useGetReceiptsPerDay";
+import { getReceiptsPerDayErrorKey } from "../../utils/getReceiptsPerDayError";
 import { TablePagination } from "../shared/TablePagination";
+import { Skeleton } from "../shared/Skeleton";
 import "./styles/ReceiptsTable.css";
 
-const RECEIPTS_PAGE_SIZE_KEY = "daily_fi_receipts_page_size" as const;
-
-export interface ReceiptItem {
-    id: string;
+interface ReceiptRow {
+    id: number;
     date: string;
-    time: string;
+    type: ReceiptItem["type"];
+    typeLabel: string;
     fileName: string;
-    type: ReceiptType;
+    fileUrl: string;
 }
 
-const columnHelper = createColumnHelper<ReceiptItem>();
+const columnHelper = createColumnHelper<ReceiptRow>();
 
-const MOCK_SELL_RECEIPTS: ReceiptItem[] = [
-    {
-        id: "sell-001",
-        date: "01-06-26",
-        time: "13:24",
-        fileName: "screenshot-225343.jpg",
-        type: "sell",
-    },
-    {
-        id: "sell-002",
-        date: "01-06-26",
-        time: "13:41",
-        fileName: "screenshot-225349.jpg",
-        type: "sell",
-    },
-    {
-        id: "sell-003",
-        date: "01-06-26",
-        time: "14:05",
-        fileName: "venta-usdt-1024.jpg",
-        type: "sell",
-    },
-    {
-        id: "sell-001",
-        date: "01-06-26",
-        time: "13:24",
-        fileName: "screenshot-225343.jpg",
-        type: "sell",
-    },
-    {
-        id: "sell-002",
-        date: "01-06-26",
-        time: "13:41",
-        fileName: "screenshot-225349.jpg",
-        type: "sell",
-    },
-    {
-        id: "sell-003",
-        date: "01-06-26",
-        time: "14:05",
-        fileName: "venta-usdt-1024.jpg",
-        type: "sell",
-    },
-    {
-        id: "sell-001",
-        date: "01-06-26",
-        time: "13:24",
-        fileName: "screenshot-225343.jpg",
-        type: "sell",
-    },
-    {
-        id: "sell-002",
-        date: "01-06-26",
-        time: "13:41",
-        fileName: "screenshot-225349.jpg",
-        type: "sell",
-    },
-    {
-        id: "sell-003",
-        date: "01-06-26",
-        time: "14:05",
-        fileName: "venta-usdt-1024.jpg",
-        type: "sell",
-    },
-    {
-        id: "sell-001",
-        date: "01-06-26",
-        time: "13:24",
-        fileName: "screenshot-225343.jpg",
-        type: "sell",
-    },
-    {
-        id: "sell-002",
-        date: "01-06-26",
-        time: "13:41",
-        fileName: "screenshot-225349.jpg",
-        type: "sell",
-    },
-    {
-        id: "sell-003",
-        date: "01-06-26",
-        time: "14:05",
-        fileName: "venta-usdt-1024.jpg",
-        type: "sell",
-    },
-    {
-        id: "sell-001",
-        date: "01-06-26",
-        time: "13:24",
-        fileName: "screenshot-225343.jpg",
-        type: "sell",
-    },
-    {
-        id: "sell-002",
-        date: "01-06-26",
-        time: "13:41",
-        fileName: "screenshot-225349.jpg",
-        type: "sell",
-    },
-    {
-        id: "sell-003",
-        date: "01-06-26",
-        time: "14:05",
-        fileName: "venta-usdt-1024.jpg",
-        type: "sell",
-    },
-    {
-        id: "sell-001",
-        date: "01-06-26",
-        time: "13:24",
-        fileName: "screenshot-225343.jpg",
-        type: "sell",
-    },
-    {
-        id: "sell-002",
-        date: "01-06-26",
-        time: "13:41",
-        fileName: "screenshot-225349.jpg",
-        type: "sell",
-    },
-    {
-        id: "sell-003",
-        date: "01-06-26",
-        time: "14:05",
-        fileName: "venta-usdt-1024.jpg",
-        type: "sell",
-    },
-    {
-        id: "sell-001",
-        date: "01-06-26",
-        time: "13:24",
-        fileName: "screenshot-225343.jpg",
-        type: "sell",
-    },
-    {
-        id: "sell-002",
-        date: "01-06-26",
-        time: "13:41",
-        fileName: "screenshot-225349.jpg",
-        type: "sell",
-    },
-    {
-        id: "sell-003",
-        date: "01-06-26",
-        time: "14:05",
-        fileName: "venta-usdt-1024.jpg",
-        type: "sell",
-    },
-    {
-        id: "sell-001",
-        date: "01-06-26",
-        time: "13:24",
-        fileName: "screenshot-225343.jpg",
-        type: "sell",
-    },
-    {
-        id: "sell-002",
-        date: "01-06-26",
-        time: "13:41",
-        fileName: "screenshot-225349.jpg",
-        type: "sell",
-    },
-    {
-        id: "sell-003",
-        date: "01-06-26",
-        time: "14:05",
-        fileName: "venta-usdt-1024.jpg",
-        type: "sell",
-    },
-];
-
-const MOCK_BUY_RECEIPTS: ReceiptItem[] = [
-    {
-        id: "buy-001",
-        date: "01-06-26",
-        time: "15:10",
-        fileName: "comprobante-compra-01.jpg",
-        type: "buy",
-    },
-    {
-        id: "buy-002",
-        date: "01-06-26",
-        time: "15:32",
-        fileName: "comprobante-compra-02.jpg",
-        type: "buy",
-    },
-    {
-        id: "buy-003",
-        date: "01-06-26",
-        time: "16:18",
-        fileName: "compra-btc-0912.jpg",
-        type: "buy",
-    },
-    {
-        id: "buy-001",
-        date: "01-06-26",
-        time: "15:10",
-        fileName: "comprobante-compra-01.jpg",
-        type: "buy",
-    },
-    {
-        id: "buy-002",
-        date: "01-06-26",
-        time: "15:32",
-        fileName: "comprobante-compra-02.jpg",
-        type: "buy",
-    },
-    {
-        id: "buy-003",
-        date: "01-06-26",
-        time: "16:18",
-        fileName: "compra-btc-0912.jpg",
-        type: "buy",
-    },
-    {
-        id: "buy-001",
-        date: "01-06-26",
-        time: "15:10",
-        fileName: "comprobante-compra-01.jpg",
-        type: "buy",
-    },
-    {
-        id: "buy-002",
-        date: "01-06-26",
-        time: "15:32",
-        fileName: "comprobante-compra-02.jpg",
-        type: "buy",
-    },
-    {
-        id: "buy-003",
-        date: "01-06-26",
-        time: "16:18",
-        fileName: "compra-btc-0912.jpg",
-        type: "buy",
-    },
-    {
-        id: "buy-001",
-        date: "01-06-26",
-        time: "15:10",
-        fileName: "comprobante-compra-01.jpg",
-        type: "buy",
-    },
-    {
-        id: "buy-002",
-        date: "01-06-26",
-        time: "15:32",
-        fileName: "comprobante-compra-02.jpg",
-        type: "buy",
-    },
-    {
-        id: "buy-003",
-        date: "01-06-26",
-        time: "16:18",
-        fileName: "compra-btc-0912.jpg",
-        type: "buy",
-    },
-    {
-        id: "buy-001",
-        date: "01-06-26",
-        time: "15:10",
-        fileName: "comprobante-compra-01.jpg",
-        type: "buy",
-    },
-    {
-        id: "buy-002",
-        date: "01-06-26",
-        time: "15:32",
-        fileName: "comprobante-compra-02.jpg",
-        type: "buy",
-    },
-    {
-        id: "buy-003",
-        date: "01-06-26",
-        time: "16:18",
-        fileName: "compra-btc-0912.jpg",
-        type: "buy",
-    },
-    {
-        id: "buy-001",
-        date: "01-06-26",
-        time: "15:10",
-        fileName: "comprobante-compra-01.jpg",
-        type: "buy",
-    },
-    {
-        id: "buy-002",
-        date: "01-06-26",
-        time: "15:32",
-        fileName: "comprobante-compra-02.jpg",
-        type: "buy",
-    },
-    {
-        id: "buy-003",
-        date: "01-06-26",
-        time: "16:18",
-        fileName: "compra-btc-0912.jpg",
-        type: "buy",
-    },
-    {
-        id: "buy-001",
-        date: "01-06-26",
-        time: "15:10",
-        fileName: "comprobante-compra-01.jpg",
-        type: "buy",
-    },
-    {
-        id: "buy-002",
-        date: "01-06-26",
-        time: "15:32",
-        fileName: "comprobante-compra-02.jpg",
-        type: "buy",
-    },
-    {
-        id: "buy-003",
-        date: "01-06-26",
-        time: "16:18",
-        fileName: "compra-btc-0912.jpg",
-        type: "buy",
-    },
-    {
-        id: "buy-001",
-        date: "01-06-26",
-        time: "15:10",
-        fileName: "comprobante-compra-01.jpg",
-        type: "buy",
-    },
-    {
-        id: "buy-002",
-        date: "01-06-26",
-        time: "15:32",
-        fileName: "comprobante-compra-02.jpg",
-        type: "buy",
-    },
-    {
-        id: "buy-003",
-        date: "01-06-26",
-        time: "16:18",
-        fileName: "compra-btc-0912.jpg",
-        type: "buy",
-    },
-    {
-        id: "buy-001",
-        date: "01-06-26",
-        time: "15:10",
-        fileName: "comprobante-compra-01.jpg",
-        type: "buy",
-    },
-    {
-        id: "buy-002",
-        date: "01-06-26",
-        time: "15:32",
-        fileName: "comprobante-compra-02.jpg",
-        type: "buy",
-    },
-    {
-        id: "buy-003",
-        date: "01-06-26",
-        time: "16:18",
-        fileName: "compra-btc-0912.jpg",
-        type: "buy",
-    },
-    {
-        id: "buy-001",
-        date: "01-06-26",
-        time: "15:10",
-        fileName: "comprobante-compra-01.jpg",
-        type: "buy",
-    },
-    {
-        id: "buy-002",
-        date: "01-06-26",
-        time: "15:32",
-        fileName: "comprobante-compra-02.jpg",
-        type: "buy",
-    },
-    {
-        id: "buy-003",
-        date: "01-06-26",
-        time: "16:18",
-        fileName: "compra-btc-0912.jpg",
-        type: "buy",
-    },
-    {
-        id: "buy-001",
-        date: "01-06-26",
-        time: "15:10",
-        fileName: "comprobante-compra-01.jpg",
-        type: "buy",
-    },
-    {
-        id: "buy-002",
-        date: "01-06-26",
-        time: "15:32",
-        fileName: "comprobante-compra-02.jpg",
-        type: "buy",
-    },
-    {
-        id: "buy-003",
-        date: "01-06-26",
-        time: "16:18",
-        fileName: "compra-btc-0912.jpg",
-        type: "buy",
-    },
-    {
-        id: "buy-001",
-        date: "01-06-26",
-        time: "15:10",
-        fileName: "comprobante-compra-01.jpg",
-        type: "buy",
-    },
-    {
-        id: "buy-002",
-        date: "01-06-26",
-        time: "15:32",
-        fileName: "comprobante-compra-02.jpg",
-        type: "buy",
-    },
-    {
-        id: "buy-003",
-        date: "01-06-26",
-        time: "16:18",
-        fileName: "compra-btc-0912.jpg",
-        type: "buy",
-    },
-    {
-        id: "buy-001",
-        date: "01-06-26",
-        time: "15:10",
-        fileName: "comprobante-compra-01.jpg",
-        type: "buy",
-    },
-    {
-        id: "buy-002",
-        date: "01-06-26",
-        time: "15:32",
-        fileName: "comprobante-compra-02.jpg",
-        type: "buy",
-    },
-    {
-        id: "buy-003",
-        date: "01-06-26",
-        time: "16:18",
-        fileName: "compra-btc-0912.jpg",
-        type: "buy",
-    },
-    {
-        id: "buy-001",
-        date: "01-06-26",
-        time: "15:10",
-        fileName: "comprobante-compra-01.jpg",
-        type: "buy",
-    },
-    {
-        id: "buy-002",
-        date: "01-06-26",
-        time: "15:32",
-        fileName: "comprobante-compra-02.jpg",
-        type: "buy",
-    },
-    {
-        id: "buy-003",
-        date: "01-06-26",
-        time: "16:18",
-        fileName: "compra-btc-0912.jpg",
-        type: "buy",
-    },
-    {
-        id: "buy-001",
-        date: "01-06-26",
-        time: "15:10",
-        fileName: "comprobante-compra-01.jpg",
-        type: "buy",
-    },
-    {
-        id: "buy-002",
-        date: "01-06-26",
-        time: "15:32",
-        fileName: "comprobante-compra-02.jpg",
-        type: "buy",
-    },
-    {
-        id: "buy-003",
-        date: "01-06-26",
-        time: "16:18",
-        fileName: "compra-btc-0912.jpg",
-        type: "buy",
-    },
-    {
-        id: "buy-001",
-        date: "01-06-26",
-        time: "15:10",
-        fileName: "comprobante-compra-01.jpg",
-        type: "buy",
-    },
-    {
-        id: "buy-002",
-        date: "01-06-26",
-        time: "15:32",
-        fileName: "comprobante-compra-02.jpg",
-        type: "buy",
-    },
-    {
-        id: "buy-003",
-        date: "01-06-26",
-        time: "16:18",
-        fileName: "compra-btc-0912.jpg",
-        type: "buy",
-    },
-    {
-        id: "buy-001",
-        date: "01-06-26",
-        time: "15:10",
-        fileName: "comprobante-compra-01.jpg",
-        type: "buy",
-    },
-    {
-        id: "buy-002",
-        date: "01-06-26",
-        time: "15:32",
-        fileName: "comprobante-compra-02.jpg",
-        type: "buy",
-    },
-    {
-        id: "buy-003",
-        date: "01-06-26",
-        time: "16:18",
-        fileName: "compra-btc-0912.jpg",
-        type: "buy",
-    },
-    {
-        id: "buy-001",
-        date: "01-06-26",
-        time: "15:10",
-        fileName: "comprobante-compra-01.jpg",
-        type: "buy",
-    },
-    {
-        id: "buy-002",
-        date: "01-06-26",
-        time: "15:32",
-        fileName: "comprobante-compra-02.jpg",
-        type: "buy",
-    },
-    {
-        id: "buy-003",
-        date: "01-06-26",
-        time: "16:18",
-        fileName: "compra-btc-0912.jpg",
-        type: "buy",
-    },
-    {
-        id: "buy-001",
-        date: "01-06-26",
-        time: "15:10",
-        fileName: "comprobante-compra-01.jpg",
-        type: "buy",
-    },
-    {
-        id: "buy-002",
-        date: "01-06-26",
-        time: "15:32",
-        fileName: "comprobante-compra-02.jpg",
-        type: "buy",
-    },
-    {
-        id: "buy-003",
-        date: "01-06-26",
-        time: "16:18",
-        fileName: "compra-btc-0912.jpg",
-        type: "buy",
-    },
-    {
-        id: "buy-001",
-        date: "01-06-26",
-        time: "15:10",
-        fileName: "comprobante-compra-01.jpg",
-        type: "buy",
-    },
-    {
-        id: "buy-002",
-        date: "01-06-26",
-        time: "15:32",
-        fileName: "comprobante-compra-02.jpg",
-        type: "buy",
-    },
-    {
-        id: "buy-003",
-        date: "01-06-26",
-        time: "16:18",
-        fileName: "compra-btc-0912.jpg",
-        type: "buy",
-    },
-    {
-        id: "buy-001",
-        date: "01-06-26",
-        time: "15:10",
-        fileName: "comprobante-compra-01.jpg",
-        type: "buy",
-    },
-    {
-        id: "buy-002",
-        date: "01-06-26",
-        time: "15:32",
-        fileName: "comprobante-compra-02.jpg",
-        type: "buy",
-    },
-    {
-        id: "buy-003",
-        date: "01-06-26",
-        time: "16:18",
-        fileName: "compra-btc-0912.jpg",
-        type: "buy",
-    },
-    {
-        id: "buy-001",
-        date: "01-06-26",
-        time: "15:10",
-        fileName: "comprobante-compra-01.jpg",
-        type: "buy",
-    },
-    {
-        id: "buy-002",
-        date: "01-06-26",
-        time: "15:32",
-        fileName: "comprobante-compra-02.jpg",
-        type: "buy",
-    },
-    {
-        id: "buy-003",
-        date: "01-06-26",
-        time: "16:18",
-        fileName: "compra-btc-0912.jpg",
-        type: "buy",
-    },
-    {
-        id: "buy-001",
-        date: "01-06-26",
-        time: "15:10",
-        fileName: "comprobante-compra-01.jpg",
-        type: "buy",
-    },
-    {
-        id: "buy-002",
-        date: "01-06-26",
-        time: "15:32",
-        fileName: "comprobante-compra-02.jpg",
-        type: "buy",
-    },
-    {
-        id: "buy-003",
-        date: "01-06-26",
-        time: "16:18",
-        fileName: "compra-btc-0912.jpg",
-        type: "buy",
-    },
-    {
-        id: "buy-001",
-        date: "01-06-26",
-        time: "15:10",
-        fileName: "comprobante-compra-01.jpg",
-        type: "buy",
-    },
-    {
-        id: "buy-002",
-        date: "01-06-26",
-        time: "15:32",
-        fileName: "comprobante-compra-02.jpg",
-        type: "buy",
-    },
-    {
-        id: "buy-003",
-        date: "01-06-26",
-        time: "16:18",
-        fileName: "compra-btc-0912.jpg",
-        type: "buy",
-    },
-    {
-        id: "buy-001",
-        date: "01-06-26",
-        time: "15:10",
-        fileName: "comprobante-compra-01.jpg",
-        type: "buy",
-    },
-    {
-        id: "buy-002",
-        date: "01-06-26",
-        time: "15:32",
-        fileName: "comprobante-compra-02.jpg",
-        type: "buy",
-    },
-    {
-        id: "buy-003",
-        date: "01-06-26",
-        time: "16:18",
-        fileName: "compra-btc-0912.jpg",
-        type: "buy",
-    },
-    {
-        id: "buy-001",
-        date: "01-06-26",
-        time: "15:10",
-        fileName: "comprobante-compra-01.jpg",
-        type: "buy",
-    },
-    {
-        id: "buy-002",
-        date: "01-06-26",
-        time: "15:32",
-        fileName: "comprobante-compra-02.jpg",
-        type: "buy",
-    },
-    {
-        id: "buy-003",
-        date: "01-06-26",
-        time: "16:18",
-        fileName: "compra-btc-0912.jpg",
-        type: "buy",
-    },
-    {
-        id: "buy-001",
-        date: "01-06-26",
-        time: "15:10",
-        fileName: "comprobante-compra-01.jpg",
-        type: "buy",
-    },
-    {
-        id: "buy-002",
-        date: "01-06-26",
-        time: "15:32",
-        fileName: "comprobante-compra-02.jpg",
-        type: "buy",
-    },
-    {
-        id: "buy-003",
-        date: "01-06-26",
-        time: "16:18",
-        fileName: "compra-btc-0912.jpg",
-        type: "buy",
-    },
-    {
-        id: "buy-001",
-        date: "01-06-26",
-        time: "15:10",
-        fileName: "comprobante-compra-01.jpg",
-        type: "buy",
-    },
-    {
-        id: "buy-002",
-        date: "01-06-26",
-        time: "15:32",
-        fileName: "comprobante-compra-02.jpg",
-        type: "buy",
-    },
-    {
-        id: "buy-003",
-        date: "01-06-26",
-        time: "16:18",
-        fileName: "compra-btc-0912.jpg",
-        type: "buy",
-    },
-    {
-        id: "buy-001",
-        date: "01-06-26",
-        time: "15:10",
-        fileName: "comprobante-compra-01.jpg",
-        type: "buy",
-    },
-    {
-        id: "buy-002",
-        date: "01-06-26",
-        time: "15:32",
-        fileName: "comprobante-compra-02.jpg",
-        type: "buy",
-    },
-    {
-        id: "buy-003",
-        date: "01-06-26",
-        time: "16:18",
-        fileName: "compra-btc-0912.jpg",
-        type: "buy",
-    },
-    {
-        id: "buy-001",
-        date: "01-06-26",
-        time: "15:10",
-        fileName: "comprobante-compra-01.jpg",
-        type: "buy",
-    },
-    {
-        id: "buy-002",
-        date: "01-06-26",
-        time: "15:32",
-        fileName: "comprobante-compra-02.jpg",
-        type: "buy",
-    },
-    {
-        id: "buy-003",
-        date: "01-06-26",
-        time: "16:18",
-        fileName: "compra-btc-0912.jpg",
-        type: "buy",
-    },
-    {
-        id: "buy-001",
-        date: "01-06-26",
-        time: "15:10",
-        fileName: "comprobante-compra-01.jpg",
-        type: "buy",
-    },
-    {
-        id: "buy-002",
-        date: "01-06-26",
-        time: "15:32",
-        fileName: "comprobante-compra-02.jpg",
-        type: "buy",
-    },
-    {
-        id: "buy-003",
-        date: "01-06-26",
-        time: "16:18",
-        fileName: "compra-btc-0912.jpg",
-        type: "buy",
-    },
-    {
-        id: "buy-001",
-        date: "01-06-26",
-        time: "15:10",
-        fileName: "comprobante-compra-01.jpg",
-        type: "buy",
-    },
-    {
-        id: "buy-002",
-        date: "01-06-26",
-        time: "15:32",
-        fileName: "comprobante-compra-02.jpg",
-        type: "buy",
-    },
-    {
-        id: "buy-003",
-        date: "01-06-26",
-        time: "16:18",
-        fileName: "compra-btc-0912.jpg",
-        type: "buy",
-    },
-];
-
-type ReceiptMenuAction = (record: ReceiptItem) => void;
+type ReceiptMenuAction = (record: ReceiptRow) => void;
 
 interface ReceiptMenuOption {
     id: string;
@@ -885,38 +44,70 @@ interface ReceiptMenuOption {
 }
 
 const handleViewReceipt: ReceiptMenuAction = (record) => {
+    // Future integration: open the receipt image in a viewer.
     console.log("ReceiptsTable: view receipt", record.id);
 };
 
 const handleDownloadReceipt: ReceiptMenuAction = (record) => {
+    // Future integration: download the receipt file from its public URL.
     console.log("ReceiptsTable: download receipt", record.id);
 };
 
 const handleDeleteReceipt: ReceiptMenuAction = (record) => {
+    // Future integration: delete the receipt through a dedicated service.
     console.log("ReceiptsTable: delete receipt", record.id);
 };
 
+const formatReceiptDate = (value: string): string => {
+    const datePart = value.slice(0, 10);
+    const [year = "", month = "", day = ""] = datePart.split("-");
+    if (!year || !month || !day) {
+        return value;
+    }
+    return `${day}-${month}-${year.slice(-2)}`;
+};
+
+const extractFileName = (
+    fileUrl: string,
+    description: string | null,
+): string => {
+    const withoutQuery = fileUrl.split("?")[0] ?? "";
+    const segments = withoutQuery.split("/").filter(Boolean);
+    const fileName = segments[segments.length - 1] ?? "";
+    return fileName !== "" ? fileName : (description ?? fileUrl);
+};
+
 interface ReceiptsTableProps {
-    selectedDate: string | null;
-    receiptType: ReceiptType;
+    query: UseGetReceiptsPerDayResult;
 }
 
-export const ReceiptsTable = ({ selectedDate, receiptType }: ReceiptsTableProps) => {
+const SKELETON_ROW_COUNT = 5;
+
+export const ReceiptsTable = ({ query }: ReceiptsTableProps) => {
     const { t } = useTranslation("");
     const [activeMenuId, setActiveMenuId] = useState<string | null>(null);
-    const [pageIndex, setPageIndex] = useState(0);
-    const [pageSize, setPageSize] = useLocalStorage<number>(RECEIPTS_PAGE_SIZE_KEY, 10);
     const popoverRef = useRef<HTMLDivElement | null>(null);
 
-    const records = useMemo<ReceiptItem[]>(
-        () => (receiptType === "sell" ? MOCK_SELL_RECEIPTS : MOCK_BUY_RECEIPTS),
-        [receiptType],
+    const typeLabels = useMemo(
+        () => ({
+            PURCHASE: t("ReceiptsScreen.purchaseLabel"),
+            SALE: t("ReceiptsScreen.saleLabel"),
+        }),
+        [t],
     );
 
-    // Clamp the page index so a shrinking dataset never renders an empty page
-    // (e.g. switching from "Venta" to "Compra" while on a later page).
-    const pageCount = Math.max(1, Math.ceil(records.length / pageSize));
-    const safePageIndex = Math.min(pageIndex, pageCount - 1);
+    const rows = useMemo<ReceiptRow[]>(
+        () =>
+            query.receipts.map((receipt) => ({
+                id: receipt.id,
+                date: formatReceiptDate(receipt.date),
+                type: receipt.type,
+                typeLabel: typeLabels[receipt.type],
+                fileName: extractFileName(receipt.fileUrl, receipt.description),
+                fileUrl: receipt.fileUrl,
+            })),
+        [query.receipts, typeLabels],
+    );
 
     const menuOptions = useMemo<ReceiptMenuOption[]>(
         () => [
@@ -947,7 +138,10 @@ export const ReceiptsTable = ({ selectedDate, receiptType }: ReceiptsTableProps)
         if (activeMenuId === null) return;
 
         const handleOutsidePointerDown = (event: MouseEvent): void => {
-            if (popoverRef.current && !popoverRef.current.contains(event.target as Node)) {
+            if (
+                popoverRef.current &&
+                !popoverRef.current.contains(event.target as Node)
+            ) {
                 setActiveMenuId(null);
             }
         };
@@ -973,8 +167,8 @@ export const ReceiptsTable = ({ selectedDate, receiptType }: ReceiptsTableProps)
                 header: t("ReceiptsScreen.tableHeaderDate"),
                 cell: (info) => info.getValue(),
             }),
-            columnHelper.accessor("time", {
-                header: t("ReceiptsScreen.tableHeaderTime"),
+            columnHelper.accessor("typeLabel", {
+                header: t("ReceiptsScreen.tableHeaderType"),
                 cell: (info) => info.getValue(),
             }),
             columnHelper.accessor("fileName", {
@@ -997,11 +191,15 @@ export const ReceiptsTable = ({ selectedDate, receiptType }: ReceiptsTableProps)
                             <button
                                 type="button"
                                 className="receipts-table__options-btn"
-                                aria-label={t("ReceiptsScreen.tableOptionsMenuLabel")}
+                                aria-label={t(
+                                    "ReceiptsScreen.tableOptionsMenuLabel",
+                                )}
                                 aria-haspopup="menu"
                                 aria-expanded={isOpen}
                                 onClick={() =>
-                                    setActiveMenuId((current) => (current === rowId ? null : rowId))
+                                    setActiveMenuId((current) =>
+                                        current === rowId ? null : rowId,
+                                    )
                                 }
                             >
                                 <MoreHorizontal size={18} aria-hidden="true" />
@@ -1011,7 +209,9 @@ export const ReceiptsTable = ({ selectedDate, receiptType }: ReceiptsTableProps)
                                 <div
                                     className="receipts-table__popover"
                                     role="menu"
-                                    aria-label={t("ReceiptsScreen.tableOptionsMenuLabel")}
+                                    aria-label={t(
+                                        "ReceiptsScreen.tableOptionsMenuLabel",
+                                    )}
                                 >
                                     {menuOptions.map((option) => (
                                         <button
@@ -1028,7 +228,10 @@ export const ReceiptsTable = ({ selectedDate, receiptType }: ReceiptsTableProps)
                                                 setActiveMenuId(null);
                                             }}
                                         >
-                                            <option.icon size={16} aria-hidden="true" />
+                                            <option.icon
+                                                size={16}
+                                                aria-hidden="true"
+                                            />
                                             <span>{option.label}</span>
                                         </button>
                                     ))}
@@ -1042,111 +245,149 @@ export const ReceiptsTable = ({ selectedDate, receiptType }: ReceiptsTableProps)
         [t, activeMenuId, menuOptions],
     );
 
-    const handlePaginationChange: OnChangeFn<PaginationState> = (updater) => {
-        const current = { pageIndex: safePageIndex, pageSize };
-        const next = typeof updater === "function" ? updater(current) : updater;
-
-        setPageIndex(next.pageIndex);
-        setPageSize(next.pageSize);
-    };
-
     const table = useReactTable({
-        data: records,
+        data: rows,
         columns,
-        state: {
-            pagination: { pageIndex: safePageIndex, pageSize },
-        },
-        onPaginationChange: handlePaginationChange,
         getCoreRowModel: getCoreRowModel(),
-        getPaginationRowModel: getPaginationRowModel(),
     });
 
-    // Changing the receipt type or selected date must only reset the page
-    // index; the chosen page size is a user preference that must be preserved.
-    useEffect(() => {
-        setPageIndex(0);
-    }, [receiptType, selectedDate]);
+    const pagination = query.pagination;
 
-    const rows = table.getRowModel().rows;
+    if (!query.hasSearched) {
+        return (
+            <section className="receipts-table">
+                <div className="receipts-table__empty">
+                    <p className="receipts-table__empty-text">
+                        {t("ReceiptsScreen.tableEmptyInstructions")}
+                    </p>
+                </div>
+            </section>
+        );
+    }
+
+    if (query.isLoading) {
+        return (
+            <section className="receipts-table">
+                <div
+                    className="receipts-table__skeleton"
+                    role="status"
+                    aria-label={t("Common.loading")}
+                >
+                    {Array.from({ length: SKELETON_ROW_COUNT }, (_, index) => (
+                        <div
+                            key={index}
+                            className="receipts-table__skeleton-row"
+                        >
+                            <Skeleton className="receipts-table__skeleton-cell" />
+                            <Skeleton className="receipts-table__skeleton-cell" />
+                            <Skeleton className="receipts-table__skeleton-cell" />
+                            <Skeleton className="receipts-table__skeleton-cell" />
+                        </div>
+                    ))}
+                </div>
+            </section>
+        );
+    }
+
+    if (query.isError) {
+        return (
+            <section className="receipts-table">
+                <div className="receipts-table__error" role="alert">
+                    <TriangleAlert
+                        size={20}
+                        className="receipts-table__error-icon"
+                        aria-hidden="true"
+                    />
+                    <p className="receipts-table__error-text">
+                        {t(getReceiptsPerDayErrorKey(query.error))}
+                    </p>
+                </div>
+            </section>
+        );
+    }
+
+    if (rows.length === 0) {
+        return (
+            <section className="receipts-table">
+                <div className="receipts-table__empty">
+                    <p className="receipts-table__empty-text">
+                        {t("ReceiptsScreen.tableEmptyNoResults")}
+                    </p>
+                </div>
+            </section>
+        );
+    }
 
     return (
         <section className="receipts-table">
-            {selectedDate === null ? (
-                <div className="receipts-table__empty">
-                    <p className="receipts-table__empty-text">
-                        {t("ReceiptsScreen.tableEmptySelectDate")}
-                    </p>
-                </div>
-            ) : (
-                <>
-                    <div className="receipts-table__scroll">
-                        <table className="receipts-table__table">
-                            <thead>
-                                {table.getHeaderGroups().map((headerGroup) => (
-                                    <tr key={headerGroup.id} className="receipts-table__row">
-                                        {headerGroup.headers.map((header) => (
-                                            <th
-                                                key={header.id}
-                                                scope="col"
-                                                className={`receipts-table__header-cell${
-                                                    header.column.id === "options"
-                                                        ? " receipts-table__header-cell--options"
-                                                        : ""
-                                                }`}
-                                            >
-                                                {header.isPlaceholder
-                                                    ? null
-                                                    : flexRender(
-                                                          header.column.columnDef.header,
-                                                          header.getContext(),
-                                                      )}
-                                            </th>
-                                        ))}
-                                    </tr>
+            <div className="receipts-table__scroll">
+                <table className="receipts-table__table">
+                    <thead>
+                        {table.getHeaderGroups().map((headerGroup) => (
+                            <tr key={headerGroup.id}>
+                                {headerGroup.headers.map((header) => (
+                                    <th
+                                        key={header.id}
+                                        scope="col"
+                                        className={`receipts-table__header-cell${
+                                            header.column.id === "options"
+                                                ? " receipts-table__header-cell--options"
+                                                : ""
+                                        }`}
+                                    >
+                                        {header.isPlaceholder
+                                            ? null
+                                            : flexRender(
+                                                  header.column.columnDef
+                                                      .header,
+                                                  header.getContext(),
+                                              )}
+                                    </th>
                                 ))}
-                            </thead>
-                            <tbody>
-                                {rows.map((row) => (
-                                    <tr key={row.id} className="receipts-table__row">
-                                        {row.getVisibleCells().map((cell) => (
-                                            <td
-                                                key={cell.id}
-                                                className={`receipts-table__cell${
-                                                    cell.column.id === "fileName"
-                                                        ? " receipts-table__cell--file"
-                                                        : cell.column.id === "options"
-                                                          ? " receipts-table__cell--options"
-                                                          : ""
-                                                }`}
-                                            >
-                                                {flexRender(
-                                                    cell.column.columnDef.cell,
-                                                    cell.getContext(),
-                                                )}
-                                            </td>
-                                        ))}
-                                    </tr>
+                            </tr>
+                        ))}
+                    </thead>
+                    <tbody>
+                        {table.getRowModel().rows.map((row) => (
+                            <tr key={row.id} className="receipts-table__row">
+                                {row.getVisibleCells().map((cell) => (
+                                    <td
+                                        key={cell.id}
+                                        className={`receipts-table__cell${
+                                            cell.column.id === "fileName"
+                                                ? " receipts-table__cell--file"
+                                                : cell.column.id === "options"
+                                                  ? " receipts-table__cell--options"
+                                                  : ""
+                                        }`}
+                                    >
+                                        {flexRender(
+                                            cell.column.columnDef.cell,
+                                            cell.getContext(),
+                                        )}
+                                    </td>
                                 ))}
-                            </tbody>
-                        </table>
-                    </div>
+                            </tr>
+                        ))}
+                    </tbody>
+                </table>
+            </div>
 
-                    <TablePagination
-                        currentPage={table.getState().pagination.pageIndex + 1}
-                        totalPages={table.getPageCount()}
-                        pageSize={table.getState().pagination.pageSize}
-                        canPreviousPage={table.getCanPreviousPage()}
-                        canNextPage={table.getCanNextPage()}
-                        onPageChange={(page) => setPageIndex(page - 1)}
-                        onPageSizeChange={(size) => {
-                            setPageSize(size);
-                            setPageIndex(0);
-                        }}
-                    />
-                </>
-            )}
+            <TablePagination
+                currentPage={pagination?.currentPage ?? 1}
+                totalPages={pagination?.totalPages ?? 1}
+                pageSize={query.limit}
+                canPreviousPage={pagination?.hasPrevPage ?? false}
+                canNextPage={pagination?.hasNextPage ?? false}
+                onPageChange={(page) => query.changePage(page)}
+                onPageSizeChange={(size) => query.changeLimit(size)}
+            />
         </section>
     );
 };
 
 export default ReceiptsTable;
+
+
+
+

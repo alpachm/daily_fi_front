@@ -239,7 +239,14 @@
     "tableEmptySelectDate": "Selecciona una fecha para ver los comprobantes",
     "optionViewReceipt": "Visualizar comprobante",
     "optionDownloadReceipt": "Descargar comprobante",
-    "optionDeleteReceipt": "Eliminar comprobante"
+    "optionDeleteReceipt": "Eliminar comprobante",
+    "tableHeaderType": "Tipo",
+    "tableEmptyInstructions": "Selecciona la fecha, el tipo de comprobante y haz clic en 'Consultar' para ver los registros.",
+    "tableEmptyNoResults": "No se encontraron comprobantes para esta consulta.",
+    "tableErrorValidation": "La consulta no es válida. Revisa la fecha seleccionada e inténtalo de nuevo.",
+    "tableErrorUnauthorized": "Sesión expirada o no autorizada. Por favor inicia sesión de nuevo.",
+    "tableErrorNetwork": "No se pudo conectar con el servidor. Inténtalo de nuevo.",
+    "tableErrorServer": "Ocurrió un error inesperado en el servidor. Inténtalo de nuevo."
   },
   "TablePagination": {
     "rowsPerPageLabel": "Registros por página",

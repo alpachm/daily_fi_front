@@ -204,3 +204,44 @@
         padding-right: 0.75rem;
     }
 }
+
+.receipts-table__skeleton {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.receipts-table__skeleton-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr 2fr 1fr;
+    gap: 1rem;
+    padding: 0.75rem 1rem;
+}
+
+.receipts-table__skeleton-cell {
+    height: 1rem;
+}
+
+.receipts-table__error {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 1.25rem 1rem;
+    border: 1px solid color-mix(in srgb, var(--status-error) 40%, transparent);
+    border-radius: 12px;
+    background-color: color-mix(in srgb, var(--status-error) 8%, transparent);
+    transition:
+        border-color 0.3s ease,
+        background-color 0.3s ease;
+}
+
+.receipts-table__error-icon {
+    flex-shrink: 0;
+    color: var(--status-error);
+}
+
+.receipts-table__error-text {
+    margin: 0;
+    font-size: 0.875rem;
+    color: var(--status-error);
+}

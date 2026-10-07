@@ -239,7 +239,14 @@
     "tableEmptySelectDate": "Select a date to view the vouchers",
     "optionViewReceipt": "View receipt",
     "optionDownloadReceipt": "Download receipt",
-    "optionDeleteReceipt": "Delete receipt"
+    "optionDeleteReceipt": "Delete receipt",
+    "tableHeaderType": "Type",
+    "tableEmptyInstructions": "Select the date, the voucher type and click 'Check' to view the records.",
+    "tableEmptyNoResults": "No vouchers were found for this query.",
+    "tableErrorValidation": "The query is invalid. Check the selected date and try again.",
+    "tableErrorUnauthorized": "Session expired or unauthorized. Please sign in again.",
+    "tableErrorNetwork": "Unable to reach the server. Please try again.",
+    "tableErrorServer": "An unexpected error occurred on the server. Please try again."
   },
   "TablePagination": {
     "rowsPerPageLabel": "Rows per page",

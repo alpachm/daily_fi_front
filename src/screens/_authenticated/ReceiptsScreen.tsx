@@ -1,7 +1,9 @@
 // src/screens/_authenticated/ReceiptsScreen.tsx
 import "../../styles/ReceiptsScreen.css";
+import { useCallback } from "react";
 import { ReceiptsMenu } from "../../components/ReceiptsScreen/ReceiptsMenu";
 import { ReceiptsTable } from "../../components/ReceiptsScreen/ReceiptsTable";
+import { useGetReceiptsPerDay } from "../../hooks/useGetReceiptsPerDay";
 import { useReceiptsMenu } from "../../hooks/useReceiptsMenu";
 
 export const ReceiptsScreen = () => {
@@ -14,6 +16,16 @@ export const ReceiptsScreen = () => {
         handleReceiptTypeChange,
     } = useReceiptsMenu();
 
+    const receiptsQuery = useGetReceiptsPerDay();
+    const { search } = receiptsQuery;
+
+    const handleConsult = useCallback((): void => {
+        if (selectedDate === null) {
+            return;
+        }
+        search({ date: selectedDate, type: receiptType });
+    }, [search, selectedDate, receiptType]);
+
     return (
         <div className="receipts-screen">
             <ReceiptsMenu
@@ -23,8 +35,9 @@ export const ReceiptsScreen = () => {
                 formattedDate={formattedDate}
                 onDateChange={handleDateChange}
                 onTypeChange={handleReceiptTypeChange}
+                onConsult={handleConsult}
             />
-            <ReceiptsTable selectedDate={selectedDate} receiptType={receiptType} />
+            <ReceiptsTable query={receiptsQuery} />
         </div>
     );
 };
