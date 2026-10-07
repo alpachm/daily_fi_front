@@ -30,7 +30,9 @@ export const UploadReceiptsModal = ({
     onUploadSuccess,
 }: UploadReceiptsModalProps) => {
     const { t } = useTranslation("");
-    const [selectedDate, setSelectedDate] = useState<string | null>(null);
+    const [selectedDate, setSelectedDate] = useState<string | null>(() =>
+        getTodayIsoDate(),
+    );
     const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
     const fileInputRef = useRef<HTMLInputElement | null>(null);
     const dialogRef = useRef<HTMLDivElement | null>(null);
@@ -40,7 +42,7 @@ export const UploadReceiptsModal = ({
     // Reset local state every time the modal closes so it opens fresh next time.
     useEffect(() => {
         if (!isOpen) {
-            setSelectedDate(null);
+            setSelectedDate(getTodayIsoDate());
             setSelectedFiles([]);
         }
     }, [isOpen]);

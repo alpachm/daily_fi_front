@@ -1,7 +1,7 @@
 // src/components/ReceiptsScreen/ReceiptsMenu.tsx
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
-import { Upload } from "lucide-react";
+import { Search, Upload } from "lucide-react";
 import type { ReceiptType } from "../../hooks/useReceiptsMenu";
 import { UploadReceiptsModal } from "./UploadReceiptsModal";
 import "./styles/ReceiptsMenu.css";
@@ -28,6 +28,11 @@ export const ReceiptsMenu = ({
 
     const hasSelectedDate = selectedDate !== null;
 
+    const handleConsult = (): void => {
+        // Placeholder for future receipt lookup integration.
+        console.log("ReceiptsMenu: consult receipts", selectedDate, receiptType);
+    };
+
     const title =
         hasSelectedDate && formattedDate
             ? t("ReceiptsScreen.menuTitleWithDate", { date: formattedDate })
@@ -36,56 +41,62 @@ export const ReceiptsMenu = ({
     return (
         <div className="receipts-menu">
             <div className="receipts-menu__header">
-                <div className="receipts-menu__controls">
-                    <h2 className="receipts-menu__title">{title}</h2>
+                <h2 className="receipts-menu__title">{title}</h2>
 
-                    <div className="receipts-menu__filters">
-                        <input
-                            type="date"
-                            className="receipts-menu__date-input"
-                            value={selectedDate ?? ""}
-                            max={today}
-                            onChange={(event) => onDateChange(event.target.value)}
-                            aria-label={t("ReceiptsScreen.menuDateLabel")}
-                        />
-
-                        <div
-                            className="receipts-menu__type-group"
-                            role="group"
-                            aria-label={t("ReceiptsScreen.menuTypeGroupLabel")}
+                <div className="receipts-menu__bar">
+                    <div
+                        className="receipts-menu__type-group"
+                        role="group"
+                        aria-label={t("ReceiptsScreen.menuTypeGroupLabel")}
+                    >
+                        <button
+                            type="button"
+                            className={`receipts-menu__type-btn${
+                                receiptType === "sell"
+                                    ? " receipts-menu__type-btn--active"
+                                    : ""
+                            }`}
+                            disabled={!hasSelectedDate}
+                            aria-pressed={receiptType === "sell"}
+                            onClick={() => onTypeChange("sell")}
                         >
-                            <button
-                                type="button"
-                                className={`receipts-menu__type-btn${
-                                    receiptType === "sell"
-                                        ? " receipts-menu__type-btn--active"
-                                        : ""
-                                }`}
-                                disabled={!hasSelectedDate}
-                                aria-pressed={receiptType === "sell"}
-                                onClick={() => onTypeChange("sell")}
-                            >
-                                {t("ReceiptsScreen.saleLabel")}
-                            </button>
+                            {t("ReceiptsScreen.saleLabel")}
+                        </button>
 
-                            <button
-                                type="button"
-                                className={`receipts-menu__type-btn${
-                                    receiptType === "buy"
-                                        ? " receipts-menu__type-btn--active"
-                                        : ""
-                                }`}
-                                disabled={!hasSelectedDate}
-                                aria-pressed={receiptType === "buy"}
-                                onClick={() => onTypeChange("buy")}
-                            >
-                                {t("ReceiptsScreen.purchaseLabel")}
-                            </button>
-                        </div>
+                        <button
+                            type="button"
+                            className={`receipts-menu__type-btn${
+                                receiptType === "buy"
+                                    ? " receipts-menu__type-btn--active"
+                                    : ""
+                            }`}
+                            disabled={!hasSelectedDate}
+                            aria-pressed={receiptType === "buy"}
+                            onClick={() => onTypeChange("buy")}
+                        >
+                            {t("ReceiptsScreen.purchaseLabel")}
+                        </button>
                     </div>
-                </div>
 
-                <div className="receipts-menu__actions">
+                    <input
+                        type="date"
+                        className="receipts-menu__date-input"
+                        value={selectedDate ?? ""}
+                        max={today}
+                        onChange={(event) => onDateChange(event.target.value)}
+                        aria-label={t("ReceiptsScreen.menuDateLabel")}
+                    />
+
+                    <button
+                        type="button"
+                        className="receipts-menu__consult-btn"
+                        disabled={!hasSelectedDate}
+                        onClick={handleConsult}
+                    >
+                        <Search size={16} aria-hidden="true" />
+                        <span>{t("ReceiptsScreen.consultLabel")}</span>
+                    </button>
+
                     <button
                         type="button"
                         className="receipts-menu__upload-btn"

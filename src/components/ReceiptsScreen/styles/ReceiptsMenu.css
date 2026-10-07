@@ -1,6 +1,7 @@
 /* ============================================================
    src/components/ReceiptsScreen/styles/ReceiptsMenu.css
-   Receipts day selector + voucher type toggle menu
+   Receipts filter & control bar — day selector, voucher type
+   segmented control and primary upload action
    ============================================================ */
 
 .receipts-menu {
@@ -23,14 +24,6 @@
         box-shadow 0.3s ease;
 }
 
-.receipts-menu__controls {
-    display: flex;
-    flex-direction: column;
-    flex-wrap: wrap;
-    gap: 0.75rem;
-    min-width: 0;
-}
-
 .receipts-menu__title {
     margin: 0;
     width: 100%;
@@ -41,20 +34,72 @@
     transition: color 0.3s ease;
 }
 
-.receipts-menu__filters {
+.receipts-menu__bar {
     display: flex;
     align-items: center;
     flex-wrap: wrap;
     gap: 0.75rem;
 }
 
+.receipts-menu__type-group {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+    padding: 0.25rem;
+    background-color: var(--background);
+    border-radius: 12px;
+    transition: background-color 0.3s ease;
+}
+
+.receipts-menu__type-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    height: 2rem;
+    padding: 0 0.875rem;
+    font-size: 0.875rem;
+    font-weight: 600;
+    font-family: inherit;
+    white-space: nowrap;
+    color: var(--text-secondary);
+    background-color: transparent;
+    border: none;
+    border-radius: 9px;
+    cursor: pointer;
+    transition:
+        background-color 0.15s ease,
+        color 0.15s ease,
+        opacity 0.15s ease;
+}
+
+.receipts-menu__type-btn:hover:not(:disabled) {
+    color: var(--text-primary);
+}
+
+.receipts-menu__type-btn:focus-visible {
+    outline: 2px solid var(--btn-primary);
+    outline-offset: 2px;
+}
+
+.receipts-menu__type-btn--active {
+    background-color: var(--btn-primary);
+    color: var(--btn-text);
+}
+
+.receipts-menu__type-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    pointer-events: none;
+}
+
 .receipts-menu__date-input {
-    padding: 0.625rem 0.75rem;
+    height: 2.5rem;
+    padding: 0 0.75rem;
     font-size: 0.875rem;
     font-family: inherit;
     color: var(--text-primary);
     background-color: var(--background);
-    border: 2px solid var(--text-secondary);
+    border: 1px solid var(--text-secondary);
     border-radius: 10px;
     outline: none;
     transition:
@@ -67,55 +112,40 @@
     border-color: var(--btn-primary);
 }
 
-.receipts-menu__type-group {
+.receipts-menu__consult-btn {
     display: inline-flex;
     align-items: center;
+    justify-content: center;
     gap: 0.5rem;
-}
-
-.receipts-menu__type-btn {
-    padding: 0.625rem 1.25rem;
+    height: 2.5rem;
+    padding: 0 1rem;
     font-size: 0.875rem;
     font-weight: 600;
     font-family: inherit;
-    color: var(--text-secondary);
+    color: var(--text-primary);
     background-color: var(--background);
     border: 1px solid var(--text-secondary);
-    border-radius: 999px;
+    border-radius: 10px;
     cursor: pointer;
     transition:
-        background-color 0.15s ease,
         border-color 0.15s ease,
         color 0.15s ease,
         opacity 0.15s ease;
 }
 
-.receipts-menu__type-btn:hover:not(:disabled) {
+.receipts-menu__consult-btn:hover:not(:disabled) {
     border-color: var(--btn-primary);
     color: var(--btn-primary);
 }
 
-.receipts-menu__type-btn:focus-visible {
+.receipts-menu__consult-btn:focus-visible {
     outline: 2px solid var(--btn-primary);
     outline-offset: 2px;
 }
 
-.receipts-menu__type-btn--active {
-    background-color: var(--btn-primary);
-    border-color: var(--btn-primary);
-    color: var(--btn-text);
-}
-
-.receipts-menu__type-btn:disabled {
+.receipts-menu__consult-btn:disabled {
     opacity: 0.5;
     cursor: not-allowed;
-    pointer-events: none;
-}
-
-.receipts-menu__actions {
-    display: flex;
-    align-items: center;
-    width: 100%;
 }
 
 .receipts-menu__upload-btn {
@@ -123,8 +153,9 @@
     align-items: center;
     justify-content: center;
     gap: 0.5rem;
-    width: 100%;
-    padding: 0.75rem 1.25rem;
+    height: 2.5rem;
+    padding: 0 1.25rem;
+    margin-left: auto;
     font-size: 0.875rem;
     font-weight: 600;
     font-family: inherit;
@@ -145,36 +176,4 @@
 .receipts-menu__upload-btn:focus-visible {
     outline: 2px solid var(--btn-primary);
     outline-offset: 2px;
-}
-
-/* ------------------------------------------------------------
-   Desktop: restore side-by-side horizontal alignment
-   ------------------------------------------------------------ */
-@media (min-width: 769px) {
-    .receipts-menu__header {
-        flex-direction: row;
-        justify-content: space-between;
-        align-items: center;
-        gap: 1.5rem;
-        flex-wrap: wrap;
-    }
-
-    .receipts-menu__controls {
-        flex: 1;
-        flex-wrap: nowrap;
-        gap: 0.875rem;
-    }
-
-    .receipts-menu__title {
-        width: auto;
-    }
-
-    .receipts-menu__actions {
-        width: auto;
-        flex-shrink: 0;
-    }
-
-    .receipts-menu__upload-btn {
-        width: auto;
-    }
 }

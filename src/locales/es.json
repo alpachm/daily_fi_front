@@ -205,6 +205,7 @@
     "menuTypeGroupLabel": "Tipo de comprobante",
     "saleLabel": "Venta",
     "purchaseLabel": "Compra",
+    "consultLabel": "Consultar",
     "uploadLabel": "Cargar comprobantes",
     "uploadModalDateLabel": "Selecciona el día de los comprobantes",
     "uploadModalSelectFiles": "Seleccionar archivos",
