@@ -63,13 +63,46 @@ type ViewMode = "days" | "months" | "years";
 const PAGE_SIZE_OPTIONS: number[] = [10, 50, 100];
 const DEFAULT_PAGE = 1;
 const DEFAULT_LIMIT = 10;
-const DEFAULT_FILTER: FilterPeriod = "day";
 const DEFAULT_VIEW_MODE: ViewMode = "days";
 
 const FILTER_TO_VIEW_MODE: Record<FilterPeriod, ViewMode> = {
     day: "days",
     month: "months",
     year: "years",
+};
+
+const VIEW_MODE_STORAGE_KEY = "history_table_view_mode";
+
+const VIEW_MODE_TO_FILTER: Record<ViewMode, FilterPeriod> = {
+    days: "day",
+    months: "month",
+    years: "year",
+};
+
+const readStoredViewMode = (): ViewMode => {
+    try {
+        const stored = window.localStorage.getItem(VIEW_MODE_STORAGE_KEY);
+        if (stored === "days" || stored === "months" || stored === "years") {
+            return stored;
+        }
+    } catch (error) {
+        console.warn(
+            `HistoryTable: failed to read "${VIEW_MODE_STORAGE_KEY}"`,
+            error,
+        );
+    }
+    return DEFAULT_VIEW_MODE;
+};
+
+const writeStoredViewMode = (mode: ViewMode): void => {
+    try {
+        window.localStorage.setItem(VIEW_MODE_STORAGE_KEY, mode);
+    } catch (error) {
+        console.warn(
+            `HistoryTable: failed to write "${VIEW_MODE_STORAGE_KEY}"`,
+            error,
+        );
+    }
 };
 
 const getAmountTone = (value: number): AmountTone => {
@@ -162,8 +195,10 @@ export const HistoryTable = () => {
     const [limit, setLimit] = useState<number>(DEFAULT_LIMIT);
     const [openMenuRowId, setOpenMenuRowId] = useState<string | null>(null);
     const popoverRef = useRef<HTMLDivElement | null>(null);
-    const [filter, setFilter] = useState<FilterPeriod>(DEFAULT_FILTER);
-    const [viewMode, setViewMode] = useState<ViewMode>(DEFAULT_VIEW_MODE);
+    const [filter, setFilter] = useState<FilterPeriod>(() =>
+        VIEW_MODE_TO_FILTER[readStoredViewMode()],
+    );
+    const [viewMode, setViewMode] = useState<ViewMode>(readStoredViewMode);
     const [isChartModalOpen, setIsChartModalOpen] = useState<boolean>(false);
 
     const { isOpen, containerRef, toggle, select } = useBalanceFilter(
@@ -199,8 +234,10 @@ export const HistoryTable = () => {
     const closeChartModal = (): void => setIsChartModalOpen(false);
 
     const handleFilterSelect = (nextFilter: FilterPeriod): void => {
+        const nextViewMode = FILTER_TO_VIEW_MODE[nextFilter];
         select(nextFilter);
-        setViewMode(FILTER_TO_VIEW_MODE[nextFilter]);
+        setViewMode(nextViewMode);
+        writeStoredViewMode(nextViewMode);
         setPage(DEFAULT_PAGE);
     };
 
