@@ -60,3 +60,30 @@ export const formatShortDate = (isoDate: string, locale?: string): string => {
         month: "short",
     }).format(date);
 };
+
+/**
+ * Formats an ISO date (`YYYY-MM-DD`) as a localized full date
+ * (e.g. "6 oct 2026" / "Oct 6, 2026"). Falls back to the raw value when the
+ * input is not a parseable ISO date.
+ */
+export const formatFullDate = (isoDate: string, locale?: string): string => {
+    const [year, month, day] = isoDate.split("-");
+    const parsedYear = Number(year);
+    const parsedMonth = Number(month);
+    const parsedDay = Number(day);
+
+    if (
+        !Number.isFinite(parsedYear) ||
+        !Number.isFinite(parsedMonth) ||
+        !Number.isFinite(parsedDay)
+    ) {
+        return isoDate;
+    }
+
+    const date = new Date(parsedYear, parsedMonth - 1, parsedDay);
+    return new Intl.DateTimeFormat(locale, {
+        day: "numeric",
+        month: "short",
+        year: "numeric",
+    }).format(date);
+};

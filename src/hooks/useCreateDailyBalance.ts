@@ -36,6 +36,11 @@ export const useCreateDailyBalance = () => {
                 dailyBalanceQueryKey(date),
                 response.data,
             );
+
+            // Invalidate daily, monthly, and yearly balance queries
+            queryClient.invalidateQueries({ queryKey: ["daily-balances"] });
+            queryClient.invalidateQueries({ queryKey: ["monthly-balances"] });
+            queryClient.invalidateQueries({ queryKey: ["yearly-balances"] });
         },
     });
 };
