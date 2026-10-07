@@ -35,15 +35,17 @@ export interface HistoryRecord {
     totalExpenses: number;
 }
 
-interface MonthlyHistoryRecord {
+interface AggregatedHistoryRecord {
     id: string;
     period: string;
-    totalIncome: number;
-    totalExpenses: number;
+    openingBalance: number;
+    closingBalance: number;
     netProfit: number;
 }
 
-type ActionMenuHandler = (record: HistoryRecord) => void;
+type ActionMenuHandler = (
+    record: HistoryRecord | AggregatedHistoryRecord,
+) => void;
 
 interface ActionMenuItem {
     id: string;
@@ -72,6 +74,15 @@ const getAmountTone = (value: number): AmountTone => {
     if (value > 0) return "positive";
     if (value < 0) return "negative";
     return "neutral";
+};
+
+const getNetProfitTone = (value: number): AmountTone =>
+    value >= 0 ? "positive" : "negative";
+
+const resolveDayProfitLoss = (record: HistoryRecord): number => {
+    if (record.totalIncome > 0) return record.totalIncome;
+    if (record.totalExpenses > 0) return -record.totalExpenses;
+    return 0;
 };
 
 const formatSignedCurrency = (value: number, locale: string): string => {
@@ -104,11 +115,11 @@ const formatMonthPeriod = (year: number, month: number, locale: string): string 
 const mapMonthlyBalanceToHistoryRecord = (
     item: MonthlyBalanceItem,
     locale: string,
-): MonthlyHistoryRecord => ({
+): AggregatedHistoryRecord => ({
     id: String(item.id),
     period: formatMonthPeriod(item.year, item.month, locale),
-    totalIncome: item.totalIncome,
-    totalExpenses: item.totalExpenses,
+    openingBalance: item.openingBalance,
+    closingBalance: item.closingBalance,
     netProfit: item.netProfit,
 });
 
@@ -184,7 +195,7 @@ export const HistoryTable = () => {
         [dailyQuery.data, i18n.language],
     );
 
-    const monthlyRecords = useMemo<MonthlyHistoryRecord[]>(
+    const monthlyRecords = useMemo<AggregatedHistoryRecord[]>(
         () =>
             (monthlyQuery.data ?? []).map((item) =>
                 mapMonthlyBalanceToHistoryRecord(item, i18n.language),
@@ -193,9 +204,9 @@ export const HistoryTable = () => {
     );
 
     // Placeholder: the "years" aggregation endpoint is not available yet.
-    const yearsRecords: MonthlyHistoryRecord[] = [];
+    const yearsRecords: AggregatedHistoryRecord[] = [];
 
-    const aggregatedRecords: MonthlyHistoryRecord[] =
+    const aggregatedRecords: AggregatedHistoryRecord[] =
         viewMode === "months" ? monthlyRecords : yearsRecords;
 
     const activeRecords =
@@ -276,6 +287,65 @@ export const HistoryTable = () => {
         };
     }, [openMenuRowId]);
 
+    const renderOptionsCell = (
+        record: HistoryRecord | AggregatedHistoryRecord,
+    ) => {
+        const isOpen = openMenuRowId === record.id;
+
+        return (
+            <td className="history-table__cell">
+                <div
+                    className="history-table__options-cell"
+                    ref={isOpen ? popoverRef : undefined}
+                >
+                    <button
+                        type="button"
+                        className="history-table__options-button"
+                        aria-label={t("DetailsScreen.tableOptionsMenuLabel")}
+                        aria-haspopup="menu"
+                        aria-expanded={isOpen}
+                        onClick={() =>
+                            setOpenMenuRowId((current) =>
+                                current === record.id ? null : record.id,
+                            )
+                        }
+                    >
+                        <MoreHorizontal size={18} aria-hidden="true" />
+                    </button>
+
+                    {isOpen ? (
+                        <div
+                            className="history-table__action-popover"
+                            role="menu"
+                            aria-label={t(
+                                "DetailsScreen.tableOptionsMenuLabel",
+                            )}
+                        >
+                            {actionItems.map((item) => (
+                                <button
+                                    key={item.id}
+                                    type="button"
+                                    className="history-table__action-item"
+                                    role="menuitem"
+                                    onClick={() => {
+                                        item.onSelect(record);
+                                        setOpenMenuRowId(null);
+                                    }}
+                                >
+                                    <item.icon
+                                        size={16}
+                                        aria-hidden="true"
+                                    />
+                                    <span>{item.label}</span>
+                                </button>
+                            ))}
+                        </div>
+                    ) : null}
+                </div>
+            </td>
+        );
+    };
+
     return (
         <section className="history-table" aria-labelledby="history-table-title">
             <header className="history-table__header">
@@ -311,43 +381,23 @@ export const HistoryTable = () => {
                 <table className="history-table__table">
                     <thead>
                         <tr>
-                            {viewMode === "days" ? (
-                                <>
-                                    <th scope="col" className="history-table__header-cell">
-                                        {t("DetailsScreen.tableHeaderDate")}
-                                    </th>
-                                    <th scope="col" className="history-table__header-cell">
-                                        {t("DetailsScreen.tableHeaderOpeningBalance")}
-                                    </th>
-                                    <th scope="col" className="history-table__header-cell">
-                                        {t("DetailsScreen.tableHeaderClosingBalance")}
-                                    </th>
-                                    <th scope="col" className="history-table__header-cell">
-                                        {t("DetailsScreen.tableHeaderIncome")}
-                                    </th>
-                                    <th scope="col" className="history-table__header-cell">
-                                        {t("DetailsScreen.tableHeaderExpenses")}
-                                    </th>
-                                    <th scope="col" className="history-table__header-cell">
-                                        {t("DetailsScreen.tableHeaderOptions")}
-                                    </th>
-                                </>
-                            ) : (
-                                <>
-                                    <th scope="col" className="history-table__header-cell">
-                                        {t("DetailsScreen.tableHeaderPeriod")}
-                                    </th>
-                                    <th scope="col" className="history-table__header-cell">
-                                        {t("DetailsScreen.tableHeaderTotalIncome")}
-                                    </th>
-                                    <th scope="col" className="history-table__header-cell">
-                                        {t("DetailsScreen.tableHeaderTotalExpenses")}
-                                    </th>
-                                    <th scope="col" className="history-table__header-cell">
-                                        {t("DetailsScreen.tableHeaderNetProfit")}
-                                    </th>
-                                </>
-                            )}
+                            <th scope="col" className="history-table__header-cell">
+                                {viewMode === "days"
+                                    ? t("DetailsScreen.tableHeaderDate")
+                                    : t("DetailsScreen.tableHeaderPeriod")}
+                            </th>
+                            <th scope="col" className="history-table__header-cell">
+                                {t("DetailsScreen.tableHeaderOpeningBalance")}
+                            </th>
+                            <th scope="col" className="history-table__header-cell">
+                                {t("DetailsScreen.tableHeaderClosingBalance")}
+                            </th>
+                            <th scope="col" className="history-table__header-cell">
+                                {t("DetailsScreen.tableHeaderAmount")}
+                            </th>
+                            <th scope="col" className="history-table__header-cell">
+                                {t("DetailsScreen.tableHeaderOptions")}
+                            </th>
                         </tr>
                     </thead>
                     <tbody>
@@ -358,7 +408,7 @@ export const HistoryTable = () => {
                                     className="history-table__row"
                                 >
                                     {Array.from(
-                                        { length: viewMode === "days" ? 6 : 4 },
+                                        { length: 5 },
                                         (_, cellIndex) => (
                                             <td
                                                 key={`history-table-skeleton-cell-${cellIndex}`}
@@ -374,7 +424,7 @@ export const HistoryTable = () => {
                             <tr>
                                 <td
                                     className="history-table__empty"
-                                    colSpan={viewMode === "days" ? 6 : 4}
+                                    colSpan={5}
                                 >
                                     {t("Common.error")}
                                 </td>
@@ -383,7 +433,7 @@ export const HistoryTable = () => {
                             <tr>
                                 <td
                                     className="history-table__empty"
-                                    colSpan={viewMode === "days" ? 6 : 4}
+                                    colSpan={5}
                                 >
                                     {t("DetailsScreen.tableEmptyState")}
                                 </td>
@@ -409,79 +459,18 @@ export const HistoryTable = () => {
                                         </span>
                                     </td>
                                     <td className="history-table__cell">
-                                        <span className="history-table__amount history-table__amount--positive">
-                                            {formatCurrency(
-                                                record.totalIncome,
-                                                i18n.language,
-                                            )}
-                                        </span>
-                                    </td>
-                                    <td className="history-table__cell">
-                                        <span className="history-table__amount history-table__amount--negative">
-                                            {formatCurrency(
-                                                record.totalExpenses,
-                                                i18n.language,
-                                            )}
-                                        </span>
-                                    </td>
-                                    <td className="history-table__cell">
-                                        <div
-                                            className="history-table__options-cell"
-                                            ref={
-                                                openMenuRowId === record.id
-                                                    ? popoverRef
-                                                    : undefined
-                                            }
+                                        <span
+                                            className={`history-table__amount history-table__amount--${getAmountTone(
+                                                resolveDayProfitLoss(record),
+                                            )}`}
                                         >
-                                            <button
-                                                type="button"
-                                                className="history-table__options-button"
-                                                aria-label={t(
-                                                    "DetailsScreen.tableOptionsMenuLabel",
-                                                )}
-                                                aria-haspopup="menu"
-                                                aria-expanded={openMenuRowId === record.id}
-                                                onClick={() =>
-                                                    setOpenMenuRowId((current) =>
-                                                        current === record.id
-                                                            ? null
-                                                            : record.id,
-                                                    )
-                                                }
-                                            >
-                                                <MoreHorizontal size={18} aria-hidden="true" />
-                                            </button>
-
-                                            {openMenuRowId === record.id ? (
-                                                <div
-                                                    className="history-table__action-popover"
-                                                    role="menu"
-                                                    aria-label={t(
-                                                        "DetailsScreen.tableOptionsMenuLabel",
-                                                    )}
-                                                >
-                                                    {actionItems.map((item) => (
-                                                        <button
-                                                            key={item.id}
-                                                            type="button"
-                                                            className="history-table__action-item"
-                                                            role="menuitem"
-                                                            onClick={() => {
-                                                                item.onSelect(record);
-                                                                setOpenMenuRowId(null);
-                                                            }}
-                                                        >
-                                                            <item.icon
-                                                                size={16}
-                                                                aria-hidden="true"
-                                                            />
-                                                            <span>{item.label}</span>
-                                                        </button>
-                                                    ))}
-                                                </div>
-                                            ) : null}
-                                        </div>
+                                            {formatSignedCurrency(
+                                                resolveDayProfitLoss(record),
+                                                i18n.language,
+                                            )}
+                                        </span>
                                     </td>
+                                    {renderOptionsCell(record)}
                                 </tr>
                             ))
                         ) : (
@@ -489,24 +478,24 @@ export const HistoryTable = () => {
                                 <tr key={record.id} className="history-table__row">
                                     <td className="history-table__cell">{record.period}</td>
                                     <td className="history-table__cell">
-                                        <span className="history-table__amount history-table__amount--positive">
+                                        <span className="history-table__amount history-table__amount--neutral">
                                             {formatCurrency(
-                                                record.totalIncome,
+                                                record.openingBalance,
                                                 i18n.language,
                                             )}
                                         </span>
                                     </td>
                                     <td className="history-table__cell">
-                                        <span className="history-table__amount history-table__amount--negative">
+                                        <span className="history-table__amount history-table__amount--neutral">
                                             {formatCurrency(
-                                                record.totalExpenses,
+                                                record.closingBalance,
                                                 i18n.language,
                                             )}
                                         </span>
                                     </td>
                                     <td className="history-table__cell">
                                         <span
-                                            className={`history-table__amount history-table__amount--${getAmountTone(
+                                            className={`history-table__amount history-table__amount--${getNetProfitTone(
                                                 record.netProfit,
                                             )}`}
                                         >
@@ -516,6 +505,7 @@ export const HistoryTable = () => {
                                             )}
                                         </span>
                                     </td>
+                                    {renderOptionsCell(record)}
                                 </tr>
                             ))
                         )}

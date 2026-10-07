@@ -20,6 +20,8 @@ export interface MonthlyBalanceItem {
     userId: number;
     year: number;
     month: number;
+    openingBalance: number;
+    closingBalance: number;
     totalIncome: number;
     totalExpenses: number;
     netProfit: number;

@@ -34,6 +34,8 @@ const isMonthlyBalanceItem = (value: unknown): value is MonthlyBalanceItem => {
         typeof value.userId === "number" &&
         typeof value.year === "number" &&
         typeof value.month === "number" &&
+        typeof value.openingBalance === "number" &&
+        typeof value.closingBalance === "number" &&
         typeof value.totalIncome === "number" &&
         typeof value.totalExpenses === "number" &&
         typeof value.netProfit === "number"
