@@ -5,11 +5,8 @@ import "./styles/BalanceChartContainer.css";
 import type { BalanceTone } from "../../hooks/useDailyBalance";
 import { useRecentDailyBalances } from "../../hooks/useRecentDailyBalances";
 import { formatShortDate } from "../../utils/date";
-import { Skeleton } from "../shared/Skeleton";
-import { BalanceChart } from "./BalanceChart";
-import type { BalanceDataPoint } from "./BalanceChart";
-import { NetBalanceChart } from "./NetBalanceChart";
-import type { NetBalanceDataPoint } from "./NetBalanceChart";
+import { BalanceChart } from "../shared/BalanceChart";
+import type { ChartDataPoint } from "../shared/BalanceChart";
 
 type BalanceChartTab = "general" | "income";
 
@@ -58,7 +55,7 @@ export const BalanceChartContainer = ({
 
     const { data: recentBalances, isLoading, isError } = useRecentDailyBalances();
 
-    const netBalanceData = useMemo<NetBalanceDataPoint[]>(() => {
+    const netBalanceData = useMemo<ChartDataPoint[]>(() => {
         if (!recentBalances || recentBalances.length === 0) {
             return [];
         }
@@ -66,12 +63,12 @@ export const BalanceChartContainer = ({
         return [...recentBalances]
             .sort((a, b) => a.date.localeCompare(b.date))
             .map((item) => ({
-                date: formatShortDate(item.date, i18n.language),
-                netValue: item.totalIncome - item.totalExpenses,
+                label: formatShortDate(item.date, i18n.language),
+                value: item.totalIncome - item.totalExpenses,
             }));
     }, [recentBalances, i18n.language]);
 
-    const balanceData = useMemo<BalanceDataPoint[]>(() => {
+    const balanceData = useMemo<ChartDataPoint[]>(() => {
         if (!recentBalances || recentBalances.length === 0) {
             return [];
         }
@@ -79,8 +76,8 @@ export const BalanceChartContainer = ({
         return [...recentBalances]
             .sort((a, b) => a.date.localeCompare(b.date))
             .map((item) => ({
-                date: formatShortDate(item.date, i18n.language),
-                amount: item.closingBalance,
+                label: formatShortDate(item.date, i18n.language),
+                value: item.closingBalance,
             }));
     }, [recentBalances, i18n.language]);
 
@@ -137,29 +134,30 @@ export const BalanceChartContainer = ({
                 </div>
             </div>
 
-            {isLoading ? (
-                <div className="balance-chart__state" role="status" aria-live="polite" aria-busy="true">
-                    <Skeleton className="balance-chart__state-skeleton" />
-                    <span className="balance-chart__state-label">{t("Common.loading")}</span>
-                </div>
-            ) : isError ? (
+            {isError ? (
                 <div className="balance-chart__state" role="status" aria-live="polite">
-                    <span className="balance-chart__state-label">{t("BalanceScreen.chartLoadError")}</span>
+                    <span className="balance-chart__state-label">
+                        {t("BalanceScreen.chartLoadError")}
+                    </span>
                 </div>
             ) : activeTab === "general" ? (
-                balanceData.length === 0 ? (
+                balanceData.length === 0 && !isLoading ? (
                     <div className="balance-chart__state" role="status" aria-live="polite">
-                        <span className="balance-chart__state-label">{t("BalanceScreen.chartEmpty")}</span>
+                        <span className="balance-chart__state-label">
+                            {t("BalanceScreen.chartEmpty")}
+                        </span>
                     </div>
                 ) : (
-                    <BalanceChart data={balanceData} />
+                    <BalanceChart data={balanceData} metricMode="balance" isLoading={isLoading} />
                 )
-            ) : netBalanceData.length === 0 ? (
+            ) : netBalanceData.length === 0 && !isLoading ? (
                 <div className="balance-chart__state" role="status" aria-live="polite">
-                    <span className="balance-chart__state-label">{t("BalanceScreen.chartEmpty")}</span>
+                    <span className="balance-chart__state-label">
+                        {t("BalanceScreen.chartEmpty")}
+                    </span>
                 </div>
             ) : (
-                <NetBalanceChart data={netBalanceData} />
+                <BalanceChart data={netBalanceData} metricMode="profit" isLoading={isLoading} />
             )}
         </section>
     );

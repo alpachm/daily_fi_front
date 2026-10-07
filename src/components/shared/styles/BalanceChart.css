@@ -1,0 +1,94 @@
+/* ============================================================
+   src/components/common/styles/BalanceChart.css
+   Reusable balance chart (area for balance, bar for profit)
+   ============================================================ */
+
+/* ---------- Loading state ---------- */
+.balance-chart__loading {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 0.75rem;
+    min-height: 300px;
+}
+
+.balance-chart__loading-skeleton {
+    width: 100%;
+    height: 300px;
+}
+
+.balance-chart__loading-label {
+    font-size: 0.875rem;
+    color: var(--text-secondary);
+}
+
+/* ---------- Area (balance) chart ---------- */
+.balance-chart__plot {
+    width: 100%;
+}
+
+/* Axis tick labels */
+.balance-chart__plot .recharts-cartesian-axis-tick-value {
+    fill: var(--text-secondary);
+    font-size: 0.75rem;
+    transition: fill 0.3s ease;
+}
+
+/* Horizontal grid lines */
+.balance-chart__plot .recharts-cartesian-grid line {
+    stroke: var(--text-secondary);
+    stroke-opacity: 0.2;
+}
+
+/* Area fill */
+.balance-chart__plot .recharts-area-area {
+    fill: var(--btn-primary);
+    fill-opacity: 0.15;
+    transition: fill 0.3s ease;
+}
+
+/* Area stroke */
+.balance-chart__plot .recharts-area-curve {
+    stroke: var(--btn-primary);
+    transition: stroke 0.3s ease;
+}
+
+/* Tooltip cursor line */
+.balance-chart__plot .recharts-tooltip-cursor {
+    stroke: var(--text-secondary);
+    stroke-opacity: 0.35;
+}
+
+/* Active data point on hover */
+.balance-chart__plot .recharts-active-dot {
+    fill: var(--btn-primary);
+    stroke: var(--card-background);
+    stroke-width: 2;
+}
+
+/* ---------- Bar (profit) chart ---------- */
+.net-balance-chart__plot {
+    width: 100%;
+}
+
+/* Axis tick labels */
+.net-balance-chart__plot .recharts-cartesian-axis-tick-value {
+    fill: var(--text-secondary);
+    font-size: 0.75rem;
+    transition: fill 0.3s ease;
+}
+
+/* Horizontal grid lines */
+.net-balance-chart__plot .recharts-cartesian-grid line {
+    stroke: var(--text-secondary);
+    stroke-opacity: 0.2;
+}
+
+/* Tooltip cursor band */
+.net-balance-chart__plot .recharts-tooltip-cursor {
+    fill: var(--text-secondary);
+    fill-opacity: 0.08;
+    stroke: var(--text-secondary);
+    stroke-opacity: 0.35;
+}
