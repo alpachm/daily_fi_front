@@ -14,10 +14,12 @@ import {
 } from "lucide-react";
 import { useAllDailyBalances } from "../../hooks/useAllDailyBalances";
 import { useMonthlyBalances } from "../../hooks/useMonthlyBalances";
+import { useYearlyBalances } from "../../hooks/useYearlyBalances";
 import { useBalanceFilter } from "../../hooks/useBalanceFilter";
 import type { FilterOption } from "../../hooks/useBalanceFilter";
 import type { DailyBalanceItem } from "../../interfaces/GetAllDailyBalancesService.interface";
 import type { MonthlyBalanceItem } from "../../interfaces/GetMonthlyBalancesService.interface";
+import type { YearlyBalanceItem } from "../../interfaces/GetYearlyBalancesService.interface";
 import { formatFullDate } from "../../utils/date";
 import type { FilterPeriod } from "./Balance";
 import { BalanceFilterMenu } from "./BalanceFilterMenu";
@@ -123,6 +125,16 @@ const mapMonthlyBalanceToHistoryRecord = (
     netProfit: item.netProfit,
 });
 
+const mapYearlyBalanceToHistoryRecord = (
+    item: YearlyBalanceItem,
+): AggregatedHistoryRecord => ({
+    id: String(item.id),
+    period: String(item.year),
+    openingBalance: item.openingBalance,
+    closingBalance: item.closingBalance,
+    netProfit: item.netProfit,
+});
+
 const mapDailyBalanceToHistoryRecord = (
     item: DailyBalanceItem,
     locale: string,
@@ -178,6 +190,11 @@ export const HistoryTable = () => {
         { enabled: viewMode === "months" },
     );
 
+    const yearlyQuery = useYearlyBalances(
+        { page, limit },
+        { enabled: viewMode === "years" },
+    );
+
     const openChartModal = (): void => setIsChartModalOpen(true);
     const closeChartModal = (): void => setIsChartModalOpen(false);
 
@@ -203,8 +220,13 @@ export const HistoryTable = () => {
         [monthlyQuery.data, i18n.language],
     );
 
-    // Placeholder: the "years" aggregation endpoint is not available yet.
-    const yearsRecords: AggregatedHistoryRecord[] = [];
+    const yearsRecords = useMemo<AggregatedHistoryRecord[]>(
+        () =>
+            (yearlyQuery.data ?? []).map((item) =>
+                mapYearlyBalanceToHistoryRecord(item),
+            ),
+        [yearlyQuery.data],
+    );
 
     const aggregatedRecords: AggregatedHistoryRecord[] =
         viewMode === "months" ? monthlyRecords : yearsRecords;
@@ -217,14 +239,14 @@ export const HistoryTable = () => {
             ? dailyQuery.isLoading
             : viewMode === "months"
               ? monthlyQuery.isLoading
-              : false;
+              : yearlyQuery.isLoading;
 
     const isError =
         viewMode === "days"
             ? dailyQuery.isError
             : viewMode === "months"
               ? monthlyQuery.isError
-              : false;
+              : yearlyQuery.isError;
 
     const actionItems = useMemo<ActionMenuItem[]>(
         () => [
