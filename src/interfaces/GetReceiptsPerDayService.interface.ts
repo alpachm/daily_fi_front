@@ -1,6 +1,12 @@
 // src/interfaces/GetReceiptsPerDayService.interface.ts
 
 /**
+ * Receipt category. Maps directly to the backend `type` query parameter and
+ * response field.
+ */
+export type ReceiptType = "PURCHASE" | "SALE";
+
+/**
  * A single receipt record returned by the "get receipts per day" endpoint.
  */
 export interface ReceiptItem {
@@ -8,7 +14,7 @@ export interface ReceiptItem {
     userId: number;
     dailyBalanceId: number;
     fileUrl: string;
-    type: "PURCHASE" | "SALE";
+    type: ReceiptType;
     date: string;
     description: string | null;
     category: string | null;
@@ -19,11 +25,13 @@ export interface ReceiptItem {
 /**
  * Request parameters accepted by `GetReceiptsPerDayService.getReceiptsPerDay`.
  *
- * `date` is required, while `page` and `limit` are optional and default to
- * `1` and `20` respectively at the service layer.
+ * `date` is required, while `type`, `page` and `limit` are optional. `page`
+ * and `limit` default to `1` and `20` respectively at the service layer, and
+ * `type` filters the returned receipts to `PURCHASE` or `SALE` when present.
  */
 export interface GetReceiptsPerDayParams {
     date: string;
+    type?: ReceiptType;
     page?: number;
     limit?: number;
 }
@@ -46,6 +54,7 @@ export interface PaginationMeta {
  */
 export interface GetReceiptsPerDayResponseData {
     date: string;
+    type?: ReceiptType;
     receipts: ReceiptItem[];
     pagination: PaginationMeta;
 }
@@ -68,9 +77,9 @@ export interface GetReceiptsPerDayFieldError {
 }
 
 /**
- * Response returned by the API when the `date`, `page` or `limit` query
- * parameters fail validation (HTTP 400), e.g. an invalid date, `page < 1`
- * or `limit > 100`.
+ * Response returned by the API when the `date`, `type`, `page` or `limit`
+ * query parameters fail validation (HTTP 400), e.g. an invalid date or type,
+ * `page < 1` or `limit > 100`.
  */
 export interface GetReceiptsPerDayValidationError {
     status: "fail";

@@ -6,6 +6,7 @@ import type {
     GetReceiptsPerDayApiError,
     GetReceiptsPerDayResponseData,
     ReceiptItem,
+    ReceiptType as ApiReceiptType,
 } from "../interfaces/GetReceiptsPerDayService.interface";
 import { useLocalStorage } from "./useLocalStorage";
 import type { ReceiptType } from "./useReceiptsMenu";
@@ -22,22 +23,32 @@ const RECEIPTS_PAGE_SIZE_KEY = "daily_fi_receipts_page_size";
 const DEFAULT_PAGE_SIZE = 10;
 
 /**
- * Criteria committed when the user clicks "Consultar". The date drives the
- * API request, while `type` is applied as a client-side filter because the
- * endpoint is scoped to a day and returns both PURCHASE and SALE receipts.
+ * Criteria committed when the user clicks "Consultar". The `date` and `type`
+ * drive the API request; `type` is translated to the backend `ReceiptType`
+ * (`PURCHASE` / `SALE`) before the request is issued, so the backend performs
+ * the filtering server-side.
  */
 export interface ReceiptsSearchParams {
     date: string;
     type: ReceiptType;
 }
 
+/**
+ * Maps the UI-facing receipt toggle (`"buy"` / `"sell"`) to the backend
+ * `ReceiptType` (`PURCHASE` / `SALE`).
+ */
+const toApiReceiptType = (type: ReceiptType): ApiReceiptType =>
+    type === "buy" ? "PURCHASE" : "SALE";
+
 const receiptsPerDayQueryKey = (
     date: string,
+    type: ApiReceiptType | null,
     page: number,
     limit: number,
-): readonly [string, string, number, number] => [
+): readonly [string, string, ApiReceiptType | null, number, number] => [
     "receipts-day",
     date,
+    type,
     page,
     limit,
 ];
@@ -46,8 +57,9 @@ const receiptsPerDayQueryKey = (
  * Fetches the receipts of a single day through `GetReceiptsPerDayService`.
  *
  * The query stays disabled until `search()` is called, so no request is fired
- * on screen mount. Pagination changes (page / page size) update the query key
- * and trigger a new fetch, mapping directly to the backend pagination metadata.
+ * on screen mount. Changing the selected date or type resets the page and
+ * updates the query key, while pagination changes (page / page size) map
+ * directly to the backend pagination metadata.
  */
 export const useGetReceiptsPerDay = () => {
     const [searchParams, setSearchParams] =
@@ -60,14 +72,23 @@ export const useGetReceiptsPerDay = () => {
 
     const hasSearched = searchParams !== null;
 
+    const apiType: ApiReceiptType | null =
+        searchParams === null ? null : toApiReceiptType(searchParams.type);
+
     const query = useQuery<
         GetReceiptsPerDayResponseData,
         GetReceiptsPerDayApiError
     >({
-        queryKey: receiptsPerDayQueryKey(searchParams?.date ?? "", page, limit),
+        queryKey: receiptsPerDayQueryKey(
+            searchParams?.date ?? "",
+            apiType,
+            page,
+            limit,
+        ),
         queryFn: () =>
             GetReceiptsPerDayService.getReceiptsPerDay({
                 date: searchParams?.date ?? "",
+                type: apiType ?? undefined,
                 page,
                 limit,
             }),
@@ -76,14 +97,10 @@ export const useGetReceiptsPerDay = () => {
         retry: 1,
     });
 
-    const receipts = useMemo<ReceiptItem[]>(() => {
-        const allReceipts = query.data?.receipts ?? [];
-        if (searchParams === null) {
-            return allReceipts;
-        }
-        const targetType = searchParams.type === "buy" ? "PURCHASE" : "SALE";
-        return allReceipts.filter((receipt) => receipt.type === targetType);
-    }, [query.data, searchParams]);
+    const receipts = useMemo<ReceiptItem[]>(
+        () => query.data?.receipts ?? [],
+        [query.data],
+    );
 
     const search = useCallback((params: ReceiptsSearchParams): void => {
         setSearchParams(params);

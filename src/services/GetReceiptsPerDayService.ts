@@ -9,6 +9,7 @@ import {
     type GetReceiptsPerDayValidationError,
     type PaginationMeta,
     type ReceiptItem,
+    type ReceiptType,
 } from "../interfaces/GetReceiptsPerDayService.interface";
 import { getAccessToken } from "../utils/auth";
 
@@ -29,6 +30,9 @@ const DEFAULT_LIMIT = 20;
 const isObject = (value: unknown): value is Record<string, unknown> =>
     typeof value === "object" && value !== null;
 
+const isReceiptType = (value: unknown): value is ReceiptType =>
+    value === "PURCHASE" || value === "SALE";
+
 const isReceiptItem = (value: unknown): value is ReceiptItem => {
     if (!isObject(value)) {
         return false;
@@ -38,7 +42,7 @@ const isReceiptItem = (value: unknown): value is ReceiptItem => {
         typeof value.userId === "number" &&
         typeof value.dailyBalanceId === "number" &&
         typeof value.fileUrl === "string" &&
-        (value.type === "PURCHASE" || value.type === "SALE") &&
+        isReceiptType(value.type) &&
         typeof value.date === "string" &&
         (value.description === null || typeof value.description === "string") &&
         (value.category === null || typeof value.category === "string") &&
@@ -105,6 +109,7 @@ const isSuccessResponse = (
     }
     return (
         typeof data.date === "string" &&
+        (data.type === undefined || isReceiptType(data.type)) &&
         Array.isArray(data.receipts) &&
         data.receipts.every(isReceiptItem) &&
         isPaginationMeta(data.pagination)
@@ -152,7 +157,11 @@ export const getReceiptsPerDay = async (
 ): Promise<GetReceiptsPerDayResponseData> => {
     const page = params.page ?? DEFAULT_PAGE;
     const limit = params.limit ?? DEFAULT_LIMIT;
-    const url = `${API_BASE_URL}${GET_RECEIPTS_PER_DAY_ENDPOINT}?date=${encodeURIComponent(params.date)}&page=${page}&limit=${limit}`;
+    const typeQuery =
+        params.type !== undefined
+            ? `&type=${encodeURIComponent(params.type)}`
+            : "";
+    const url = `${API_BASE_URL}${GET_RECEIPTS_PER_DAY_ENDPOINT}?date=${encodeURIComponent(params.date)}${typeQuery}&page=${page}&limit=${limit}`;
     const accessToken = getAccessToken();
 
     let response: Response;
