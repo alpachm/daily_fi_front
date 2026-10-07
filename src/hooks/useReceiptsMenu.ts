@@ -3,6 +3,41 @@ import { useCallback, useMemo, useState } from "react";
 
 export type ReceiptType = "sell" | "buy";
 
+const RECEIPT_TYPE_STORAGE_KEY = "last_selected_receipt_type";
+
+const DEFAULT_RECEIPT_TYPE: ReceiptType = "buy";
+
+const toStoredReceiptType = (type: ReceiptType): "PURCHASE" | "SALE" =>
+    type === "buy" ? "PURCHASE" : "SALE";
+
+const readStoredReceiptType = (): ReceiptType => {
+    try {
+        const stored = window.localStorage.getItem(RECEIPT_TYPE_STORAGE_KEY);
+        if (stored === "PURCHASE" || stored === "buy") return "buy";
+        if (stored === "SALE" || stored === "sell") return "sell";
+    } catch (error) {
+        console.warn(
+            `useReceiptsMenu: failed to read "${RECEIPT_TYPE_STORAGE_KEY}"`,
+            error,
+        );
+    }
+    return DEFAULT_RECEIPT_TYPE;
+};
+
+const persistReceiptType = (type: ReceiptType): void => {
+    try {
+        window.localStorage.setItem(
+            RECEIPT_TYPE_STORAGE_KEY,
+            toStoredReceiptType(type),
+        );
+    } catch (error) {
+        console.warn(
+            `useReceiptsMenu: failed to write "${RECEIPT_TYPE_STORAGE_KEY}"`,
+            error,
+        );
+    }
+};
+
 const getTodayIsoDate = (): string => {
     const now = new Date();
     const year = now.getFullYear();
@@ -27,10 +62,10 @@ interface UseReceiptsMenuResult {
 }
 
 export const useReceiptsMenu = (): UseReceiptsMenuResult => {
-    const [selectedDate, setSelectedDate] = useState<string | null>(null);
-    const [receiptType, setReceiptType] = useState<ReceiptType>("sell");
-
     const today = useMemo(() => getTodayIsoDate(), []);
+    const [selectedDate, setSelectedDate] = useState<string | null>(today);
+    const [receiptType, setReceiptType] =
+        useState<ReceiptType>(readStoredReceiptType);
 
     const formattedDate = useMemo(
         () => (selectedDate ? formatDisplayDate(selectedDate) : null),
@@ -40,7 +75,8 @@ export const useReceiptsMenu = (): UseReceiptsMenuResult => {
     const handleDateChange = useCallback((raw: string): void => {
         if (raw === "") {
             setSelectedDate(null);
-            setReceiptType("sell");
+            setReceiptType(DEFAULT_RECEIPT_TYPE);
+            persistReceiptType(DEFAULT_RECEIPT_TYPE);
             return;
         }
         setSelectedDate(raw);
@@ -48,6 +84,7 @@ export const useReceiptsMenu = (): UseReceiptsMenuResult => {
 
     const handleReceiptTypeChange = useCallback((type: ReceiptType): void => {
         setReceiptType(type);
+        persistReceiptType(type);
     }, []);
 
     return {

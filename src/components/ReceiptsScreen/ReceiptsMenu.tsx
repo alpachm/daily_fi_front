@@ -1,8 +1,9 @@
 // src/components/ReceiptsScreen/ReceiptsMenu.tsx
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
-import { Upload } from "lucide-react";
+import { Search, Upload } from "lucide-react";
 import type { ReceiptType } from "../../hooks/useReceiptsMenu";
+import { DatePickerInput } from "../shared/DatePickerInput";
 import { UploadReceiptsModal } from "./UploadReceiptsModal";
 import "./styles/ReceiptsMenu.css";
 
@@ -28,6 +29,11 @@ export const ReceiptsMenu = ({
 
     const hasSelectedDate = selectedDate !== null;
 
+    const handleConsult = (): void => {
+        // Placeholder for future receipt lookup integration.
+        console.log("ReceiptsMenu: consult receipts", selectedDate, receiptType);
+    };
+
     const title =
         hasSelectedDate && formattedDate
             ? t("ReceiptsScreen.menuTitleWithDate", { date: formattedDate })
@@ -36,19 +42,10 @@ export const ReceiptsMenu = ({
     return (
         <div className="receipts-menu">
             <div className="receipts-menu__header">
-                <div className="receipts-menu__controls">
-                    <h2 className="receipts-menu__title">{title}</h2>
+                <h2 className="receipts-menu__title">{title}</h2>
 
+                <div className="receipts-menu__bar">
                     <div className="receipts-menu__filters">
-                        <input
-                            type="date"
-                            className="receipts-menu__date-input"
-                            value={selectedDate ?? ""}
-                            max={today}
-                            onChange={(event) => onDateChange(event.target.value)}
-                            aria-label={t("ReceiptsScreen.menuDateLabel")}
-                        />
-
                         <div
                             className="receipts-menu__type-group"
                             role="group"
@@ -82,10 +79,25 @@ export const ReceiptsMenu = ({
                                 {t("ReceiptsScreen.purchaseLabel")}
                             </button>
                         </div>
-                    </div>
-                </div>
 
-                <div className="receipts-menu__actions">
+                        <DatePickerInput
+                            value={selectedDate}
+                            max={today}
+                            ariaLabel={t("ReceiptsScreen.menuDateLabel")}
+                            onChange={onDateChange}
+                        />
+                    </div>
+
+                    <button
+                        type="button"
+                        className="receipts-menu__consult-btn"
+                        disabled={!hasSelectedDate}
+                        onClick={handleConsult}
+                    >
+                        <Search size={16} aria-hidden="true" />
+                        <span>{t("ReceiptsScreen.consultLabel")}</span>
+                    </button>
+
                     <button
                         type="button"
                         className="receipts-menu__upload-btn"

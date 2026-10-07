@@ -94,24 +94,6 @@
     transition: color 0.3s ease;
 }
 
-.upload-receipts-modal__date-input {
-    padding: 0.625rem 0.75rem;
-    font-size: 0.875rem;
-    font-family: inherit;
-    color: var(--text-primary);
-    background-color: var(--background);
-    border: 2px solid var(--text-secondary);
-    border-radius: 10px;
-    outline: none;
-    transition:
-        border-color 0.2s ease,
-        background-color 0.3s ease,
-        color 0.3s ease;
-}
-
-.upload-receipts-modal__date-input:focus {
-    border-color: var(--btn-primary);
-}
 .upload-receipts-modal__dropzone {
     display: flex;
     flex-direction: column;
@@ -167,25 +149,84 @@
 .upload-receipts-modal__file-list {
     list-style: none;
     margin: 0.5rem 0 0;
-    padding: 0;
+    padding: 0 0.25rem 0 0;
     width: 100%;
     display: flex;
     flex-direction: column;
-    gap: 0.25rem;
-    max-height: 160px;
+    gap: 0.5rem;
+    max-height: 12rem;
     overflow-y: auto;
+    scrollbar-width: thin;
+    scrollbar-color: var(--text-secondary) transparent;
+}
+
+.upload-receipts-modal__file-list::-webkit-scrollbar {
+    width: 6px;
+}
+
+.upload-receipts-modal__file-list::-webkit-scrollbar-track {
+    background-color: transparent;
+}
+
+.upload-receipts-modal__file-list::-webkit-scrollbar-thumb {
+    background-color: var(--text-secondary);
+    border-radius: 9999px;
 }
 
 .upload-receipts-modal__file-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.5rem;
+    min-height: 2.5rem;
+    flex-shrink: 0;
     font-size: 0.75rem;
     color: var(--text-secondary);
     text-align: left;
-    padding: 0.375rem 0.625rem;
+    padding: 0.375rem 0.5rem 0.375rem 0.625rem;
     background-color: var(--card-background);
     border-radius: 6px;
+}
+
+.upload-receipts-modal__file-name {
+    flex: 1 1 auto;
+    min-width: 0;
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
+}
+
+.upload-receipts-modal__file-remove {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    width: 24px;
+    height: 24px;
+    padding: 0.25rem;
+    border: none;
+    border-radius: 6px;
+    background-color: transparent;
+    color: var(--text-secondary);
+    cursor: pointer;
+    transition:
+        color 0.15s ease,
+        background-color 0.15s ease;
+}
+
+.upload-receipts-modal__file-remove:hover:not(:disabled) {
+    color: var(--status-error);
+    background-color: var(--background);
+}
+
+.upload-receipts-modal__file-remove:focus-visible {
+    outline: 2px solid var(--status-error);
+    outline-offset: 2px;
+}
+
+.upload-receipts-modal__file-remove:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
 }
 
 .upload-receipts-modal__file-input {
@@ -246,6 +287,95 @@
 .upload-receipts-modal__upload-btn:disabled {
     opacity: 0.5;
     cursor: not-allowed;
+}
+
+.upload-receipts-modal__type-section {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.upload-receipts-modal__type-label {
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: var(--text-primary);
+    transition: color 0.3s ease;
+}
+
+.upload-receipts-modal__type-group {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+    padding: 0.25rem;
+    background-color: var(--background);
+    border-radius: 12px;
+    transition: background-color 0.3s ease;
+}
+
+.upload-receipts-modal__type-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex: 1;
+    height: 2rem;
+    padding: 0 0.875rem;
+    font-size: 0.875rem;
+    font-weight: 600;
+    font-family: inherit;
+    white-space: nowrap;
+    color: var(--text-secondary);
+    background-color: transparent;
+    border: none;
+    border-radius: 9px;
+    cursor: pointer;
+    transition:
+        background-color 0.15s ease,
+        color 0.15s ease,
+        opacity 0.15s ease;
+}
+
+.upload-receipts-modal__type-btn:hover:not(:disabled) {
+    color: var(--text-primary);
+}
+
+.upload-receipts-modal__type-btn:focus-visible {
+    outline: 2px solid var(--btn-primary);
+    outline-offset: 2px;
+}
+
+.upload-receipts-modal__type-btn--active {
+    background-color: var(--btn-primary);
+    color: var(--btn-text);
+}
+
+.upload-receipts-modal__type-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    pointer-events: none;
+}
+
+.upload-receipts-modal__spinner {
+    flex-shrink: 0;
+    animation: upload-receipts-modal__spin 0.8s linear infinite;
+}
+
+.upload-receipts-modal__cancel-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.upload-receipts-modal__close:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+@keyframes upload-receipts-modal__spin {
+    from {
+        transform: rotate(0deg);
+    }
+    to {
+        transform: rotate(360deg);
+    }
 }
 
 @keyframes upload-receipts-modal__fade-in {

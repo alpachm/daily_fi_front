@@ -1,6 +1,7 @@
 /* ============================================================
    src/components/ReceiptsScreen/styles/ReceiptsMenu.css
-   Receipts day selector + voucher type toggle menu
+   Receipts filter & control bar — day selector, voucher type
+   segmented control and primary upload action
    ============================================================ */
 
 .receipts-menu {
@@ -23,14 +24,6 @@
         box-shadow 0.3s ease;
 }
 
-.receipts-menu__controls {
-    display: flex;
-    flex-direction: column;
-    flex-wrap: wrap;
-    gap: 0.75rem;
-    min-width: 0;
-}
-
 .receipts-menu__title {
     margin: 0;
     width: 100%;
@@ -41,58 +34,58 @@
     transition: color 0.3s ease;
 }
 
-.receipts-menu__filters {
+/* Mobile-first: controls stack vertically and stretch to the full width. */
+.receipts-menu__bar {
     display: flex;
-    align-items: center;
-    flex-wrap: wrap;
+    flex-direction: column;
+    align-items: stretch;
+    width: 100%;
     gap: 0.75rem;
 }
 
-.receipts-menu__date-input {
-    padding: 0.625rem 0.75rem;
-    font-size: 0.875rem;
-    font-family: inherit;
-    color: var(--text-primary);
-    background-color: var(--background);
-    border: 2px solid var(--text-secondary);
-    border-radius: 10px;
-    outline: none;
-    transition:
-        border-color 0.2s ease,
-        background-color 0.3s ease,
-        color 0.3s ease;
-}
-
-.receipts-menu__date-input:focus {
-    border-color: var(--btn-primary);
+/* Segmented control + date input group. */
+.receipts-menu__filters {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 0.75rem;
+    width: 100%;
 }
 
 .receipts-menu__type-group {
-    display: inline-flex;
+    display: flex;
+    width: 100%;
     align-items: center;
-    gap: 0.5rem;
+    gap: 0.25rem;
+    padding: 0.25rem;
+    background-color: var(--background);
+    border-radius: 12px;
+    transition: background-color 0.3s ease;
 }
 
 .receipts-menu__type-btn {
-    padding: 0.625rem 1.25rem;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex: 1 1 0;
+    height: 2rem;
+    padding: 0 0.875rem;
     font-size: 0.875rem;
     font-weight: 600;
     font-family: inherit;
+    white-space: nowrap;
     color: var(--text-secondary);
-    background-color: var(--background);
-    border: 1px solid var(--text-secondary);
-    border-radius: 999px;
+    background-color: transparent;
+    border: none;
+    border-radius: 9px;
     cursor: pointer;
     transition:
         background-color 0.15s ease,
-        border-color 0.15s ease,
         color 0.15s ease,
         opacity 0.15s ease;
 }
 
 .receipts-menu__type-btn:hover:not(:disabled) {
-    border-color: var(--btn-primary);
-    color: var(--btn-primary);
+    color: var(--text-primary);
 }
 
 .receipts-menu__type-btn:focus-visible {
@@ -102,7 +95,6 @@
 
 .receipts-menu__type-btn--active {
     background-color: var(--btn-primary);
-    border-color: var(--btn-primary);
     color: var(--btn-text);
 }
 
@@ -112,19 +104,57 @@
     pointer-events: none;
 }
 
-.receipts-menu__actions {
-    display: flex;
-    align-items: center;
+/* Make the shared date input fill its grid cell on mobile. */
+.receipts-menu__filters .date-picker-input {
     width: 100%;
+}
+
+.receipts-menu__consult-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    gap: 0.5rem;
+    height: 2.5rem;
+    padding: 0 1rem;
+    font-size: 0.875rem;
+    font-weight: 600;
+    font-family: inherit;
+    color: var(--text-primary);
+    background-color: var(--background);
+    border: 1px solid var(--text-secondary);
+    border-radius: 10px;
+    cursor: pointer;
+    transition:
+        border-color 0.15s ease,
+        color 0.15s ease,
+        opacity 0.15s ease;
+}
+
+.receipts-menu__consult-btn:hover:not(:disabled) {
+    border-color: var(--btn-primary);
+    color: var(--btn-primary);
+}
+
+.receipts-menu__consult-btn:focus-visible {
+    outline: 2px solid var(--btn-primary);
+    outline-offset: 2px;
+}
+
+.receipts-menu__consult-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
 }
 
 .receipts-menu__upload-btn {
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    gap: 0.5rem;
     width: 100%;
-    padding: 0.75rem 1.25rem;
+    gap: 0.5rem;
+    height: 2.5rem;
+    padding: 0 1.25rem;
+    margin-left: 0;
     font-size: 0.875rem;
     font-weight: 600;
     font-family: inherit;
@@ -147,34 +177,47 @@
     outline-offset: 2px;
 }
 
-/* ------------------------------------------------------------
-   Desktop: restore side-by-side horizontal alignment
-   ------------------------------------------------------------ */
-@media (min-width: 769px) {
-    .receipts-menu__header {
+/* Small screens: balance the segmented control and date input side by side. */
+@media (min-width: 640px) {
+    .receipts-menu__filters {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+}
+
+/* Desktop: restore the original horizontal inline layout. */
+@media (min-width: 768px) {
+    .receipts-menu__bar {
         flex-direction: row;
-        justify-content: space-between;
         align-items: center;
-        gap: 1.5rem;
         flex-wrap: wrap;
+        gap: 0.75rem;
     }
 
-    .receipts-menu__controls {
-        flex: 1;
-        flex-wrap: nowrap;
-        gap: 0.875rem;
-    }
-
-    .receipts-menu__title {
+    .receipts-menu__filters {
+        display: flex;
+        align-items: center;
         width: auto;
     }
 
-    .receipts-menu__actions {
+    .receipts-menu__type-group {
+        display: inline-flex;
         width: auto;
-        flex-shrink: 0;
+    }
+
+    .receipts-menu__type-btn {
+        flex: initial;
+    }
+
+    .receipts-menu__filters .date-picker-input {
+        width: auto;
+    }
+
+    .receipts-menu__consult-btn {
+        width: auto;
     }
 
     .receipts-menu__upload-btn {
         width: auto;
+        margin-left: auto;
     }
 }
