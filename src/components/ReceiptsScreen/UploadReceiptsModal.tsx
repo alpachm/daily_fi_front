@@ -98,6 +98,16 @@ export const UploadReceiptsModal = ({
         setSelectedFiles(files);
     };
 
+    const handleRemoveFile = (
+        event: MouseEvent<HTMLButtonElement>,
+        index: number,
+    ): void => {
+        event.stopPropagation();
+        setSelectedFiles((previousFiles) =>
+            previousFiles.filter((_, fileIndex) => fileIndex !== index),
+        );
+    };
+
     const handleDropzoneClick = (): void => {
         if (!selectedDate || isPending) return;
         fileInputRef.current?.click();
@@ -296,7 +306,23 @@ export const UploadReceiptsModal = ({
                                             key={`${file.name}-${index}`}
                                             className="upload-receipts-modal__file-item"
                                         >
-                                            {file.name}
+                                            <span className="upload-receipts-modal__file-name">
+                                                {file.name}
+                                            </span>
+                                            <button
+                                                type="button"
+                                                className="upload-receipts-modal__file-remove"
+                                                onClick={(event) =>
+                                                    handleRemoveFile(event, index)
+                                                }
+                                                disabled={isPending}
+                                                aria-label={t(
+                                                    "ReceiptsScreen.uploadModalRemoveFile",
+                                                    { fileName: file.name },
+                                                )}
+                                            >
+                                                <X size={14} aria-hidden="true" />
+                                            </button>
                                         </li>
                                     ))}
                                 </ul>
