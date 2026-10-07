@@ -16,6 +16,7 @@ import {
 } from "../../interfaces/UploadReceiptsService.interface";
 import { getTodayIsoDate } from "../../utils/date";
 import { AutomaticAlertModal } from "../shared/AutomaticAlertModal";
+import { DatePickerInput } from "../shared/DatePickerInput";
 import "./styles/UploadReceiptsModal.css";
 
 export interface UploadReceiptsModalProps {
@@ -88,8 +89,8 @@ export const UploadReceiptsModal = ({
         setAlert(null);
     }, []);
 
-    const handleDateChange = (event: ChangeEvent<HTMLInputElement>): void => {
-        setSelectedDate(event.target.value || null);
+    const handleDateChange = (value: string): void => {
+        setSelectedDate(value || null);
     };
 
     const handleFileChange = (event: ChangeEvent<HTMLInputElement>): void => {
@@ -222,11 +223,9 @@ export const UploadReceiptsModal = ({
                         >
                             {t("ReceiptsScreen.uploadModalDateLabel")}
                         </label>
-                        <input
+                        <DatePickerInput
                             id="upload-receipts-modal-date"
-                            type="date"
-                            className="upload-receipts-modal__date-input"
-                            value={selectedDate ?? ""}
+                            value={selectedDate}
                             max={today}
                             disabled={isPending}
                             onChange={handleDateChange}

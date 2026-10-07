@@ -1,0 +1,48 @@
+/* ============================================================
+   src/components/shared/styles/DatePickerInput.css
+   Reusable native date input with a clearly visible calendar icon
+   ============================================================ */
+
+.date-picker-input {
+    padding: 0.625rem 0.75rem;
+    font-size: 0.875rem;
+    font-family: inherit;
+    color: var(--text-primary);
+    background-color: var(--background);
+    border: 2px solid var(--text-secondary);
+    border-radius: 10px;
+    outline: none;
+    /* Defensive: guarantee the field can receive pointer events and default
+       the native date popup to the light theme (overridden for dark below). */
+    pointer-events: auto;
+    color-scheme: light;
+    transition:
+        border-color 0.2s ease,
+        background-color 0.3s ease,
+        color 0.3s ease;
+}
+
+.date-picker-input:focus {
+    border-color: var(--btn-primary);
+}
+
+/* Keep the native calendar picker icon visible and clearly clickable in both
+   themes. Without an explicit color, Chromium's default indicator can become
+   nearly invisible against the dark `--background`, making the field look
+   frozen even though it is still interactive. */
+.date-picker-input::-webkit-calendar-picker-indicator {
+    cursor: pointer;
+    opacity: 1;
+    color: var(--text-secondary);
+    transition: color 0.2s ease;
+}
+
+.date-picker-input::-webkit-calendar-picker-indicator:hover {
+    color: var(--btn-primary);
+}
+
+/* Match the native calendar popup to the dark theme. */
+html.dark .date-picker-input,
+body.dark .date-picker-input {
+    color-scheme: dark;
+}

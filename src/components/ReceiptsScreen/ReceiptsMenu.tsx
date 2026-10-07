@@ -3,6 +3,7 @@ import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Search, Upload } from "lucide-react";
 import type { ReceiptType } from "../../hooks/useReceiptsMenu";
+import { DatePickerInput } from "../shared/DatePickerInput";
 import { UploadReceiptsModal } from "./UploadReceiptsModal";
 import "./styles/ReceiptsMenu.css";
 
@@ -78,13 +79,11 @@ export const ReceiptsMenu = ({
                         </button>
                     </div>
 
-                    <input
-                        type="date"
-                        className="receipts-menu__date-input"
-                        value={selectedDate ?? ""}
+                    <DatePickerInput
+                        value={selectedDate}
                         max={today}
-                        onChange={(event) => onDateChange(event.target.value)}
-                        aria-label={t("ReceiptsScreen.menuDateLabel")}
+                        ariaLabel={t("ReceiptsScreen.menuDateLabel")}
+                        onChange={onDateChange}
                     />
 
                     <button
