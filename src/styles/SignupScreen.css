@@ -1,0 +1,62 @@
+/* ============================================================
+   src/styles/SignupScreen.css
+   Sign Up Screen container — Pure CSS, Responsive, Light/Dark Mode
+   ============================================================ */
+
+/* ---------- SCREEN CONTAINER ---------- */
+.signup-screen {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+    min-height: 100dvh;
+    padding: 1.5rem;
+    background-color: var(--background);
+    transition: background-color 0.3s ease;
+}
+
+/* ---------- CARD ---------- */
+.signup-card {
+    width: 100%;
+    max-width: 420px;
+    background-color: var(--card-background);
+    border-radius: 16px;
+    padding: 2.5rem 2rem;
+    box-shadow:
+        0 4px 6px -1px rgba(0, 0, 0, 0.08),
+        0 2px 4px -2px rgba(0, 0, 0, 0.05);
+    transition:
+        background-color 0.3s ease,
+        box-shadow 0.3s ease;
+    overflow: hidden;
+}
+
+/* ---------- ANIMATED STEP WRAPPER ---------- */
+.signup-step {
+    width: 100%;
+}
+
+/* ============================================================
+   RESPONSIVE — Mobile (< 480px)
+   ============================================================ */
+@media screen and (max-width: 480px) {
+    .signup-screen {
+        padding: 1rem;
+    }
+
+    .signup-card {
+        padding: 2rem 1.25rem;
+        border-radius: 12px;
+    }
+}
+
+/* ============================================================
+   LARGE SCREENS (> 768px) — subtle card enhancement
+   ============================================================ */
+@media screen and (min-width: 768px) {
+    .signup-card {
+        box-shadow:
+            0 10px 25px -5px rgba(0, 0, 0, 0.1),
+            0 8px 10px -6px rgba(0, 0, 0, 0.06);
+    }
+}

@@ -1,0 +1,32 @@
+/* ============================================================
+   src/styles/BalanceScreen.css — Balance screen layout
+   ============================================================ */
+
+.balance-screen {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+.balance-screen__title {
+    margin: 0;
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    letter-spacing: -0.02em;
+    transition: color 0.3s ease;
+}
+
+.balance-screen__columns {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+}
+
+/* Desktop: side-by-side 2-column layout */
+@media (min-width: 768px) {
+    .balance-screen__columns {
+        grid-template-columns: 1fr 1fr;
+        align-items: stretch;
+    }
+}

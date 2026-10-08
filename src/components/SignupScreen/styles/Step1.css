@@ -1,0 +1,230 @@
+/* ============================================================
+   src/components/SignupScreen/styles/Step1.css
+   Registration form step — Pure CSS, Light/Dark Mode
+   ============================================================ */
+
+.step1 {
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+}
+
+/* ---------- HEADER ---------- */
+.step1-header {
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.step1-title {
+    font-size: 1.75rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    letter-spacing: -0.02em;
+    transition: color 0.3s ease;
+}
+
+.step1-subtitle {
+    font-size: 0.9375rem;
+    color: var(--text-secondary);
+    transition: color 0.3s ease;
+}
+
+/* ---------- FORM ---------- */
+.step1-form {
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
+}
+
+/* ---------- FIELD ---------- */
+.step1-field {
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+}
+
+.step1-label {
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: var(--text-primary);
+    transition: color 0.3s ease;
+}
+
+.step1-input {
+    width: 100%;
+    padding: 0.75rem 1rem;
+    font-size: 0.9375rem;
+    font-family: inherit;
+    color: var(--text-primary);
+    background-color: var(--background);
+    border: 2px solid transparent;
+    border-radius: 10px;
+    outline: none;
+    transition:
+        border-color 0.2s ease,
+        background-color 0.3s ease,
+        color 0.3s ease,
+        box-shadow 0.2s ease;
+}
+
+.step1-input::-webkit-input-placeholder {
+    color: var(--text-secondary);
+    opacity: 0.7;
+}
+
+.step1-input::-moz-placeholder {
+    color: var(--text-secondary);
+    opacity: 0.7;
+}
+
+.step1-input:-ms-input-placeholder {
+    color: var(--text-secondary);
+    opacity: 0.7;
+}
+
+.step1-input::-ms-input-placeholder {
+    color: var(--text-secondary);
+    opacity: 0.7;
+}
+
+.step1-input::placeholder {
+    color: var(--text-secondary);
+    opacity: 0.7;
+}
+
+.step1-input:focus {
+    border-color: var(--btn-primary);
+    box-shadow: 0 0 0 3px rgba(56, 189, 248, 0.2);
+}
+
+/* ---------- PASSWORD TOGGLE ---------- */
+.step1-input-wrap {
+    position: relative;
+}
+
+.step1-input-wrap .step1-input {
+    padding-right: 2.75rem;
+}
+
+.step1-input-toggle {
+    position: absolute;
+    top: 50%;
+    right: 0.5rem;
+    transform: translateY(-50%);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    border: none;
+    border-radius: 8px;
+    background-color: transparent;
+    color: var(--text-secondary);
+    cursor: pointer;
+    transition:
+        background-color 0.15s ease,
+        color 0.15s ease;
+}
+
+.step1-input-toggle:hover {
+    color: var(--text-primary);
+}
+
+.step1-input-toggle:focus-visible {
+    outline: 2px solid var(--btn-primary);
+    outline-offset: 2px;
+}
+
+.step1-input[aria-invalid="true"] {
+    border-color: var(--status-error);
+}
+
+.step1-field-error {
+    font-size: 0.8125rem;
+    color: var(--status-error);
+    transition: color 0.3s ease;
+}
+
+/* ---------- SUBMIT BUTTON ---------- */
+.step1-submit {
+    width: 100%;
+    padding: 0.85rem 1.5rem;
+    font-size: 1rem;
+    font-weight: 600;
+    font-family: inherit;
+    color: var(--btn-text);
+    background-color: var(--btn-primary);
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    transition:
+        background-color 0.3s ease,
+        color 0.3s ease,
+        opacity 0.2s ease,
+        transform 0.1s ease;
+}
+
+.step1-submit:hover {
+    opacity: 0.9;
+}
+
+.step1-submit:active {
+    transform: scale(0.98);
+}
+
+.step1-submit:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+/* ---------- FOOTER ---------- */
+.step1-footer {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.4rem;
+    font-size: 0.875rem;
+}
+
+.step1-footer-text {
+    color: var(--text-secondary);
+    transition: color 0.3s ease;
+}
+
+.step1-login-link {
+    color: var(--btn-primary);
+    font-weight: 600;
+    text-decoration: none;
+    transition:
+        color 0.3s ease,
+        opacity 0.2s ease;
+}
+
+.step1-login-link:hover {
+    opacity: 0.8;
+    text-decoration: underline;
+    text-underline-offset: 3px;
+}
+
+/* ---------- RESPONSIVE ---------- */
+@media screen and (max-width: 480px) {
+    .step1-title {
+        font-size: 1.5rem;
+    }
+
+    .step1-subtitle {
+        font-size: 0.85rem;
+    }
+
+    .step1-input {
+        padding: 0.7rem 0.875rem;
+        font-size: 0.875rem;
+    }
+
+    .step1-submit {
+        padding: 0.75rem 1.25rem;
+        font-size: 0.9375rem;
+    }
+}

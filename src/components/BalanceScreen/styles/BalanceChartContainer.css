@@ -1,0 +1,134 @@
+/* ============================================================
+   src/components/BalanceScreen/styles/BalanceChartContainer.css — Chart card
+   ============================================================ */
+
+.balance-chart {
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
+    background-color: var(--card-background);
+    border-radius: 16px;
+    padding: 1.5rem;
+    box-shadow:
+        0 4px 6px -1px rgba(0, 0, 0, 0.08),
+        0 2px 4px -2px rgba(0, 0, 0, 0.05);
+    transition:
+        background-color 0.3s ease,
+        box-shadow 0.3s ease;
+}
+
+.balance-chart__header {
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
+}
+
+.balance-chart__summary {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 1.5rem 2.5rem;
+}
+
+.balance-chart__metric {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+}
+
+.balance-chart__metric-label {
+    font-size: 0.8125rem;
+    color: var(--text-secondary);
+    transition: color 0.3s ease;
+}
+
+.balance-chart__metric-value {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 1.5rem;
+    font-weight: 700;
+    line-height: 1.2;
+    word-break: break-word;
+}
+
+.balance-chart__metric-value--positive {
+    color: var(--status-success);
+}
+
+.balance-chart__metric-value--negative {
+    color: var(--status-error);
+}
+
+.balance-chart__metric-value--neutral {
+    color: var(--text-secondary);
+}
+
+.balance-chart__tabs {
+    display: flex;
+    gap: 0.5rem;
+    padding: 0.25rem;
+    background-color: var(--background);
+    border-radius: 12px;
+    transition: background-color 0.3s ease;
+}
+
+.balance-chart__tab {
+    flex: 1;
+    padding: 0.5rem 0.75rem;
+    border: none;
+    border-radius: 9px;
+    background-color: transparent;
+    color: var(--text-secondary);
+    font-size: 0.875rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition:
+        background-color 0.15s ease,
+        color 0.15s ease;
+}
+
+.balance-chart__tab:hover {
+    color: var(--text-primary);
+}
+
+.balance-chart__tab:focus-visible {
+    outline: 2px solid var(--btn-primary);
+    outline-offset: 2px;
+}
+
+.balance-chart__tab--active {
+    background-color: var(--btn-primary);
+    color: var(--btn-text);
+}
+
+.balance-chart__state {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 0.75rem;
+    min-height: 300px;
+}
+
+.balance-chart__state-label {
+    font-size: 0.875rem;
+    color: var(--text-secondary);
+}
+
+/* ---------- Responsive: desktop header/toggle alignment ---------- */
+@media (min-width: 768px) {
+    .balance-chart__header {
+        flex-direction: row;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .balance-chart__tabs {
+        flex-shrink: 0;
+    }
+
+    .balance-chart__tab {
+        flex: none;
+    }
+}

@@ -1,0 +1,112 @@
+/* ============================================================
+   src/components/SignupScreen/styles/Step2.css
+   Final outcome step — Pure CSS, Light/Dark Mode
+   ============================================================ */
+
+.step2 {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    gap: 1rem;
+    padding: 0.5rem 0;
+}
+
+/* ---------- ANIMATED LOGO BADGE ---------- */
+.step2-logo {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    margin-bottom: 0.5rem;
+}
+
+.step2-logo--success {
+    color: var(--status-success);
+    background-color: color-mix(
+        in srgb,
+        var(--status-success) 12%,
+        var(--card-background)
+    );
+    border: 2px solid var(--status-success);
+}
+
+.step2-logo--error {
+    color: var(--status-error);
+    background-color: color-mix(
+        in srgb,
+        var(--status-error) 12%,
+        var(--card-background)
+    );
+    border: 2px solid var(--status-error);
+}
+
+/* ---------- OUTCOME CONTENT ---------- */
+.step2-title {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    transition: color 0.3s ease;
+}
+
+.step2-message {
+    font-size: 0.9375rem;
+    color: var(--text-secondary);
+    transition: color 0.3s ease;
+}
+
+/* ---------- ACTION CTA ---------- */
+.step2-action {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    margin-top: 0.75rem;
+    padding: 0.85rem 1.5rem;
+    font-size: 1rem;
+    font-weight: 600;
+    font-family: inherit;
+    text-align: center;
+    text-decoration: none;
+    color: var(--btn-text);
+    background-color: var(--btn-primary);
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    transition:
+        background-color 0.3s ease,
+        color 0.3s ease,
+        opacity 0.2s ease,
+        transform 0.1s ease;
+}
+
+.step2-action:hover {
+    opacity: 0.9;
+}
+
+.step2-action:active {
+    transform: scale(0.98);
+}
+
+.step2-action:focus-visible {
+    outline: 2px solid var(--btn-primary);
+    outline-offset: 2px;
+}
+
+/* ---------- RESPONSIVE ---------- */
+@media screen and (max-width: 480px) {
+    .step2-title {
+        font-size: 1.35rem;
+    }
+
+    .step2-message {
+        font-size: 0.875rem;
+    }
+
+    .step2-action {
+        padding: 0.75rem 1.25rem;
+        font-size: 0.9375rem;
+    }
+}

@@ -1,0 +1,387 @@
+/* ============================================================
+   src/components/DetailsScreen/styles/HistoryTable.css
+   Balance history table (TanStack Table v8)
+   ============================================================ */
+
+.history-table {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    background-color: var(--card-background);
+    border-radius: 16px;
+    padding: 1.5rem;
+    box-shadow:
+        0 4px 6px -1px rgba(0, 0, 0, 0.08),
+        0 2px 4px -2px rgba(0, 0, 0, 0.05);
+    transition:
+        background-color 0.3s ease,
+        box-shadow 0.3s ease;
+}
+
+.history-table__title {
+    margin: 0;
+    width: 100%;
+    font-size: 1.125rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    transition: color 0.3s ease;
+}
+
+.history-table__header {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 1rem;
+}
+
+.history-table__actions {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    flex-shrink: 0;
+    width: 100%;
+    justify-content: space-between;
+}
+
+.history-table__chart-button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    height: 40px;
+    padding: 0 0.875rem;
+    border: 1px solid var(--btn-primary);
+    border-radius: 10px;
+    background-color: var(--btn-primary);
+    color: var(--btn-text);
+    font-size: 0.875rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition:
+        opacity 0.15s ease,
+        transform 0.15s ease;
+}
+
+.history-table__chart-button:hover {
+    opacity: 0.9;
+}
+
+.history-table__chart-button:active {
+    transform: translateY(1px);
+}
+
+.history-table__chart-button:focus-visible {
+    outline: 2px solid var(--btn-primary);
+    outline-offset: 2px;
+}
+
+.history-table__container {
+    width: 100%;
+    overflow-x: auto;
+}
+
+.history-table__table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.875rem;
+}
+
+.history-table__header-cell {
+    padding: 0.75rem 1rem;
+    text-align: left;
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    color: var(--text-secondary);
+    border-bottom: 1px solid var(--text-secondary);
+    white-space: nowrap;
+    transition:
+        color 0.3s ease,
+        border-color 0.3s ease;
+}
+
+.history-table__header-label {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.375rem;
+}
+
+.history-table__cell {
+    padding: 0.75rem 1rem;
+    color: var(--text-primary);
+    border-bottom: 1px solid var(--background);
+    transition:
+        color 0.3s ease,
+        border-color 0.3s ease;
+}
+
+.history-table__row:last-child .history-table__cell {
+    border-bottom: none;
+}
+
+.history-table__amount {
+    font-weight: 700;
+    white-space: nowrap;
+}
+
+.history-table__amount--positive {
+    color: var(--status-success);
+}
+
+.history-table__amount--negative {
+    color: var(--status-error);
+}
+
+.history-table__amount--neutral {
+    color: var(--text-secondary);
+}
+
+.history-table__options-button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    border: none;
+    border-radius: 8px;
+    background-color: transparent;
+    color: var(--text-secondary);
+    cursor: pointer;
+    transition:
+        background-color 0.15s ease,
+        color 0.15s ease;
+}
+
+.history-table__options-button:hover {
+    background-color: var(--background);
+    color: var(--text-primary);
+}
+
+.history-table__options-button:focus-visible {
+    outline: 2px solid var(--btn-primary);
+    outline-offset: 2px;
+}
+
+.history-table__empty {
+    padding: 2rem 1rem;
+    text-align: center;
+    color: var(--text-secondary);
+    font-size: 0.875rem;
+}
+
+.history-table__options-cell {
+    position: relative;
+    display: inline-flex;
+}
+
+.history-table__action-popover {
+    position: absolute;
+    top: calc(100% + 0.25rem);
+    right: 0;
+    z-index: 20;
+    display: flex;
+    flex-direction: column;
+    min-width: 15rem;
+    padding: 0.375rem;
+    background-color: var(--card-background);
+    border: 1px solid var(--text-secondary);
+    border-radius: 12px;
+    box-shadow:
+        0 12px 24px -8px rgba(0, 0, 0, 0.18),
+        0 4px 8px -4px rgba(0, 0, 0, 0.08);
+    transition:
+        background-color 0.15s ease,
+        border-color 0.15s ease;
+}
+
+.history-table__action-item {
+    display: flex;
+    align-items: center;
+    gap: 0.625rem;
+    width: 100%;
+    padding: 0.625rem 0.75rem;
+    border: none;
+    border-radius: 8px;
+    background-color: transparent;
+    color: var(--text-primary);
+    font-size: 0.875rem;
+    text-align: left;
+    cursor: pointer;
+    transition:
+        background-color 0.15s ease,
+        color 0.15s ease;
+}
+
+.history-table__action-item:hover {
+    background-color: var(--background);
+}
+
+.history-table__action-item:focus-visible {
+    outline: 2px solid var(--btn-primary);
+    outline-offset: 2px;
+}
+
+.history-table__action-item svg {
+    flex-shrink: 0;
+    color: var(--text-secondary);
+    transition: color 0.15s ease;
+}
+
+.history-table__action-item:hover svg {
+    color: var(--text-primary);
+}
+
+/* ------------------------------------------------------------
+   Desktop: restore side-by-side horizontal header alignment
+   ------------------------------------------------------------ */
+@media (min-width: 768px) {
+    .history-table__header {
+        flex-direction: row;
+        align-items: center;
+        justify-content: space-between;
+    }
+
+    .history-table__title {
+        width: auto;
+    }
+
+    .history-table__actions {
+        width: auto;
+        justify-content: flex-end;
+    }
+}
+
+/* ------------------------------------------------------------
+   Loading skeleton rows
+   ------------------------------------------------------------ */
+.history-table__skeleton {
+    height: 1rem;
+    border-radius: 6px;
+}
+
+.history-table__skeleton--date {
+    width: 7rem;
+}
+
+.history-table__skeleton--amount {
+    width: 6rem;
+}
+
+.history-table__skeleton--action {
+    width: 2rem;
+    height: 2rem;
+    margin-left: auto;
+}
+
+/* ------------------------------------------------------------
+   Server-side pagination footer
+   ------------------------------------------------------------ */
+.history-table__pagination {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+}
+
+.history-table__page-size {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.history-table__page-size-label {
+    font-size: 0.8125rem;
+    color: var(--text-secondary);
+    transition: color 0.3s ease;
+}
+
+.history-table__select-wrapper {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+}
+
+.history-table__select {
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+    padding: 0.5rem 2rem 0.5rem 0.75rem;
+    border: 1px solid var(--text-secondary);
+    border-radius: 10px;
+    background-color: var(--card-background);
+    color: var(--text-primary);
+    font-size: 0.8125rem;
+    cursor: pointer;
+    transition:
+        background-color 0.15s ease,
+        border-color 0.15s ease,
+        color 0.15s ease;
+}
+
+.history-table__select:focus-visible {
+    outline: 2px solid var(--btn-primary);
+    outline-offset: 2px;
+}
+
+.history-table__select-chevron {
+    position: absolute;
+    right: 0.625rem;
+    pointer-events: none;
+    color: var(--text-secondary);
+    transition: color 0.15s ease;
+}
+
+.history-table__pager {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.history-table__page-indicator {
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: var(--text-primary);
+    transition: color 0.3s ease;
+}
+
+.history-table__page-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 36px;
+    border: 1px solid var(--text-secondary);
+    border-radius: 10px;
+    background-color: transparent;
+    color: var(--text-secondary);
+    cursor: pointer;
+    transition:
+        background-color 0.15s ease,
+        border-color 0.15s ease,
+        color 0.15s ease;
+}
+
+.history-table__page-btn:hover:not(:disabled) {
+    background-color: var(--btn-primary);
+    border-color: var(--btn-primary);
+    color: var(--btn-text);
+}
+
+.history-table__page-btn:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+}
+
+.history-table__page-btn:focus-visible {
+    outline: 2px solid var(--btn-primary);
+    outline-offset: 2px;
+}
+
+@media (max-width: 480px) {
+    .history-table__pagination {
+        justify-content: flex-start;
+    }
+}
+

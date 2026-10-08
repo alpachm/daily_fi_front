@@ -123,6 +123,44 @@
     box-shadow: 0 0 0 3px rgba(56, 189, 248, 0.2);
 }
 
+/* ---------- PASSWORD TOGGLE ---------- */
+.login-input-wrap {
+    position: relative;
+}
+
+.login-input-wrap .login-input {
+    padding-right: 2.75rem;
+}
+
+.login-input-toggle {
+    position: absolute;
+    top: 50%;
+    right: 0.5rem;
+    transform: translateY(-50%);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    border: none;
+    border-radius: 8px;
+    background-color: transparent;
+    color: var(--text-secondary);
+    cursor: pointer;
+    transition:
+        background-color 0.15s ease,
+        color 0.15s ease;
+}
+
+.login-input-toggle:hover {
+    color: var(--text-primary);
+}
+
+.login-input-toggle:focus-visible {
+    outline: 2px solid var(--btn-primary);
+    outline-offset: 2px;
+}
+
 /* ---------- FORGOT PASSWORD ---------- */
 .login-forgot {
     display: flex;
@@ -246,4 +284,44 @@
             0 10px 25px -5px rgba(0, 0, 0, 0.1),
             0 8px 10px -6px rgba(0, 0, 0, 0.06);
     }
+}
+
+/* ---------- VALIDATION / ALERT STATES ---------- */
+.login-input[aria-invalid="true"] {
+    border-color: var(--status-error);
+}
+
+.login-field-error {
+    font-size: 0.8125rem;
+    color: var(--status-error);
+    transition: color 0.3s ease;
+}
+
+.login-alert {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.75rem 1rem;
+    font-size: 0.875rem;
+    color: var(--status-error);
+    background-color: color-mix(
+        in srgb,
+        var(--status-error) 12%,
+        var(--card-background)
+    );
+    border: 1px solid var(--status-error);
+    border-radius: 10px;
+    transition:
+        color 0.3s ease,
+        background-color 0.3s ease,
+        border-color 0.3s ease;
+}
+
+.login-alert-icon {
+    flex-shrink: 0;
+}
+
+.login-submit:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
 }

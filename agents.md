@@ -24,7 +24,7 @@
 
 - **Componentes Funcionales:** Usa exclusivamente arrow functions (`const Component = () => {}`) y exportaciones nombradas.
 - **Modularidad:** Un componente por archivo. Si un componente o vista supera las 150 líneas de código, debe ser refactorizado y dividido en subcomponentes más pequeños.
-- **Separación de Conceptos:** La lógica de negocio, cálculos de capital, hooks de manejo de estado y peticiones HTTP a la API **nunca** deben vivir directamente dentro del TSX. Extráelos siempre a Custom Hooks independientes (ej. `useBalanceDiario.ts`).
+- **Separación de Conceptos:** La lógica de negocio, cálculos de capital, hooks de manejo de estado y peticiones HTTP a la API **nunca** deben vivir directamente dentro del TSX. Extráelos siempre a Custom Hooks independientes (ej. `useDailyBalance.ts`).
 - **Diseño y UI Coherente:** El diseño visual se rige estrictamente por tokens de diseño centralizados. El soporte para Light y Dark Mode se maneja inyectando la clase `.dark` en el `<html>` o `<body>`. Queda prohibido hardcodear códigos hexadecimales; se deben usar exclusivamente las siguientes variables CSS globales:
     - **Fondo General de la App:** `var(--background)`
     - **Contenedores y Tarjetas:** `var(--card-background)`
@@ -35,13 +35,25 @@
     - **Estados Financieros:**
         - **Ganancias (Éxito/Capital Positivo):** `var(--status-success)`
         - **Pérdidas (Alerta/Capital Negativo):** `var(--status-error)`
-- **Estilos:** No se utilizarán librerías externas como Tailwind ni nada similar, todos los estilos se basarán en CSS puro manteniendo las mejores prácticas. Los archivos CSS correspondientes a las Screens se almacenarán en la carpeta `src/styles` con el mismo nombre del archivo `.tsx` al que correspondan. Los archivos CSS de los componentes se almacenarán en la carpeta `src/components/styles` con el mismo nombre del componente al que corresponden.
+- **Estilos y Coherencia de Rutas CSS (Estricto):** Queda totalmente prohibido el uso de librerías externas (Tailwind, Bootstrap, etc.); todo el diseño se basará en CSS puro. La ubicación de los archivos `.css` debe ser un espejo exacto y mandatorio de la estructura del componente o pantalla al que pertenecen:
+    1. **Para Vistas/Pantallas (Screens):** Si el archivo de la pantalla está en `src/screens/NombreScreen.tsx` o dentro de una subcarpeta protegida como `src/screens/_authenticated/NombreScreen.tsx`, su archivo CSS DEBE guardarse exclusivamente en `src/styles/NombreScreen.css`.
+        - _Ejemplo 1:_ `src/screens/LoginScreen.tsx` $\rightarrow$ `src/styles/LoginScreen.css`
+        - _Ejemplo 2:_ `src/screens/_authenticated/DetailsScreen.tsx` $\rightarrow$ `src/styles/DetailsScreen.css`
+    2. **Para Contenedores Estructurales (Layouts):** Si el archivo `.tsx` está en `src/layouts/NombreLayout.tsx`, su CSS DEBE guardarse exclusivamente en `src/layouts/styles/NombreLayout.css`.
+    3. **Para Componentes Específicos por Screen:** La ruta de los componentes pertenecientes a una pantalla está anidada en `src/components/NombreDeLaScreen/NombreComponente.tsx`. Los estilos de dicho componente DEBEN guardarse obligatoriamente dentro de la subcarpeta `styles/` en esa misma ubicación del componente: `src/components/NombreDeLaScreen/styles/NombreComponente.css`.
+        - _Ejemplo 1:_ `src/components/BalanceScreen/AmountField.tsx` $\rightarrow$ `src/components/BalanceScreen/styles/AmountField.css`
+        - _Ejemplo 2:_ `src/components/DetailsScreen/Balance.tsx` $\rightarrow$ `src/components/DetailsScreen/styles/Balance.css`
+- **Aislamiento de Estilos (Cero Contaminación):** Cada componente funcional, layout o screen debe tener su propio archivo CSS individual e independiente. Queda estrictamente PROHIBIDO agrupar, combinar o escribir estilos de un componente dentro del archivo CSS de otro componente, layout o screen. Si un elemento requiere estilos, se le crea su propio archivo CSS en su respectiva ubicación según las reglas anteriores.
+- **Estructura de Directorios Estricta:** El proyecto se divide rigurosamente en tres conceptos arquitectónicos:
+    1. `src/layouts/`: Aloja exclusivamente los cascarones estructurales (ej. `DashboardLayout.tsx`). Sus estilos van en `src/layouts/styles/`.
+    2. `src/screens/`: Aloja las páginas o vistas finales de la app (ej. `LoginScreen.tsx`, `_authenticated/DetailsScreen.tsx`). Sus estilos van exclusivamente en `src/styles/`.
+    3. `src/components/`: Aloja los subcomponentes organizados por pantalla (`src/components/NombreDeLaScreen/`). Sus estilos van obligatoriamente en `src/components/NombreDeLaScreen/styles/`.
 
 ---
 
 ## 4. Estándares del Backend (Node.js + TypeScript)
 
-- **Arquitectura Limpia:** Divide el servidor siguiendo el patrón de capas: Rutas $\rightarrow$ Controladores $\rightarrow$ Servicios/Modelos. El controlador solo gestiona la petición y la respuesta; la lógica financiera y la comunicación con Supabase se aíslan en los servicios a través del cliente oficial (`@supabase/supabase-js`).
+- **Arquitectura Limpia:** Divide el servidor siguiendo el patrón de capas: Rutas $\rightarrow$ Controladores $\rightarrow$ Servicios/Modelos. El controlador solo gestiona la petición y la respuesta; la lógica financiera y la comunicación con Supabase se aislan en los servicios a través del cliente oficial (`@supabase/supabase-js`).
 - **Validación de Datos:** Toda petición entrante (`req.body`, `req.query`, `req.params`) que contenga datos numéricos (como capital inicial/final) debe ser estrictamente validada en el backend antes de operar, utilizando esquemas de **Zod**.
 - **Manejo de Errores Rígido:** Envuelve todas las operaciones asíncronas en bloques `try/catch`. Centraliza las respuestas de error a través de un middleware personalizado. Nunca expongas stack traces crudos del servidor al frontend.
 
@@ -50,14 +62,14 @@
 ## 5. Reglas de Interacción y Formato de Respuesta de la IA
 
 - **Código Primero:** Proporciona soluciones de código directas, limpias y listas para producción. Reduce las explicaciones teóricas al mínimo necesario.
-- **Rutas de Archivos Claras:** Añade siempre un comentario con la ruta exacta del archivo al principio de cada bloque de código (ej. `// src/components/Dashboard.tsx`).
+- **Rutas de Archivos Claras:** Añade siempre un comentario con la ruta exacta del archivo al principio de cada bloque de código (ej. `// src/components/BalanceScreen/styles/AmountField.css`).
 - **Scripts Completos:** No utilices marcadores de posición perezosos como `// ... resto del código aquí ...` a menos que sea una edición menor explícitamente solicitada. Proporciona las estructuras completas para evitar errores de copia.
 
 ---
 
 ## 6. Reglas de Internacionalización (i18n)
 
-Para mantener una arquitectura multiidioma altamente escalable y prevenir errores en tiempo de compilación, el Agente de IA debe cumplir estrictamente con las siguientes reglas:
+Para mantener una arquitectura multiidioma highly escalable y prevenir errores en tiempo de compilación, el Agente de IA debe cumplir estrictamente con las siguientes reglas:
 
 ### ⚙️ Directrices de Implementación
 
@@ -69,7 +81,7 @@ Para mantener una arquitectura multiidioma altamente escalable y prevenir errore
     - No se permite escribir ninguna cadena de texto visible para el usuario, etiqueta, placeholder, título, texto de botón o mensaje de error como texto plano dentro de los archivos TSX.
     - Cada texto debe ser extraído obligatoriamente a los archivos `src/locales/es.json` y `src/locales/en.json` bajo estructuras de objetos idénticas antes de modificar la vista.
 3. **Separación de Intereses (TSX Limpio):**
-    - El hook `useTranslation` debe inicializarse de forma limpia en la parte superior del componente o dentro de los custom hooks: `const { t } = useTranslation('global');`.
+    - El hook `useTranslation` debe inicializarse de forma limpia en la parte superior del componente o dentro de los custom hooks: `const { t } = useTranslation('');`.
     - No se deben incrustar manipulaciones de cadenas complejas, condicionales o concatenaciones en línea dentro del TSX. Si se necesita texto dinámico, se deben usar las funciones nativas de interpolación o pluralización del motor de traducción.
 4. **Protección contra Discrepancias Regionales:**
     - Asegurar siempre que se respete la propiedad `load: 'languageOnly'` en la configuración central para que las variantes regionales (ej. `es-VE`, `es-US`, `en-US`) sean manejadas limpiamente por los diccionarios base `es` o `en`.
@@ -100,3 +112,33 @@ Los archivos de traducción se organizarán de forma estrictamente plana en su r
     }
 }
 ```
+
+### 🗂️️ Estándares para Servicios API e Interfaz de Datos (Frontend)
+
+Para mantener la capa de comunicación HTTP desacoplada y fuertemente tipada, la creación de servicios e interfaces debe seguir estrictamente estas reglas:
+
+1. **Ubicación y Nomenclatura de Servicios:**
+    - Todo servicio de integración HTTP/API debe guardarse exclusivamente en la ruta `src/services/`.
+    - El nombre del archivo y del servicio debe estar escrito en **PascalCase**, compuesto por el nombre del dominio o módulo seguido obligatoriamente de la palabra `Service` (ej. `RegisterService.ts`, `DailyBalanceService.ts`).
+    - _Ruta de ejemplo:_ `src/services/RegisterService.ts`
+
+2. **Ubicación y Nomenclatura de Interfaces:**
+    - Todas las interfaces, tipos de petición/respuesta y contratos de datos vinculados a un servicio deben guardarse exclusivamente en la ruta `src/interfaces/`.
+    - El nombre del archivo debe corresponder exactamente al nombre del servicio seguido de la extensión `.interface.ts` (ej. `RegisterService.interface.ts`, `DailyBalanceService.interface.ts`).
+    - Queda estrictamente prohibido definir interfaces de la API dentro del archivo del servicio o del componente TSX.
+    - _Ruta de ejemplo:_ `src/interfaces/RegisterService.interface.ts`
+
+3. **Inmutabilidad y Tipado Estricto:**
+    - Toda función dentro del servicio debe retornar promesas con tipos explícitos importados desde su respectivo archivo `.interface.ts`. Prohibido el uso de `any` en parámetros o respuestas.
+
+### Gestión de Estado de Red y Peticiones API (TanStack Query)
+
+- **Uso Obligatorio de Wrappers:** NO realizar llamadas a servicios de API directamente dentro de componentes React ni mediante hooks `useEffect` nativos. Toda consulta de estado del servidor debe envolverse en custom hooks utilizando `@tanstack/react-query` (`useQuery` / `useMutation`).
+- **Convención de Query Keys:** Utilizar arreglos estructurados y predecibles para las claves de consulta (ej. `['resource-name', entityIdOrDate]`).
+- **Estándar de Configuración de Caché:**
+    - Establecer `staleTime` en un mínimo de 5 minutos (`1000 * 60 * 5`) para consultas estándar, a menos que se requiera explícitamente sondeo en tiempo real (_polling_).
+    - Configurar `retry: 1` para evitar bucles repetitivos de peticiones ante errores del cliente o de autenticación.
+- **Mutaciones e Invalidación de Caché:**
+    - Todo hook `useMutation` (`POST`, `PUT`, `PATCH`, `DELETE`) DEBE gestionar el evento `onSuccess` invalidando o actualizando las claves de caché correspondientes en `QueryClient` (`invalidateQueries` o `setQueryData`).
+- **Manejo Gradual de Errores y Nulos:**
+    - Los servicios y consultas deben manejar respuestas distintas a 200 de forma limpia (por ejemplo, retornando `null` ante un `404`) para que los componentes puedan renderizar estados iniciales o vacíos sin fallos inesperados.

@@ -1,0 +1,232 @@
+/* ============================================================
+   src/components/styles/Navbar.css — Navigation Bar (Sidebar)
+   ============================================================ */
+
+/* ---------- Desktop Sidebar ---------- */
+.dashboard-nav {
+    width: 240px;
+    height: 100%;
+    flex-shrink: 0;
+    background-color: var(--card-background);
+    border-right: 1px solid var(--text-secondary);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    padding: 1rem 0.75rem;
+}
+
+.dashboard-nav__panel {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    min-height: 0;
+}
+
+.dashboard-nav__main {
+    flex: 1;
+    min-height: 0;
+    overflow-y: auto;
+}
+
+.dashboard-nav__list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+}
+
+.dashboard-nav__item {
+    margin: 0;
+}
+
+.dashboard-nav__footer {
+    flex-shrink: 0;
+    padding-top: 1rem;
+    border-top: 1px solid var(--text-secondary);
+}
+
+.dashboard-nav__link {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.75rem 1rem;
+    border-radius: 8px;
+    text-decoration: none;
+    color: var(--text-primary);
+    font-size: 0.9375rem;
+    font-weight: 500;
+    transition:
+        background-color 0.15s ease,
+        color 0.15s ease;
+}
+
+.dashboard-nav__link:hover {
+    background-color: var(--text-secondary);
+    color: var(--btn-text);
+}
+
+.dashboard-nav__link--active {
+    background-color: var(--btn-primary);
+    color: var(--btn-text);
+}
+
+.dashboard-nav__link--active .dashboard-nav__icon {
+    stroke: var(--btn-text);
+}
+
+.dashboard-nav__icon {
+    font-size: 1.25rem;
+    line-height: 1;
+    flex-shrink: 0;
+    stroke: var(--text-secondary);
+    transition: stroke 0.2s ease;
+}
+
+.dashboard-nav__label {
+    white-space: nowrap;
+}
+
+/* ---------- Close button ---------- */
+.dashboard-nav__close-btn {
+    display: none;
+}
+
+.dashboard-nav__close-icon {
+    display: none;
+}
+
+/* ---------- Full-Screen Mobile Drawer ---------- */
+@media (max-width: 768px) {
+    .dashboard-nav {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100vw;
+        height: 100vh;
+        z-index: 999;
+        padding: 0;
+        pointer-events: none;
+    }
+
+    /* Closed state: hidden off-screen to the left */
+    .dashboard-nav--closed {
+        transform: translateX(-100%);
+        transition: transform 0.3s ease-in-out;
+        border: none;
+        background-color: transparent;
+    }
+
+    .dashboard-nav--closed .dashboard-nav__backdrop {
+        display: none;
+    }
+
+    /* Open state: visible full-screen */
+    .dashboard-nav--open {
+        visibility: visible;
+        pointer-events: auto;
+    }
+
+    .dashboard-nav--open .dashboard-nav__backdrop {
+        display: block;
+        opacity: 1;
+    }
+
+    .dashboard-nav--open .dashboard-nav__panel {
+        transform: translateX(0);
+    }
+
+    /* Backdrop */
+    .dashboard-nav__backdrop {
+        display: none;
+        position: absolute;
+        inset: 0;
+        background-color: rgba(0, 0, 0, 0.45);
+        z-index: 1;
+    }
+
+    /* Slide-out panel */
+    .dashboard-nav__panel {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 280px;
+        max-width: 80vw;
+        height: 100%;
+        background-color: var(--card-background);
+        z-index: 2;
+        display: flex;
+        flex-direction: column;
+        padding: 1.5rem 1rem;
+        box-shadow: 4px 0 16px rgba(0, 0, 0, 0.15);
+        transform: translateX(-100%);
+        transition: transform 0.3s ease-in-out;
+    }
+
+    /* Close button (X icon) */
+    .dashboard-nav__close-btn {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        align-self: flex-end;
+        width: 36px;
+        height: 36px;
+        border: none;
+        border-radius: 8px;
+        background-color: transparent;
+        cursor: pointer;
+        margin-bottom: 1rem;
+        transition: background-color 0.15s ease;
+    }
+
+    .dashboard-nav__close-btn:hover {
+        background-color: var(--text-secondary);
+    }
+
+    .dashboard-nav__close-icon {
+        display: block;
+        position: relative;
+        width: 20px;
+        height: 20px;
+    }
+
+    .dashboard-nav__close-icon::before,
+    .dashboard-nav__close-icon::after {
+        content: "";
+        position: absolute;
+        top: 50%;
+        left: 0;
+        width: 100%;
+        height: 2px;
+        background-color: var(--text-primary);
+        border-radius: 1px;
+    }
+
+    .dashboard-nav__close-icon::before {
+        transform: translateY(-50%) rotate(45deg);
+    }
+
+    .dashboard-nav__close-icon::after {
+        transform: translateY(-50%) rotate(-45deg);
+    }
+
+    /* Nav links inside the drawer */
+    .dashboard-nav__list {
+        flex-direction: column;
+        gap: 0.25rem;
+    }
+
+    .dashboard-nav__link {
+        flex-direction: row;
+        gap: 0.75rem;
+        padding: 0.75rem 1rem;
+        font-size: 0.9375rem;
+    }
+
+    .dashboard-nav__icon {
+        font-size: 1.25rem;
+        stroke: var(--text-secondary);
+        transition: stroke 0.2s ease;
+    }
+}

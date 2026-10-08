@@ -1,0 +1,119 @@
+/* ============================================================
+   src/components/shared/styles/AutomaticAlertModal.css
+   Reusable non-blocking, auto-dismissing alert/notification modal
+   ============================================================ */
+
+.automatic-alert-modal__overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 1000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 1rem;
+    background-color: rgba(0, 0, 0, 0.55);
+    backdrop-filter: blur(4px);
+    pointer-events: none;
+    animation: automatic-alert-modal__fade-in 0.2s ease;
+}
+
+.automatic-alert-modal {
+    pointer-events: auto;
+    width: 100%;
+    max-width: 400px;
+    background-color: var(--card-background);
+    border-radius: 16px;
+    padding: 1.5rem;
+    box-shadow: 0 20px 40px -12px rgba(0, 0, 0, 0.35);
+    outline: none;
+    animation: automatic-alert-modal__pop-in 0.2s ease;
+    transition: background-color 0.3s ease;
+}
+
+.automatic-alert-modal__content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.75rem;
+    text-align: center;
+}
+
+.automatic-alert-modal__icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 52px;
+    height: 52px;
+    flex-shrink: 0;
+    border-radius: 50%;
+    color: var(--btn-primary);
+    background-color: color-mix(
+        in srgb,
+        var(--btn-primary) 12%,
+        var(--card-background)
+    );
+    transition:
+        color 0.3s ease,
+        background-color 0.3s ease;
+}
+
+.automatic-alert-modal--success .automatic-alert-modal__icon {
+    color: var(--status-success);
+    background-color: color-mix(
+        in srgb,
+        var(--status-success) 12%,
+        var(--card-background)
+    );
+}
+
+.automatic-alert-modal--error .automatic-alert-modal__icon {
+    color: var(--status-error);
+    background-color: color-mix(
+        in srgb,
+        var(--status-error) 12%,
+        var(--card-background)
+    );
+}
+
+.automatic-alert-modal--warning .automatic-alert-modal__icon {
+    color: var(--status-warning);
+    background-color: color-mix(
+        in srgb,
+        var(--status-warning) 12%,
+        var(--card-background)
+    );
+}
+
+.automatic-alert-modal__message {
+    margin: 0;
+    font-size: 0.9375rem;
+    line-height: 1.5;
+    color: var(--text-secondary);
+    transition: color 0.3s ease;
+}
+
+@keyframes automatic-alert-modal__fade-in {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
+@keyframes automatic-alert-modal__pop-in {
+    from {
+        opacity: 0;
+        transform: translateY(8px) scale(0.98);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+@media (max-width: 480px) {
+    .automatic-alert-modal {
+        padding: 1.25rem;
+    }
+}

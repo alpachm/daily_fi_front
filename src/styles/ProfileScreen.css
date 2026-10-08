@@ -1,0 +1,18 @@
+/* ============================================================
+   src/styles/ProfileScreen.css — Profile screen layout
+   ============================================================ */
+
+.profile-screen {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+.profile-screen__title {
+    margin: 0;
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    letter-spacing: -0.02em;
+    transition: color 0.3s ease;
+}

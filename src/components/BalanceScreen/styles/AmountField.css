@@ -1,0 +1,95 @@
+/* ============================================================
+   src/components/BalanceScreen/styles/AmountField.css — Inline-editable field
+   ============================================================ */
+
+.amount-field {
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+}
+
+.amount-field__label {
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: var(--text-primary);
+    transition: color 0.3s ease;
+}
+
+.amount-field__editor {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.amount-field__input {
+    flex: 1;
+    min-width: 0;
+    padding: 0.7rem 0.875rem;
+    font-size: 1rem;
+    font-family: inherit;
+    color: var(--text-primary);
+    background-color: var(--background);
+    border: 2px solid transparent;
+    border-radius: 10px;
+    outline: none;
+    appearance: textfield;
+    -moz-appearance: textfield;
+    transition:
+        border-color 0.2s ease,
+        box-shadow 0.2s ease,
+        background-color 0.3s ease,
+        color 0.3s ease;
+}
+
+.amount-field__input:focus {
+    border-color: var(--btn-primary);
+    box-shadow: 0 0 0 3px rgba(56, 189, 248, 0.2);
+}
+
+.amount-field__input:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+.amount-field__input::-webkit-outer-spin-button,
+.amount-field__input::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+
+.amount-field__action {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 36px;
+    flex-shrink: 0;
+    border: none;
+    border-radius: 8px;
+    background-color: transparent;
+    color: var(--text-secondary);
+    cursor: pointer;
+    transition:
+        background-color 0.15s ease,
+        color 0.15s ease;
+}
+
+.amount-field__action:hover {
+    background-color: var(--text-secondary);
+    color: var(--btn-text);
+}
+
+.amount-field__display {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.75rem;
+}
+
+.amount-field__value {
+    font-size: 1.125rem;
+    font-weight: 600;
+    color: var(--text-primary);
+    word-break: break-word;
+    transition: color 0.3s ease;
+}

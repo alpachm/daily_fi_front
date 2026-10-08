@@ -1,0 +1,272 @@
+/* ============================================================
+   src/components/ReceiptsScreen/styles/ReceiptsTable.css
+   Receipts table (Fecha / Hora / Nombre / Opciones)
+   ============================================================ */
+
+.receipts-table {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    width: 100%;
+    background-color: var(--card-background);
+    border-radius: 16px;
+    padding: 1.5rem;
+    box-shadow:
+        0 4px 6px -1px rgba(0, 0, 0, 0.08),
+        0 2px 4px -2px rgba(0, 0, 0, 0.05);
+    transition:
+        background-color 0.3s ease,
+        box-shadow 0.3s ease;
+}
+
+.receipts-table__scroll {
+    width: 100%;
+    overflow-x: auto;
+}
+
+.receipts-table__table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.875rem;
+}
+
+.receipts-table__header-cell {
+    padding: 0.75rem 1rem;
+    text-align: left;
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    color: var(--text-secondary);
+    border-bottom: 1px solid var(--text-secondary);
+    white-space: nowrap;
+    transition:
+        color 0.3s ease,
+        border-color 0.3s ease;
+}
+
+.receipts-table__cell {
+    padding: 0.75rem 1rem;
+    color: var(--text-primary);
+    border-bottom: 1px solid var(--background);
+    white-space: nowrap;
+    transition:
+        background-color 0.15s ease,
+        color 0.3s ease,
+        border-color 0.3s ease;
+}
+
+.receipts-table__row:last-child .receipts-table__cell {
+    border-bottom: none;
+}
+
+.receipts-table__table tbody .receipts-table__row:hover .receipts-table__cell {
+    background-color: var(--background);
+}
+
+.receipts-table__cell--file {
+    max-width: 260px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.receipts-table__header-cell--options,
+.receipts-table__cell--options {
+    width: 1%;
+    text-align: right;
+}
+
+.receipts-table__options-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    border: none;
+    border-radius: 8px;
+    background-color: transparent;
+    color: var(--text-secondary);
+    cursor: pointer;
+    transition:
+        background-color 0.15s ease,
+        color 0.15s ease;
+}
+
+.receipts-table__options-btn:hover {
+    background-color: var(--background);
+    color: var(--text-primary);
+}
+
+.receipts-table__options-btn:focus-visible {
+    outline: 2px solid var(--btn-primary);
+    outline-offset: 2px;
+}
+
+.receipts-table__options-cell {
+    position: relative;
+    display: inline-flex;
+}
+
+.receipts-table__popover {
+    position: absolute;
+    top: calc(100% + 0.25rem);
+    right: 0;
+    z-index: 20;
+    display: flex;
+    flex-direction: column;
+    min-width: 15rem;
+    padding: 0.375rem;
+    background-color: var(--card-background);
+    border: 1px solid var(--text-secondary);
+    border-radius: 12px;
+    box-shadow:
+        0 12px 24px -8px rgba(0, 0, 0, 0.18),
+        0 4px 8px -4px rgba(0, 0, 0, 0.08);
+    transition:
+        background-color 0.15s ease,
+        border-color 0.15s ease;
+}
+
+.receipts-table__popover-item {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    width: 100%;
+    padding: 0.625rem 0.75rem;
+    border: none;
+    border-radius: 8px;
+    background-color: transparent;
+    color: var(--text-primary);
+    font-size: 0.875rem;
+    text-align: left;
+    cursor: pointer;
+    transition:
+        background-color 0.15s ease,
+        color 0.15s ease;
+}
+
+.receipts-table__popover-item:hover {
+    background-color: var(--background);
+}
+
+.receipts-table__popover-item:focus-visible {
+    outline: 2px solid var(--btn-primary);
+    outline-offset: 2px;
+}
+
+.receipts-table__popover-item svg {
+    flex-shrink: 0;
+    color: var(--text-secondary);
+    transition: color 0.15s ease;
+}
+
+.receipts-table__popover-item:hover svg {
+    color: var(--text-primary);
+}
+
+.receipts-table__popover-item--danger {
+    color: var(--status-error);
+}
+
+.receipts-table__popover-item--danger svg {
+    color: var(--status-error);
+}
+
+.receipts-table__popover-item--danger:hover {
+    background-color: color-mix(in srgb, var(--status-error) 12%, transparent);
+}
+
+.receipts-table__popover-item--danger:hover svg {
+    color: var(--status-error);
+}
+
+.receipts-table__empty {
+    padding: 2.5rem 1rem;
+    text-align: center;
+}
+
+.receipts-table__empty-text {
+    margin: 0;
+    font-size: 0.875rem;
+    color: var(--text-secondary);
+    transition: color 0.3s ease;
+}
+
+@media (max-width: 480px) {
+    .receipts-table {
+        padding: 1.25rem;
+    }
+
+    .receipts-table__header-cell,
+    .receipts-table__cell {
+        padding-left: 0.75rem;
+        padding-right: 0.75rem;
+    }
+}
+
+.receipts-table__skeleton {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.receipts-table__skeleton-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr 2fr 1fr;
+    gap: 1rem;
+    padding: 0.75rem 1rem;
+}
+
+.receipts-table__skeleton-cell {
+    height: 1rem;
+}
+
+.receipts-table__error {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 1.25rem 1rem;
+    border: 1px solid color-mix(in srgb, var(--status-error) 40%, transparent);
+    border-radius: 12px;
+    background-color: color-mix(in srgb, var(--status-error) 8%, transparent);
+    transition:
+        border-color 0.3s ease,
+        background-color 0.3s ease;
+}
+
+.receipts-table__error-icon {
+    flex-shrink: 0;
+    color: var(--status-error);
+}
+
+.receipts-table__error-text {
+    margin: 0;
+    font-size: 0.875rem;
+    color: var(--status-error);
+}
+
+.receipts-table__options-btn:disabled {
+    cursor: not-allowed;
+    opacity: 0.6;
+}
+
+.receipts-table__popover-item:disabled {
+    cursor: not-allowed;
+    opacity: 0.6;
+}
+
+.receipts-table__spinner {
+    flex-shrink: 0;
+    animation: receipts-table__spin 0.8s linear infinite;
+}
+
+@keyframes receipts-table__spin {
+    from {
+        transform: rotate(0deg);
+    }
+
+    to {
+        transform: rotate(360deg);
+    }
+}

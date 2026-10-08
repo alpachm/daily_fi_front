@@ -1,0 +1,240 @@
+/* ============================================================
+   src/components/DetailsScreen/styles/DetailsChartModal.css
+   Accessible modal with a Recharts period chart
+   ============================================================ */
+
+.details-chart-modal__overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 1000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 1rem;
+    background-color: rgba(0, 0, 0, 0.5);
+    animation: details-chart-modal__fade-in 0.2s ease;
+}
+
+.details-chart-modal {
+    width: 100%;
+    max-width: 560px;
+    max-height: calc(100vh - 2rem);
+    overflow-y: auto;
+    background-color: var(--card-background);
+    border-radius: 16px;
+    padding: 1.5rem;
+    box-shadow: 0 20px 40px -12px rgba(0, 0, 0, 0.35);
+    outline: none;
+    animation: details-chart-modal__pop-in 0.2s ease;
+    transition: background-color 0.3s ease;
+}
+
+.details-chart-modal__header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 1rem;
+    margin-bottom: 1.25rem;
+}
+
+.details-chart-modal__heading {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+}
+
+.details-chart-modal__title {
+    margin: 0;
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    transition: color 0.3s ease;
+}
+
+.details-chart-modal__description {
+    margin: 0;
+    font-size: 0.875rem;
+    color: var(--text-secondary);
+    transition: color 0.3s ease;
+}
+
+.details-chart-modal__close {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 36px;
+    flex-shrink: 0;
+    border: none;
+    border-radius: 8px;
+    background-color: transparent;
+    color: var(--text-secondary);
+    cursor: pointer;
+    transition:
+        background-color 0.15s ease,
+        color 0.15s ease;
+}
+
+.details-chart-modal__close:hover {
+    background-color: var(--background);
+    color: var(--text-primary);
+}
+
+.details-chart-modal__close:focus-visible {
+    outline: 2px solid var(--btn-primary);
+    outline-offset: 2px;
+}
+
+.details-chart-modal__filters {
+    display: flex;
+    gap: 0.5rem;
+    margin-bottom: 1.25rem;
+    padding: 0.25rem;
+    background-color: var(--background);
+    border-radius: 12px;
+    transition: background-color 0.3s ease;
+}
+
+.details-chart-modal__filter {
+    flex: 1;
+    padding: 0.5rem 0.75rem;
+    border: none;
+    border-radius: 9px;
+    background-color: transparent;
+    color: var(--text-secondary);
+    font-size: 0.875rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition:
+        background-color 0.15s ease,
+        color 0.15s ease;
+}
+
+.details-chart-modal__filter:hover {
+    color: var(--text-primary);
+}
+
+.details-chart-modal__filter:focus-visible {
+    outline: 2px solid var(--btn-primary);
+    outline-offset: 2px;
+}
+
+.details-chart-modal__filter--active {
+    background-color: var(--btn-primary);
+    color: var(--btn-text);
+}
+
+.details-chart-modal__metrics {
+    display: flex;
+    gap: 0.5rem;
+    margin-bottom: 1.25rem;
+    padding: 0.25rem;
+    background-color: var(--background);
+    border-radius: 12px;
+    transition: background-color 0.3s ease;
+}
+
+.details-chart-modal__metric {
+    flex: 1;
+    padding: 0.5rem 0.75rem;
+    border: none;
+    border-radius: 9px;
+    background-color: transparent;
+    color: var(--text-secondary);
+    font-size: 0.875rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition:
+        background-color 0.15s ease,
+        color 0.15s ease;
+}
+
+.details-chart-modal__metric:hover {
+    color: var(--text-primary);
+}
+
+.details-chart-modal__metric:focus-visible {
+    outline: 2px solid var(--btn-primary);
+    outline-offset: 2px;
+}
+
+.details-chart-modal__metric--active {
+    background-color: var(--btn-primary);
+    color: var(--btn-text);
+}
+
+.details-chart-modal__plot {
+    width: 100%;
+}
+
+/* Recharts overrides scoped to the modal */
+.details-chart-modal__plot .recharts-cartesian-axis-tick-value {
+    fill: var(--text-secondary);
+    font-size: 0.75rem;
+    transition: fill 0.3s ease;
+}
+
+.details-chart-modal__plot .recharts-cartesian-grid line {
+    stroke: var(--text-secondary);
+    stroke-opacity: 0.2;
+}
+
+.details-chart-modal__plot .recharts-area-area {
+    fill: var(--btn-primary);
+    fill-opacity: 0.15;
+    transition: fill 0.3s ease;
+}
+
+.details-chart-modal__plot .recharts-area-curve {
+    stroke: var(--btn-primary);
+    transition: stroke 0.3s ease;
+}
+
+.details-chart-modal__plot .recharts-tooltip-cursor {
+    stroke: var(--text-secondary);
+    stroke-opacity: 0.35;
+}
+
+.details-chart-modal__plot .recharts-active-dot {
+    fill: var(--btn-primary);
+    stroke: var(--card-background);
+    stroke-width: 2;
+}
+
+@keyframes details-chart-modal__fade-in {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
+@keyframes details-chart-modal__pop-in {
+    from {
+        opacity: 0;
+        transform: translateY(8px) scale(0.98);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+@media (min-width: 768px) {
+    .details-chart-modal__metrics {
+        width: fit-content;
+        margin-left: auto;
+    }
+
+    .details-chart-modal__metric {
+        flex: none;
+        width: auto;
+    }
+}
+
+@media (max-width: 480px) {
+    .details-chart-modal {
+        padding: 1.25rem;
+    }
+}

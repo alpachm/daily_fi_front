@@ -1,0 +1,33 @@
+/* ============================================================
+   src/layouts/styles/DashboardLayout.css — Layout skeleton styles
+   ============================================================ */
+
+/* ---------- Layout Grid ---------- */
+.dashboard-layout {
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+    overflow: hidden;
+    background-color: var(--background);
+}
+
+.dashboard-layout__body {
+    display: flex;
+    flex: 1;
+    overflow: hidden;
+}
+
+/* ---------- Main Content ---------- */
+.dashboard-layout__main {
+    flex: 1;
+    overflow-y: auto;
+    padding: 2rem;
+    background-color: var(--background);
+}
+
+/* ---------- Responsive (max-width: 768px) ---------- */
+@media (max-width: 768px) {
+    .dashboard-layout__main {
+        padding: 1rem;
+    }
+}
