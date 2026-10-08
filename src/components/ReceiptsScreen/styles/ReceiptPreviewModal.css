@@ -1,0 +1,117 @@
+/* ============================================================
+   src/components/ReceiptsScreen/styles/ReceiptPreviewModal.css
+   Receipt preview modal / lightbox
+   ============================================================ */
+
+.receipt-preview-modal__overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 1000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 1rem;
+    background-color: rgba(0, 0, 0, 0.75);
+    backdrop-filter: blur(4px);
+    animation: receipt-preview-modal__fade-in 0.2s ease;
+}
+
+.receipt-preview-modal {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    max-width: 90vw;
+    max-height: 85vh;
+    outline: none;
+    animation: receipt-preview-modal__pop-in 0.2s ease;
+}
+
+.receipt-preview-modal__close {
+    position: absolute;
+    top: 0.75rem;
+    right: 0.75rem;
+    z-index: 50;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    border: none;
+    border-radius: 50%;
+    background-color: var(--card-background);
+    color: var(--text-primary);
+    cursor: pointer;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.35);
+    transition:
+        background-color 0.15s ease,
+        color 0.15s ease,
+        transform 0.15s ease;
+}
+
+.receipt-preview-modal__close:hover {
+    background-color: var(--background);
+    transform: scale(1.06);
+}
+
+.receipt-preview-modal__close:focus-visible {
+    outline: 2px solid var(--btn-primary);
+    outline-offset: 2px;
+}
+
+.receipt-preview-modal__image {
+    max-width: 90vw;
+    max-height: 85vh;
+    object-fit: contain;
+    border-radius: 12px;
+    box-shadow: 0 20px 40px -12px rgba(0, 0, 0, 0.35);
+    opacity: 0;
+    transition: opacity 0.25s ease;
+}
+
+.receipt-preview-modal__image--visible {
+    opacity: 1;
+}
+
+.receipt-preview-modal__loading {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    pointer-events: none;
+}
+
+.receipt-preview-modal__spinner {
+    color: var(--btn-primary);
+    animation: receipt-preview-modal__spin 0.8s linear infinite;
+}
+
+@keyframes receipt-preview-modal__spin {
+    from {
+        transform: rotate(0deg);
+    }
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+@keyframes receipt-preview-modal__fade-in {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
+@keyframes receipt-preview-modal__pop-in {
+    from {
+        opacity: 0;
+        transform: scale(0.98);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}

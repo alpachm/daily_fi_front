@@ -46,7 +46,9 @@ export interface BatchStatus {
  * `RECEIPT_UPLOAD_BATCH_SIZE` files.
  *
  * On success it invalidates the daily, monthly, and yearly balance queries so
- * any receipt-derived totals refetch without a manual reload.
+ * any receipt-derived totals refetch without a manual reload. It also marks
+ * the `receipts-day` queries stale without triggering an automatic refetch, so
+ * the receipts table only refreshes when the user re-runs the search.
  */
 export const useUploadReceipts = () => {
     const queryClient = useQueryClient();
@@ -143,6 +145,15 @@ export const useUploadReceipts = () => {
             queryClient.invalidateQueries({ queryKey: ["daily-balances"] });
             queryClient.invalidateQueries({ queryKey: ["monthly-balances"] });
             queryClient.invalidateQueries({ queryKey: ["yearly-balances"] });
+
+            // Mark every receipts-per-day query stale without refetching it.
+            // The receipts table is strictly on-demand: it only fetches when
+            // the user clicks "Consultar", so a passive invalidation keeps the
+            // current view untouched until the next manual search.
+            queryClient.invalidateQueries({
+                queryKey: ["receipts-day"],
+                refetchType: "none",
+            });
         },
     });
 

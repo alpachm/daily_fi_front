@@ -14,6 +14,7 @@ interface ReceiptsMenuProps {
     formattedDate: string | null;
     onDateChange: (raw: string) => void;
     onTypeChange: (type: ReceiptType) => void;
+    onConsult: () => void;
 }
 
 export const ReceiptsMenu = ({
@@ -23,16 +24,12 @@ export const ReceiptsMenu = ({
     formattedDate,
     onDateChange,
     onTypeChange,
+    onConsult,
 }: ReceiptsMenuProps) => {
     const { t } = useTranslation("");
     const [isUploadModalOpen, setIsUploadModalOpen] = useState(false);
 
     const hasSelectedDate = selectedDate !== null;
-
-    const handleConsult = (): void => {
-        // Placeholder for future receipt lookup integration.
-        console.log("ReceiptsMenu: consult receipts", selectedDate, receiptType);
-    };
 
     const title =
         hasSelectedDate && formattedDate
@@ -92,7 +89,7 @@ export const ReceiptsMenu = ({
                         type="button"
                         className="receipts-menu__consult-btn"
                         disabled={!hasSelectedDate}
-                        onClick={handleConsult}
+                        onClick={onConsult}
                     >
                         <Search size={16} aria-hidden="true" />
                         <span>{t("ReceiptsScreen.consultLabel")}</span>
