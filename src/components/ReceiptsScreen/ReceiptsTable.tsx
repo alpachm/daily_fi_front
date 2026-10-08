@@ -1,5 +1,5 @@
 // src/components/ReceiptsScreen/ReceiptsTable.tsx
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import {
     createColumnHelper,
@@ -20,6 +20,7 @@ import type { UseGetReceiptsPerDayResult } from "../../hooks/useGetReceiptsPerDa
 import { getReceiptsPerDayErrorKey } from "../../utils/getReceiptsPerDayError";
 import { TablePagination } from "../shared/TablePagination";
 import { Skeleton } from "../shared/Skeleton";
+import { ReceiptPreviewModal } from "./ReceiptPreviewModal";
 import "./styles/ReceiptsTable.css";
 
 interface ReceiptRow {
@@ -42,11 +43,6 @@ interface ReceiptMenuOption {
     danger?: boolean;
     onSelect: ReceiptMenuAction;
 }
-
-const handleViewReceipt: ReceiptMenuAction = (record) => {
-    // Future integration: open the receipt image in a viewer.
-    console.log("ReceiptsTable: view receipt", record.id);
-};
 
 const handleDownloadReceipt: ReceiptMenuAction = (record) => {
     // Future integration: download the receipt file from its public URL.
@@ -86,7 +82,18 @@ const SKELETON_ROW_COUNT = 5;
 export const ReceiptsTable = ({ query }: ReceiptsTableProps) => {
     const { t } = useTranslation("");
     const [activeMenuId, setActiveMenuId] = useState<string | null>(null);
+    const [previewReceipt, setPreviewReceipt] = useState<ReceiptRow | null>(
+        null,
+    );
     const popoverRef = useRef<HTMLDivElement | null>(null);
+
+    const handlePreviewReceipt = useCallback((record: ReceiptRow): void => {
+        setPreviewReceipt(record);
+    }, []);
+
+    const handleClosePreview = useCallback((): void => {
+        setPreviewReceipt(null);
+    }, []);
 
     const typeLabels = useMemo(
         () => ({
@@ -115,7 +122,7 @@ export const ReceiptsTable = ({ query }: ReceiptsTableProps) => {
                 id: "view-receipt",
                 label: t("ReceiptsScreen.optionViewReceipt"),
                 icon: Eye,
-                onSelect: handleViewReceipt,
+                onSelect: handlePreviewReceipt,
             },
             {
                 id: "download-receipt",
@@ -131,7 +138,7 @@ export const ReceiptsTable = ({ query }: ReceiptsTableProps) => {
                 onSelect: handleDeleteReceipt,
             },
         ],
-        [t],
+        [t, handlePreviewReceipt],
     );
 
     useEffect(() => {
@@ -319,70 +326,79 @@ export const ReceiptsTable = ({ query }: ReceiptsTableProps) => {
     }
 
     return (
-        <section className="receipts-table">
-            <div className="receipts-table__scroll">
-                <table className="receipts-table__table">
-                    <thead>
-                        {table.getHeaderGroups().map((headerGroup) => (
-                            <tr key={headerGroup.id}>
-                                {headerGroup.headers.map((header) => (
-                                    <th
-                                        key={header.id}
-                                        scope="col"
-                                        className={`receipts-table__header-cell${
-                                            header.column.id === "options"
-                                                ? " receipts-table__header-cell--options"
-                                                : ""
-                                        }`}
-                                    >
-                                        {header.isPlaceholder
-                                            ? null
-                                            : flexRender(
-                                                  header.column.columnDef
-                                                      .header,
-                                                  header.getContext(),
-                                              )}
-                                    </th>
-                                ))}
-                            </tr>
-                        ))}
-                    </thead>
-                    <tbody>
-                        {table.getRowModel().rows.map((row) => (
-                            <tr key={row.id} className="receipts-table__row">
-                                {row.getVisibleCells().map((cell) => (
-                                    <td
-                                        key={cell.id}
-                                        className={`receipts-table__cell${
-                                            cell.column.id === "fileName"
-                                                ? " receipts-table__cell--file"
-                                                : cell.column.id === "options"
-                                                  ? " receipts-table__cell--options"
-                                                  : ""
-                                        }`}
-                                    >
-                                        {flexRender(
-                                            cell.column.columnDef.cell,
-                                            cell.getContext(),
-                                        )}
-                                    </td>
-                                ))}
-                            </tr>
-                        ))}
-                    </tbody>
-                </table>
-            </div>
+        <>
+            <section className="receipts-table">
+                <div className="receipts-table__scroll">
+                    <table className="receipts-table__table">
+                        <thead>
+                            {table.getHeaderGroups().map((headerGroup) => (
+                                <tr key={headerGroup.id}>
+                                    {headerGroup.headers.map((header) => (
+                                        <th
+                                            key={header.id}
+                                            scope="col"
+                                            className={`receipts-table__header-cell${
+                                                header.column.id === "options"
+                                                    ? " receipts-table__header-cell--options"
+                                                    : ""
+                                            }`}
+                                        >
+                                            {header.isPlaceholder
+                                                ? null
+                                                : flexRender(
+                                                      header.column.columnDef
+                                                          .header,
+                                                      header.getContext(),
+                                                  )}
+                                        </th>
+                                    ))}
+                                </tr>
+                            ))}
+                        </thead>
+                        <tbody>
+                            {table.getRowModel().rows.map((row) => (
+                                <tr key={row.id} className="receipts-table__row">
+                                    {row.getVisibleCells().map((cell) => (
+                                        <td
+                                            key={cell.id}
+                                            className={`receipts-table__cell${
+                                                cell.column.id === "fileName"
+                                                    ? " receipts-table__cell--file"
+                                                    : cell.column.id === "options"
+                                                      ? " receipts-table__cell--options"
+                                                      : ""
+                                            }`}
+                                        >
+                                            {flexRender(
+                                                cell.column.columnDef.cell,
+                                                cell.getContext(),
+                                            )}
+                                        </td>
+                                    ))}
+                                </tr>
+                            ))}
+                        </tbody>
+                    </table>
+                </div>
 
-            <TablePagination
-                currentPage={pagination?.currentPage ?? 1}
-                totalPages={pagination?.totalPages ?? 1}
-                pageSize={query.limit}
-                canPreviousPage={pagination?.hasPrevPage ?? false}
-                canNextPage={pagination?.hasNextPage ?? false}
-                onPageChange={(page) => query.changePage(page)}
-                onPageSizeChange={(size) => query.changeLimit(size)}
+                <TablePagination
+                    currentPage={pagination?.currentPage ?? 1}
+                    totalPages={pagination?.totalPages ?? 1}
+                    pageSize={query.limit}
+                    canPreviousPage={pagination?.hasPrevPage ?? false}
+                    canNextPage={pagination?.hasNextPage ?? false}
+                    onPageChange={(page) => query.changePage(page)}
+                    onPageSizeChange={(size) => query.changeLimit(size)}
+                />
+            </section>
+
+            <ReceiptPreviewModal
+                isOpen={previewReceipt !== null}
+                fileUrl={previewReceipt?.fileUrl ?? ""}
+                altText={previewReceipt?.fileName ?? ""}
+                onClose={handleClosePreview}
             />
-        </section>
+        </>
     );
 };
 
