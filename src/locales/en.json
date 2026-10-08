@@ -240,6 +240,7 @@
     "optionViewReceipt": "View receipt",
     "optionDownloadReceipt": "Download receipt",
     "optionDeleteReceipt": "Delete receipt",
+    "downloadReceiptError": "The receipt could not be downloaded. Please try again.",
     "tableHeaderType": "Type",
     "tableEmptyInstructions": "Select the date, the voucher type and click 'Check' to view the records.",
     "tableEmptyNoResults": "No vouchers were found for this query.",

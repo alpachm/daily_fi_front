@@ -11,13 +11,16 @@ import type { LucideIcon } from "lucide-react";
 import {
     Download,
     Eye,
+    LoaderCircle,
     MoreHorizontal,
     Trash2,
     TriangleAlert,
 } from "lucide-react";
 import type { ReceiptItem } from "../../interfaces/GetReceiptsPerDayService.interface";
 import type { UseGetReceiptsPerDayResult } from "../../hooks/useGetReceiptsPerDay";
+import { downloadReceiptFile } from "../../services/DownloadReceiptService";
 import { getReceiptsPerDayErrorKey } from "../../utils/getReceiptsPerDayError";
+import { AutomaticAlertModal } from "../shared/AutomaticAlertModal";
 import { TablePagination } from "../shared/TablePagination";
 import { Skeleton } from "../shared/Skeleton";
 import { ReceiptPreviewModal } from "./ReceiptPreviewModal";
@@ -43,11 +46,6 @@ interface ReceiptMenuOption {
     danger?: boolean;
     onSelect: ReceiptMenuAction;
 }
-
-const handleDownloadReceipt: ReceiptMenuAction = (record) => {
-    // Future integration: download the receipt file from its public URL.
-    console.log("ReceiptsTable: download receipt", record.id);
-};
 
 const handleDeleteReceipt: ReceiptMenuAction = (record) => {
     // Future integration: delete the receipt through a dedicated service.
@@ -85,6 +83,10 @@ export const ReceiptsTable = ({ query }: ReceiptsTableProps) => {
     const [previewReceipt, setPreviewReceipt] = useState<ReceiptRow | null>(
         null,
     );
+    const [downloadingReceiptId, setDownloadingReceiptId] = useState<
+        number | null
+    >(null);
+    const [downloadError, setDownloadError] = useState<string | null>(null);
     const popoverRef = useRef<HTMLDivElement | null>(null);
 
     const handlePreviewReceipt = useCallback((record: ReceiptRow): void => {
@@ -93,6 +95,28 @@ export const ReceiptsTable = ({ query }: ReceiptsTableProps) => {
 
     const handleClosePreview = useCallback((): void => {
         setPreviewReceipt(null);
+    }, []);
+
+    const handleDownloadReceipt = useCallback(
+        async (record: ReceiptRow): Promise<void> => {
+            setDownloadingReceiptId(record.id);
+            setDownloadError(null);
+            try {
+                await downloadReceiptFile(
+                    record.fileUrl,
+                    `comprobante-${record.id}`,
+                );
+            } catch {
+                setDownloadError(t("ReceiptsScreen.downloadReceiptError"));
+            } finally {
+                setDownloadingReceiptId(null);
+            }
+        },
+        [t],
+    );
+
+    const handleDownloadErrorClose = useCallback((): void => {
+        setDownloadError(null);
     }, []);
 
     const typeLabels = useMemo(
@@ -138,7 +162,7 @@ export const ReceiptsTable = ({ query }: ReceiptsTableProps) => {
                 onSelect: handleDeleteReceipt,
             },
         ],
-        [t, handlePreviewReceipt],
+        [t, handlePreviewReceipt, handleDownloadReceipt],
     );
 
     useEffect(() => {
@@ -189,6 +213,7 @@ export const ReceiptsTable = ({ query }: ReceiptsTableProps) => {
                     const record = info.row.original;
                     const rowId = info.row.id;
                     const isOpen = activeMenuId === rowId;
+                    const isDownloading = downloadingReceiptId === record.id;
 
                     return (
                         <div
@@ -203,13 +228,25 @@ export const ReceiptsTable = ({ query }: ReceiptsTableProps) => {
                                 )}
                                 aria-haspopup="menu"
                                 aria-expanded={isOpen}
+                                disabled={isDownloading}
                                 onClick={() =>
                                     setActiveMenuId((current) =>
                                         current === rowId ? null : rowId,
                                     )
                                 }
                             >
-                                <MoreHorizontal size={18} aria-hidden="true" />
+                                {isDownloading ? (
+                                    <LoaderCircle
+                                        size={18}
+                                        className="receipts-table__spinner"
+                                        aria-hidden="true"
+                                    />
+                                ) : (
+                                    <MoreHorizontal
+                                        size={18}
+                                        aria-hidden="true"
+                                    />
+                                )}
                             </button>
 
                             {isOpen ? (
@@ -220,28 +257,43 @@ export const ReceiptsTable = ({ query }: ReceiptsTableProps) => {
                                         "ReceiptsScreen.tableOptionsMenuLabel",
                                     )}
                                 >
-                                    {menuOptions.map((option) => (
-                                        <button
-                                            key={option.id}
-                                            type="button"
-                                            className={`receipts-table__popover-item${
-                                                option.danger
-                                                    ? " receipts-table__popover-item--danger"
-                                                    : ""
-                                            }`}
-                                            role="menuitem"
-                                            onClick={() => {
-                                                option.onSelect(record);
-                                                setActiveMenuId(null);
-                                            }}
-                                        >
-                                            <option.icon
-                                                size={16}
-                                                aria-hidden="true"
-                                            />
-                                            <span>{option.label}</span>
-                                        </button>
-                                    ))}
+                                    {menuOptions.map((option) => {
+                                        const isOptionDownloading =
+                                            option.id === "download-receipt" &&
+                                            isDownloading;
+
+                                        return (
+                                            <button
+                                                key={option.id}
+                                                type="button"
+                                                className={`receipts-table__popover-item${
+                                                    option.danger
+                                                        ? " receipts-table__popover-item--danger"
+                                                        : ""
+                                                }`}
+                                                role="menuitem"
+                                                disabled={isOptionDownloading}
+                                                onClick={() => {
+                                                    option.onSelect(record);
+                                                    setActiveMenuId(null);
+                                                }}
+                                            >
+                                                {isOptionDownloading ? (
+                                                    <LoaderCircle
+                                                        size={16}
+                                                        className="receipts-table__spinner"
+                                                        aria-hidden="true"
+                                                    />
+                                                ) : (
+                                                    <option.icon
+                                                        size={16}
+                                                        aria-hidden="true"
+                                                    />
+                                                )}
+                                                <span>{option.label}</span>
+                                            </button>
+                                        );
+                                    })}
                                 </div>
                             ) : null}
                         </div>
@@ -249,7 +301,7 @@ export const ReceiptsTable = ({ query }: ReceiptsTableProps) => {
                 },
             }),
         ],
-        [t, activeMenuId, menuOptions],
+        [t, activeMenuId, menuOptions, downloadingReceiptId],
     );
 
     const table = useReactTable({
@@ -398,6 +450,16 @@ export const ReceiptsTable = ({ query }: ReceiptsTableProps) => {
                 altText={previewReceipt?.fileName ?? ""}
                 onClose={handleClosePreview}
             />
+
+            {downloadError !== null ? (
+                <AutomaticAlertModal
+                    isOpen
+                    onClose={handleDownloadErrorClose}
+                    message={downloadError}
+                    icon={<TriangleAlert size={24} aria-hidden="true" />}
+                    variant="error"
+                />
+            ) : null}
         </>
     );
 };
