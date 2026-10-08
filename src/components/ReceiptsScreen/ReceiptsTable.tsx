@@ -9,6 +9,7 @@ import {
 } from "@tanstack/react-table";
 import type { LucideIcon } from "lucide-react";
 import {
+    Check,
     Download,
     Eye,
     LoaderCircle,
@@ -17,9 +18,13 @@ import {
     TriangleAlert,
 } from "lucide-react";
 import type { ReceiptItem } from "../../interfaces/GetReceiptsPerDayService.interface";
+import type { DeleteReceiptApiError } from "../../interfaces/DeleteReceiptService.interface";
 import type { UseGetReceiptsPerDayResult } from "../../hooks/useGetReceiptsPerDay";
+import { useDeleteReceipt } from "../../hooks/useDeleteReceipt";
 import { downloadReceiptFile } from "../../services/DownloadReceiptService";
+import { getDeleteReceiptErrorKey } from "../../utils/deleteReceiptError";
 import { getReceiptsPerDayErrorKey } from "../../utils/getReceiptsPerDayError";
+import { AlertModal } from "../shared/AlertModal";
 import { AutomaticAlertModal } from "../shared/AutomaticAlertModal";
 import { TablePagination } from "../shared/TablePagination";
 import { Skeleton } from "../shared/Skeleton";
@@ -47,10 +52,12 @@ interface ReceiptMenuOption {
     onSelect: ReceiptMenuAction;
 }
 
-const handleDeleteReceipt: ReceiptMenuAction = (record) => {
-    // Future integration: delete the receipt through a dedicated service.
-    console.log("ReceiptsTable: delete receipt", record.id);
-};
+type DeleteFlowState =
+    | { phase: "idle" }
+    | { phase: "confirm"; receipt: ReceiptRow }
+    | { phase: "pending"; receiptId: number }
+    | { phase: "success"; message: string }
+    | { phase: "error"; message: string };
 
 const formatReceiptDate = (value: string): string => {
     const datePart = value.slice(0, 10);
@@ -87,7 +94,28 @@ export const ReceiptsTable = ({ query }: ReceiptsTableProps) => {
         number | null
     >(null);
     const [downloadError, setDownloadError] = useState<string | null>(null);
+    const [deleteFlow, setDeleteFlow] = useState<DeleteFlowState>({
+        phase: "idle",
+    });
     const popoverRef = useRef<HTMLDivElement | null>(null);
+
+    const { mutate: deleteReceipt } = useDeleteReceipt({
+        onMutate: (receiptId: number) => {
+            setDeleteFlow({ phase: "pending", receiptId });
+        },
+        onSuccess: () => {
+            setDeleteFlow({
+                phase: "success",
+                message: t("ReceiptsScreen.deleteReceiptSuccess"),
+            });
+        },
+        onError: (error: DeleteReceiptApiError) => {
+            setDeleteFlow({
+                phase: "error",
+                message: t(getDeleteReceiptErrorKey(error)),
+            });
+        },
+    });
 
     const handlePreviewReceipt = useCallback((record: ReceiptRow): void => {
         setPreviewReceipt(record);
@@ -118,6 +146,25 @@ export const ReceiptsTable = ({ query }: ReceiptsTableProps) => {
     const handleDownloadErrorClose = useCallback((): void => {
         setDownloadError(null);
     }, []);
+
+    const handleRequestDelete = useCallback((record: ReceiptRow): void => {
+        setDeleteFlow({ phase: "confirm", receipt: record });
+        setActiveMenuId(null);
+    }, []);
+
+    const handleCloseDeleteModal = useCallback((): void => {
+        if (deleteFlow.phase === "pending") return;
+        setDeleteFlow({ phase: "idle" });
+    }, [deleteFlow.phase]);
+
+    const handleDeleteAlertClose = useCallback((): void => {
+        setDeleteFlow({ phase: "idle" });
+    }, []);
+
+    const handleConfirmDelete = useCallback((): void => {
+        if (deleteFlow.phase !== "confirm") return;
+        deleteReceipt(deleteFlow.receipt.id);
+    }, [deleteFlow, deleteReceipt]);
 
     const typeLabels = useMemo(
         () => ({
@@ -159,10 +206,10 @@ export const ReceiptsTable = ({ query }: ReceiptsTableProps) => {
                 label: t("ReceiptsScreen.optionDeleteReceipt"),
                 icon: Trash2,
                 danger: true,
-                onSelect: handleDeleteReceipt,
+                onSelect: handleRequestDelete,
             },
         ],
-        [t, handlePreviewReceipt, handleDownloadReceipt],
+        [t, handlePreviewReceipt, handleDownloadReceipt, handleRequestDelete],
     );
 
     useEffect(() => {
@@ -214,6 +261,10 @@ export const ReceiptsTable = ({ query }: ReceiptsTableProps) => {
                     const rowId = info.row.id;
                     const isOpen = activeMenuId === rowId;
                     const isDownloading = downloadingReceiptId === record.id;
+                    const isDeleting =
+                        deleteFlow.phase === "pending" &&
+                        deleteFlow.receiptId === record.id;
+                    const isRowBusy = isDownloading || isDeleting;
 
                     return (
                         <div
@@ -228,14 +279,14 @@ export const ReceiptsTable = ({ query }: ReceiptsTableProps) => {
                                 )}
                                 aria-haspopup="menu"
                                 aria-expanded={isOpen}
-                                disabled={isDownloading}
+                                disabled={isRowBusy}
                                 onClick={() =>
                                     setActiveMenuId((current) =>
                                         current === rowId ? null : rowId,
                                     )
                                 }
                             >
-                                {isDownloading ? (
+                                {isRowBusy ? (
                                     <LoaderCircle
                                         size={18}
                                         className="receipts-table__spinner"
@@ -301,7 +352,7 @@ export const ReceiptsTable = ({ query }: ReceiptsTableProps) => {
                 },
             }),
         ],
-        [t, activeMenuId, menuOptions, downloadingReceiptId],
+        [t, activeMenuId, menuOptions, downloadingReceiptId, deleteFlow],
     );
 
     const table = useReactTable({
@@ -444,12 +495,43 @@ export const ReceiptsTable = ({ query }: ReceiptsTableProps) => {
                 />
             </section>
 
+            <AlertModal
+                isOpen={
+                    deleteFlow.phase === "confirm" ||
+                    deleteFlow.phase === "pending"
+                }
+                onClose={handleCloseDeleteModal}
+                onConfirm={handleConfirmDelete}
+                title={t("ReceiptsScreen.deleteReceiptConfirmTitle")}
+                message={t("ReceiptsScreen.deleteReceiptConfirmMessage")}
+                icon={<Trash2 size={24} aria-hidden="true" />}
+                variant="danger"
+                confirmText={t("ReceiptsScreen.deleteReceiptConfirmButton")}
+                isLoading={deleteFlow.phase === "pending"}
+            />
+
             <ReceiptPreviewModal
                 isOpen={previewReceipt !== null}
                 fileUrl={previewReceipt?.fileUrl ?? ""}
                 altText={previewReceipt?.fileName ?? ""}
                 onClose={handleClosePreview}
             />
+
+            {deleteFlow.phase === "success" || deleteFlow.phase === "error" ? (
+                <AutomaticAlertModal
+                    isOpen
+                    onClose={handleDeleteAlertClose}
+                    message={deleteFlow.message}
+                    icon={
+                        deleteFlow.phase === "success" ? (
+                            <Check size={24} aria-hidden="true" />
+                        ) : (
+                            <TriangleAlert size={24} aria-hidden="true" />
+                        )
+                    }
+                    variant={deleteFlow.phase === "success" ? "success" : "error"}
+                />
+            ) : null}
 
             {downloadError !== null ? (
                 <AutomaticAlertModal
