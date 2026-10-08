@@ -18,6 +18,7 @@ import {
     TriangleAlert,
 } from "lucide-react";
 import type { ReceiptItem } from "../../interfaces/GetReceiptsPerDayService.interface";
+import type { DeleteReceiptApiError } from "../../interfaces/DeleteReceiptService.interface";
 import type { UseGetReceiptsPerDayResult } from "../../hooks/useGetReceiptsPerDay";
 import { useDeleteReceipt } from "../../hooks/useDeleteReceipt";
 import { downloadReceiptFile } from "../../services/DownloadReceiptService";
@@ -51,12 +52,12 @@ interface ReceiptMenuOption {
     onSelect: ReceiptMenuAction;
 }
 
-type DeleteAlertVariant = "success" | "error";
-
-interface DeleteAlert {
-    variant: DeleteAlertVariant;
-    message: string;
-}
+type DeleteFlowState =
+    | { phase: "idle" }
+    | { phase: "confirm"; receipt: ReceiptRow }
+    | { phase: "pending"; receiptId: number }
+    | { phase: "success"; message: string }
+    | { phase: "error"; message: string };
 
 const formatReceiptDate = (value: string): string => {
     const datePart = value.slice(0, 10);
@@ -93,17 +94,28 @@ export const ReceiptsTable = ({ query }: ReceiptsTableProps) => {
         number | null
     >(null);
     const [downloadError, setDownloadError] = useState<string | null>(null);
-    const [receiptToDelete, setReceiptToDelete] = useState<ReceiptRow | null>(
-        null,
-    );
-    const [deletingReceiptId, setDeletingReceiptId] = useState<number | null>(
-        null,
-    );
-    const [deleteAlert, setDeleteAlert] = useState<DeleteAlert | null>(null);
+    const [deleteFlow, setDeleteFlow] = useState<DeleteFlowState>({
+        phase: "idle",
+    });
     const popoverRef = useRef<HTMLDivElement | null>(null);
 
-    const { mutateAsync: deleteReceiptAsync, isPending: isDeleting } =
-        useDeleteReceipt();
+    const { mutate: deleteReceipt } = useDeleteReceipt({
+        onMutate: (receiptId: number) => {
+            setDeleteFlow({ phase: "pending", receiptId });
+        },
+        onSuccess: () => {
+            setDeleteFlow({
+                phase: "success",
+                message: t("ReceiptsScreen.deleteReceiptSuccess"),
+            });
+        },
+        onError: (error: DeleteReceiptApiError) => {
+            setDeleteFlow({
+                phase: "error",
+                message: t(getDeleteReceiptErrorKey(error)),
+            });
+        },
+    });
 
     const handlePreviewReceipt = useCallback((record: ReceiptRow): void => {
         setPreviewReceipt(record);
@@ -136,40 +148,23 @@ export const ReceiptsTable = ({ query }: ReceiptsTableProps) => {
     }, []);
 
     const handleRequestDelete = useCallback((record: ReceiptRow): void => {
-        setReceiptToDelete(record);
+        setDeleteFlow({ phase: "confirm", receipt: record });
         setActiveMenuId(null);
     }, []);
 
     const handleCloseDeleteModal = useCallback((): void => {
-        if (isDeleting) return;
-        setReceiptToDelete(null);
-    }, [isDeleting]);
+        if (deleteFlow.phase === "pending") return;
+        setDeleteFlow({ phase: "idle" });
+    }, [deleteFlow.phase]);
 
     const handleDeleteAlertClose = useCallback((): void => {
-        setDeleteAlert(null);
+        setDeleteFlow({ phase: "idle" });
     }, []);
 
-    const handleConfirmDelete = useCallback(async (): Promise<void> => {
-        if (receiptToDelete === null) return;
-        const receiptId = receiptToDelete.id;
-        setDeletingReceiptId(receiptId);
-        try {
-            await deleteReceiptAsync(receiptId);
-            setDeleteAlert({
-                variant: "success",
-                message: t("ReceiptsScreen.deleteReceiptSuccess"),
-            });
-            setReceiptToDelete(null);
-        } catch (error: unknown) {
-            setDeleteAlert({
-                variant: "error",
-                message: t(getDeleteReceiptErrorKey(error)),
-            });
-            setReceiptToDelete(null);
-        } finally {
-            setDeletingReceiptId(null);
-        }
-    }, [receiptToDelete, deleteReceiptAsync, t]);
+    const handleConfirmDelete = useCallback((): void => {
+        if (deleteFlow.phase !== "confirm") return;
+        deleteReceipt(deleteFlow.receipt.id);
+    }, [deleteFlow, deleteReceipt]);
 
     const typeLabels = useMemo(
         () => ({
@@ -266,7 +261,9 @@ export const ReceiptsTable = ({ query }: ReceiptsTableProps) => {
                     const rowId = info.row.id;
                     const isOpen = activeMenuId === rowId;
                     const isDownloading = downloadingReceiptId === record.id;
-                    const isDeleting = deletingReceiptId === record.id;
+                    const isDeleting =
+                        deleteFlow.phase === "pending" &&
+                        deleteFlow.receiptId === record.id;
                     const isRowBusy = isDownloading || isDeleting;
 
                     return (
@@ -355,7 +352,7 @@ export const ReceiptsTable = ({ query }: ReceiptsTableProps) => {
                 },
             }),
         ],
-        [t, activeMenuId, menuOptions, downloadingReceiptId, deletingReceiptId],
+        [t, activeMenuId, menuOptions, downloadingReceiptId, deleteFlow],
     );
 
     const table = useReactTable({
@@ -499,7 +496,10 @@ export const ReceiptsTable = ({ query }: ReceiptsTableProps) => {
             </section>
 
             <AlertModal
-                isOpen={receiptToDelete !== null}
+                isOpen={
+                    deleteFlow.phase === "confirm" ||
+                    deleteFlow.phase === "pending"
+                }
                 onClose={handleCloseDeleteModal}
                 onConfirm={handleConfirmDelete}
                 title={t("ReceiptsScreen.deleteReceiptConfirmTitle")}
@@ -507,7 +507,7 @@ export const ReceiptsTable = ({ query }: ReceiptsTableProps) => {
                 icon={<Trash2 size={24} aria-hidden="true" />}
                 variant="danger"
                 confirmText={t("ReceiptsScreen.deleteReceiptConfirmButton")}
-                isLoading={isDeleting}
+                isLoading={deleteFlow.phase === "pending"}
             />
 
             <ReceiptPreviewModal
@@ -517,19 +517,19 @@ export const ReceiptsTable = ({ query }: ReceiptsTableProps) => {
                 onClose={handleClosePreview}
             />
 
-            {deleteAlert !== null ? (
+            {deleteFlow.phase === "success" || deleteFlow.phase === "error" ? (
                 <AutomaticAlertModal
                     isOpen
                     onClose={handleDeleteAlertClose}
-                    message={deleteAlert.message}
+                    message={deleteFlow.message}
                     icon={
-                        deleteAlert.variant === "success" ? (
+                        deleteFlow.phase === "success" ? (
                             <Check size={24} aria-hidden="true" />
                         ) : (
                             <TriangleAlert size={24} aria-hidden="true" />
                         )
                     }
-                    variant={deleteAlert.variant}
+                    variant={deleteFlow.phase === "success" ? "success" : "error"}
                 />
             ) : null}
 
