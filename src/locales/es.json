@@ -240,6 +240,7 @@
     "optionViewReceipt": "Visualizar comprobante",
     "optionDownloadReceipt": "Descargar comprobante",
     "optionDeleteReceipt": "Eliminar comprobante",
+    "downloadReceiptError": "No se pudo descargar el comprobante. Inténtalo de nuevo.",
     "tableHeaderType": "Tipo",
     "tableEmptyInstructions": "Selecciona la fecha, el tipo de comprobante y haz clic en 'Consultar' para ver los registros.",
     "tableEmptyNoResults": "No se encontraron comprobantes para esta consulta.",

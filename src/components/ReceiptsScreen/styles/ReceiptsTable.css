@@ -245,3 +245,28 @@
     font-size: 0.875rem;
     color: var(--status-error);
 }
+
+.receipts-table__options-btn:disabled {
+    cursor: not-allowed;
+    opacity: 0.6;
+}
+
+.receipts-table__popover-item:disabled {
+    cursor: not-allowed;
+    opacity: 0.6;
+}
+
+.receipts-table__spinner {
+    flex-shrink: 0;
+    animation: receipts-table__spin 0.8s linear infinite;
+}
+
+@keyframes receipts-table__spin {
+    from {
+        transform: rotate(0deg);
+    }
+
+    to {
+        transform: rotate(360deg);
+    }
+}
