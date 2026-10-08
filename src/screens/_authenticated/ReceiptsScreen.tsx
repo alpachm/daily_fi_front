@@ -19,6 +19,10 @@ export const ReceiptsScreen = () => {
     const receiptsQuery = useGetReceiptsPerDay();
     const { search } = receiptsQuery;
 
+    // Commits the selected filters and forces a fresh network request. The
+    // `search` action always refetches, so re-consulting the same day/type
+    // after uploading receipts reflects the new records on the next click
+    // without an automatic update after the upload itself.
     const handleConsult = useCallback((): void => {
         if (selectedDate === null) {
             return;

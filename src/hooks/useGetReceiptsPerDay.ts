@@ -1,5 +1,5 @@
 // src/hooks/useGetReceiptsPerDay.ts
-import { useCallback, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { GetReceiptsPerDayService } from "../services/GetReceiptsPerDayService";
 import type {
@@ -45,13 +45,10 @@ const receiptsPerDayQueryKey = (
     type: ApiReceiptType | null,
     page: number,
     limit: number,
-): readonly [string, string, ApiReceiptType | null, number, number] => [
-    "receipts-day",
-    date,
-    type,
-    page,
-    limit,
-];
+): readonly [
+    string,
+    { date: string; type: ApiReceiptType | null; page: number; limit: number },
+] => ["receipts-day", { date, type, page, limit }];
 
 /**
  * Fetches the receipts of a single day through `GetReceiptsPerDayService`.
@@ -59,7 +56,11 @@ const receiptsPerDayQueryKey = (
  * The query stays disabled until `search()` is called, so no request is fired
  * on screen mount. Changing the selected date or type resets the page and
  * updates the query key, while pagination changes (page / page size) map
- * directly to the backend pagination metadata.
+ * directly to the backend pagination metadata. Every explicit `search()`
+ * commit also forces a fresh network request, so re-consulting the same
+ * filters always reflects newly uploaded receipts. Upload invalidations are
+ * passive (`refetchType: "none"`), so they mark the cache stale but never
+ * refetch the mounted table automatically.
  */
 export const useGetReceiptsPerDay = () => {
     const [searchParams, setSearchParams] =
@@ -69,6 +70,7 @@ export const useGetReceiptsPerDay = () => {
         RECEIPTS_PAGE_SIZE_KEY,
         DEFAULT_PAGE_SIZE,
     );
+    const [searchRequestId, setSearchRequestId] = useState(0);
 
     const hasSearched = searchParams !== null;
 
@@ -105,7 +107,20 @@ export const useGetReceiptsPerDay = () => {
     const search = useCallback((params: ReceiptsSearchParams): void => {
         setSearchParams(params);
         setPage(1);
+        setSearchRequestId((current) => current + 1);
     }, []);
+
+    const { refetch } = query;
+
+    // Force a fresh network request on every explicit "Consultar" click. A
+    // cached result (even an empty list) would otherwise be served for an
+    // unchanged filter combination, hiding receipts uploaded in the meantime.
+    useEffect(() => {
+        if (searchRequestId === 0) {
+            return;
+        }
+        void refetch();
+    }, [searchRequestId, refetch]);
 
     const changePage = useCallback((nextPage: number): void => {
         setPage(nextPage);
