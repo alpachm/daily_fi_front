@@ -7,7 +7,7 @@ import {
     type GetBalancePerDayValidationError,
     type ValidationErrorItem,
 } from "../interfaces/GetBalancePerDayService.interface";
-import { getAccessToken } from "../utils/auth";
+import { performApiFetch } from "./httpClient";
 
 /**
  * Base URL of the backend API, injected at build time by Vite.
@@ -79,14 +79,6 @@ const isSuccessResponse = (
     );
 };
 
-const readResponseBody = async (response: Response): Promise<unknown> => {
-    try {
-        return await response.json();
-    } catch {
-        return null;
-    }
-};
-
 const mapErrorResponse = (
     statusCode: number,
     body: unknown,
@@ -119,19 +111,8 @@ export const getBalancePerDay = async (
     date: string,
 ): Promise<DailyBalanceData | null> => {
     const url = `${API_BASE_URL}${GET_BALANCE_PER_DAY_ENDPOINT}?date=${encodeURIComponent(date)}`;
-    const accessToken = getAccessToken();
-
-    let response: Response;
-    try {
-        response = await fetch(url, {
-            method: "GET",
-            headers: {
-                ...(accessToken !== null
-                    ? { Authorization: `Bearer ${accessToken}` }
-                    : {}),
-            },
-        });
-    } catch {
+    const result = await performApiFetch(url, { method: "GET" });
+    if (!result.ok) {
         throw new GetBalancePerDayApiError(
             "Unable to reach the get balance per day service.",
             {
@@ -141,7 +122,8 @@ export const getBalancePerDay = async (
         );
     }
 
-    const responseBody: unknown = await readResponseBody(response);
+    const response = result.response;
+    const responseBody = result.body;
 
     // A 404 means no balance has been created for this date yet. It is not an
     // error condition; callers treat `null` as "nothing to show".

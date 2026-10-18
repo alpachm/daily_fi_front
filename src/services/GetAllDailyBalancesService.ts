@@ -6,7 +6,7 @@ import {
     type GetAllDailyBalancesGenericErrorResponse,
     type DailyBalancesResponse,
 } from "../interfaces/GetAllDailyBalancesService.interface";
-import { getAccessToken } from "../utils/auth";
+import { performApiFetch } from "./httpClient";
 
 /**
  * Base URL of the backend API, injected at build time by Vite.
@@ -59,14 +59,6 @@ const isGenericApiErrorResponse = (
     return value.status === "fail" && typeof value.message === "string";
 };
 
-const readResponseBody = async (response: Response): Promise<unknown> => {
-    try {
-        return await response.json();
-    } catch {
-        return null;
-    }
-};
-
 const mapErrorResponse = (
     statusCode: number,
     body: unknown,
@@ -111,19 +103,8 @@ export const getAllDailyBalances = async (
     params: DailyBalanceQueryParams = {},
 ): Promise<DailyBalanceItem[]> => {
     const url = `${API_BASE_URL}${GET_ALL_DAILY_BALANCES_ENDPOINT}${buildQueryString(params)}`;
-    const accessToken = getAccessToken();
-
-    let response: Response;
-    try {
-        response = await fetch(url, {
-            method: "GET",
-            headers: {
-                ...(accessToken !== null
-                    ? { Authorization: `Bearer ${accessToken}` }
-                    : {}),
-            },
-        });
-    } catch {
+    const result = await performApiFetch(url, { method: "GET" });
+    if (!result.ok) {
         throw new GetAllDailyBalancesApiError(
             "Unable to reach the get all daily balances service.",
             {
@@ -133,7 +114,8 @@ export const getAllDailyBalances = async (
         );
     }
 
-    const responseBody: unknown = await readResponseBody(response);
+    const response = result.response;
+    const responseBody = result.body;
 
     if (!response.ok) {
         throw mapErrorResponse(response.status, responseBody);
