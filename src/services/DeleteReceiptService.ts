@@ -1,6 +1,6 @@
 // src/services/DeleteReceiptService.ts
 import { DeleteReceiptApiError } from "../interfaces/DeleteReceiptService.interface";
-import { getAccessToken } from "../utils/auth";
+import { performApiFetch } from "./httpClient";
 
 /**
  * Base URL of the backend API, injected at build time by Vite.
@@ -22,14 +22,6 @@ const readErrorMessage = (body: unknown): string | null => {
         return null;
     }
     return typeof body.message === "string" ? body.message : null;
-};
-
-const readResponseBody = async (response: Response): Promise<unknown> => {
-    try {
-        return await response.json();
-    } catch {
-        return null;
-    }
 };
 
 const mapErrorResponse = (
@@ -72,19 +64,8 @@ export const deleteReceipt = async (
     receiptId: number | string,
 ): Promise<void> => {
     const url = `${API_BASE_URL}${deleteReceiptEndpoint(receiptId)}`;
-    const accessToken = getAccessToken();
-
-    let response: Response;
-    try {
-        response = await fetch(url, {
-            method: "DELETE",
-            headers: {
-                ...(accessToken !== null
-                    ? { Authorization: `Bearer ${accessToken}` }
-                    : {}),
-            },
-        });
-    } catch {
+    const result = await performApiFetch(url, { method: "DELETE" });
+    if (!result.ok) {
         throw new DeleteReceiptApiError(
             "Unable to reach the delete receipt service.",
             {
@@ -94,11 +75,13 @@ export const deleteReceipt = async (
         );
     }
 
+    const response = result.response;
+
     if (response.status === 204) {
         return;
     }
 
-    const responseBody: unknown = await readResponseBody(response);
+    const responseBody = result.body;
 
     if (!response.ok) {
         throw mapErrorResponse(response.status, responseBody);

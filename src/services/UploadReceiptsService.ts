@@ -6,7 +6,7 @@ import {
     type UploadReceiptsPayload,
     type UploadReceiptsSuccessResponse,
 } from "../interfaces/UploadReceiptsService.interface";
-import { getAccessToken } from "../utils/auth";
+import { performApiFetch } from "./httpClient";
 
 /**
  * Base URL of the backend API, injected at build time by Vite.
@@ -59,14 +59,6 @@ const isSuccessResponse = (
         return true;
     }
     return isObject(data) && typeof data.count === "number";
-};
-
-const readResponseBody = async (response: Response): Promise<unknown> => {
-    try {
-        return await response.json();
-    } catch {
-        return null;
-    }
 };
 
 const mapErrorResponse = (
@@ -140,22 +132,13 @@ export const uploadReceipts = async (
     payload: UploadReceiptsPayload,
 ): Promise<UploadReceiptsSuccessResponse> => {
     const url = `${API_BASE_URL}${UPLOAD_RECEIPTS_ENDPOINT}`;
-    const accessToken = getAccessToken();
-
-    let response: Response;
-    try {
+    const result = await performApiFetch(url, {
+        method: "POST",
         // Do NOT set a "Content-Type" header manually: the browser derives the
         // multipart boundary from the `FormData` instance.
-        response = await fetch(url, {
-            method: "POST",
-            headers: {
-                ...(accessToken !== null
-                    ? { Authorization: `Bearer ${accessToken}` }
-                    : {}),
-            },
-            body: buildFormData(payload),
-        });
-    } catch {
+        body: buildFormData(payload),
+    });
+    if (!result.ok) {
         throw new UploadReceiptsApiError(
             "Unable to reach the upload receipts service.",
             {
@@ -165,7 +148,8 @@ export const uploadReceipts = async (
         );
     }
 
-    const responseBody: unknown = await readResponseBody(response);
+    const response = result.response;
+    const responseBody = result.body;
 
     if (!response.ok) {
         throw mapErrorResponse(response.status, responseBody);
