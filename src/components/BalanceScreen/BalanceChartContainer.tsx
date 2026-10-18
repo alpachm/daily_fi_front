@@ -4,7 +4,8 @@ import { useTranslation } from "react-i18next";
 import "./styles/BalanceChartContainer.css";
 import type { BalanceTone } from "../../hooks/useDailyBalance";
 import { useRecentDailyBalances } from "../../hooks/useRecentDailyBalances";
-import { formatShortDate } from "../../utils/date";
+import type { DailyBalanceData } from "../../interfaces/DailyBalance.interface";
+import { formatShortDate, getTodayIsoDate } from "../../utils/date";
 import { BalanceChart } from "../shared/BalanceChart";
 import type { ChartDataPoint } from "../shared/BalanceChart";
 
@@ -27,14 +28,17 @@ const readStoredTab = (): BalanceChartTab => {
     return "general";
 };
 
+const resolveActiveBalance = (record: DailyBalanceData): number =>
+    record.closingBalance !== 0 ? record.closingBalance : record.openingBalance;
+
 interface BalanceChartContainerProps {
-    totalNetDisplay: string;
+    formatAmount: (value: number) => string;
     percentageChangeDisplay: string;
     percentageChangeTone: BalanceTone;
 }
 
 export const BalanceChartContainer = ({
-    totalNetDisplay,
+    formatAmount,
     percentageChangeDisplay,
     percentageChangeTone,
 }: BalanceChartContainerProps) => {
@@ -54,6 +58,24 @@ export const BalanceChartContainer = ({
     };
 
     const { data: recentBalances, isLoading, isError } = useRecentDailyBalances();
+
+    const todayDate = useMemo(() => getTodayIsoDate(), []);
+
+    const latestTotalBalance = useMemo<number | null>(() => {
+        if (!recentBalances || recentBalances.length === 0) {
+            return null;
+        }
+
+        const todayRecord = recentBalances.find((item) => item.date === todayDate);
+        if (todayRecord) {
+            return resolveActiveBalance(todayRecord);
+        }
+
+        const latestRecord = [...recentBalances].sort((a, b) =>
+            b.date.localeCompare(a.date),
+        )[0];
+        return latestRecord ? resolveActiveBalance(latestRecord) : null;
+    }, [recentBalances, todayDate]);
 
     const netBalanceData = useMemo<ChartDataPoint[]>(() => {
         if (!recentBalances || recentBalances.length === 0) {
@@ -99,7 +121,9 @@ export const BalanceChartContainer = ({
                             {t("BalanceScreen.totalNetLabel")}
                         </span>
                         <span className="balance-chart__metric-value balance-chart__metric-value--neutral">
-                            {totalNetDisplay}
+                            {latestTotalBalance === null
+                                ? t("BalanceScreen.noData")
+                                : formatAmount(latestTotalBalance)}
                         </span>
                     </div>
 
