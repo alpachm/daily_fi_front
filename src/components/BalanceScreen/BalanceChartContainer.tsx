@@ -75,10 +75,19 @@ export const BalanceChartContainer = ({
 
         return [...recentBalances]
             .sort((a, b) => a.date.localeCompare(b.date))
-            .map((item) => ({
-                label: formatShortDate(item.date, i18n.language),
-                value: item.closingBalance,
-            }));
+            .map((item) => {
+                // A record with `closingBalance === 0` is still open/active
+                // (the closing value has not been entered yet), so fall back to
+                // `openingBalance` to avoid plotting a misleading zero.
+                const chartValue =
+                    item.closingBalance !== 0
+                        ? item.closingBalance
+                        : item.openingBalance;
+                return {
+                    label: formatShortDate(item.date, i18n.language),
+                    value: chartValue,
+                };
+            });
     }, [recentBalances, i18n.language]);
 
     return (
