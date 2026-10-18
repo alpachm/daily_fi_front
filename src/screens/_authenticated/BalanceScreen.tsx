@@ -14,7 +14,6 @@ export const BalanceScreen = () => {
     const { t } = useTranslation("");
     const balance = useDailyBalance();
     const {
-        data: balanceData,
         isLoading,
         percentageChange,
         tone,
@@ -41,13 +40,6 @@ export const BalanceScreen = () => {
                 ? "success"
                 : "empty";
 
-    const openingBalance = balanceData?.openingBalance ?? null;
-
-    const totalNetDisplay =
-        openingBalance === null
-            ? t("BalanceScreen.noData")
-            : balance.formatAmount(openingBalance);
-
     const percentageChangeDisplay =
         percentageChange === null
             ? t("BalanceScreen.noData")
@@ -56,7 +48,7 @@ export const BalanceScreen = () => {
     return (
         <div className="balance-screen">
             <BalanceChartContainer
-                totalNetDisplay={totalNetDisplay}
+                formatAmount={balance.formatAmount}
                 percentageChangeDisplay={percentageChangeDisplay}
                 percentageChangeTone={tone}
             />
