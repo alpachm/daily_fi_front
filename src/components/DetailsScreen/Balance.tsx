@@ -1,7 +1,7 @@
 // src/components/DetailsScreen/Balance.tsx
 import { useTranslation } from "react-i18next";
 import type { LucideIcon } from "lucide-react";
-import { TrendingDown, TrendingUp } from "lucide-react";
+import { Minus, TrendingDown, TrendingUp } from "lucide-react";
 import type { BalanceTone } from "../../hooks/useDailyBalance";
 import { useAllDailyBalances } from "../../hooks/useAllDailyBalances";
 import { useDetailsBalance } from "../../hooks/useDetailsBalance";
@@ -29,6 +29,12 @@ const getTone = (value: number): BalanceTone => {
     if (value > 0) return "positive";
     if (value < 0) return "negative";
     return "neutral";
+};
+
+const getWorstDayIcon = (value: number): LucideIcon => {
+    if (value > 0) return TrendingUp;
+    if (value < 0) return TrendingDown;
+    return Minus;
 };
 
 const formatCurrency = (value: number, locale: string): string =>
@@ -61,8 +67,7 @@ export const Balance = () => {
 
     const bestDayTone: BalanceTone =
         metrics.bestDay.date === null ? "neutral" : "positive";
-    const worstDayTone: BalanceTone =
-        metrics.worstDay.date === null ? "neutral" : "negative";
+    const worstDayTone: BalanceTone = getTone(metrics.worstDay.value);
 
     const bestDayDate =
         metrics.bestDay.date === null
@@ -94,7 +99,7 @@ export const Balance = () => {
             label: t("DetailsScreen.worstDay"),
             value: formatSignedCurrency(metrics.worstDay.value, i18n.language),
             tone: worstDayTone,
-            icon: TrendingDown,
+            icon: getWorstDayIcon(metrics.worstDay.value),
             date: worstDayDate,
         },
     ];
