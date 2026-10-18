@@ -6,7 +6,7 @@ import {
     type MonthlyBalanceQueryParams,
     type MonthlyBalancesResponse,
 } from "../interfaces/GetMonthlyBalancesService.interface";
-import { getAccessToken } from "../utils/auth";
+import { performApiFetch } from "./httpClient";
 
 /**
  * Base URL of the backend API, injected at build time by Vite.
@@ -61,14 +61,6 @@ const isGenericApiErrorResponse = (
     return value.status === "fail" && typeof value.message === "string";
 };
 
-const readResponseBody = async (response: Response): Promise<unknown> => {
-    try {
-        return await response.json();
-    } catch {
-        return null;
-    }
-};
-
 const mapErrorResponse = (
     statusCode: number,
     body: unknown,
@@ -112,19 +104,8 @@ export const getMonthlyBalances = async (
     params: MonthlyBalanceQueryParams = {},
 ): Promise<MonthlyBalanceItem[]> => {
     const url = `${API_BASE_URL}${GET_MONTHLY_BALANCES_ENDPOINT}${buildQueryString(params)}`;
-    const accessToken = getAccessToken();
-
-    let response: Response;
-    try {
-        response = await fetch(url, {
-            method: "GET",
-            headers: {
-                ...(accessToken !== null
-                    ? { Authorization: `Bearer ${accessToken}` }
-                    : {}),
-            },
-        });
-    } catch {
+    const result = await performApiFetch(url, { method: "GET" });
+    if (!result.ok) {
         throw new GetMonthlyBalancesApiError(
             "Unable to reach the get monthly balances service.",
             {
@@ -134,7 +115,8 @@ export const getMonthlyBalances = async (
         );
     }
 
-    const responseBody: unknown = await readResponseBody(response);
+    const response = result.response;
+    const responseBody = result.body;
 
     if (!response.ok) {
         throw mapErrorResponse(response.status, responseBody);

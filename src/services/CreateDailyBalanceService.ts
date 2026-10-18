@@ -8,7 +8,7 @@ import {
     type CreateDailyBalanceUnauthorizedErrorResponse,
     type CreateDailyBalanceValidationErrorResponse,
 } from "../interfaces/CreateDailyBalanceService.interface";
-import { getAccessToken } from "../utils/auth";
+import { performApiFetch } from "./httpClient";
 
 /**
  * Base URL of the backend API, injected at build time by Vite.
@@ -82,14 +82,6 @@ const isCreateDailyBalanceSuccessResponse = (
     );
 };
 
-const readResponseBody = async (response: Response): Promise<unknown> => {
-    try {
-        return await response.json();
-    } catch {
-        return null;
-    }
-};
-
 const mapErrorResponse = (
     statusCode: number,
     body: unknown,
@@ -129,21 +121,12 @@ export const createDailyBalance = async (
     payload: CreateDailyBalancePayload,
 ): Promise<CreateDailyBalanceSuccessResponse> => {
     const url = `${API_BASE_URL}${CREATE_DAILY_BALANCE_ENDPOINT}`;
-    const accessToken = getAccessToken();
-
-    let response: Response;
-    try {
-        response = await fetch(url, {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-                ...(accessToken !== null
-                    ? { Authorization: `Bearer ${accessToken}` }
-                    : {}),
-            },
-            body: JSON.stringify(payload),
-        });
-    } catch {
+    const result = await performApiFetch(url, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+    });
+    if (!result.ok) {
         throw new CreateDailyBalanceApiError(
             "Unable to reach the create daily balance service.",
             {
@@ -153,7 +136,8 @@ export const createDailyBalance = async (
         );
     }
 
-    const responseBody: unknown = await readResponseBody(response);
+    const response = result.response;
+    const responseBody = result.body;
 
     if (!response.ok) {
         throw mapErrorResponse(response.status, responseBody);

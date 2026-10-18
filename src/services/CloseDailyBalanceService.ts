@@ -6,7 +6,7 @@ import {
     type CloseDailyBalanceSuccessResponse,
     type CloseDailyBalanceValidationErrorResponse,
 } from "../interfaces/CloseDailyBalanceService.interface";
-import { getAccessToken } from "../utils/auth";
+import { performApiFetch } from "./httpClient";
 
 /**
  * Base URL of the backend API, injected at build time by Vite.
@@ -79,14 +79,6 @@ const isCloseDailyBalanceSuccessResponse = (
     );
 };
 
-const readResponseBody = async (response: Response): Promise<unknown> => {
-    try {
-        return await response.json();
-    } catch {
-        return null;
-    }
-};
-
 const mapErrorResponse = (
     statusCode: number,
     body: unknown,
@@ -134,21 +126,12 @@ export const closeDailyBalance = async (
     closingBalance: number,
 ): Promise<CloseDailyBalanceSuccessResponse> => {
     const url = `${API_BASE_URL}${closeDailyBalanceEndpoint(id)}`;
-    const accessToken = getAccessToken();
-
-    let response: Response;
-    try {
-        response = await fetch(url, {
-            method: "PATCH",
-            headers: {
-                "Content-Type": "application/json",
-                ...(accessToken !== null
-                    ? { Authorization: `Bearer ${accessToken}` }
-                    : {}),
-            },
-            body: JSON.stringify({ closing_balance: closingBalance }),
-        });
-    } catch {
+    const result = await performApiFetch(url, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ closing_balance: closingBalance }),
+    });
+    if (!result.ok) {
         throw new CloseDailyBalanceApiError(
             "Unable to reach the close daily balance service.",
             {
@@ -158,7 +141,8 @@ export const closeDailyBalance = async (
         );
     }
 
-    const responseBody: unknown = await readResponseBody(response);
+    const response = result.response;
+    const responseBody = result.body;
 
     if (!response.ok) {
         throw mapErrorResponse(response.status, responseBody);

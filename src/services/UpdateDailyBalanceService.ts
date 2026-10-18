@@ -7,7 +7,7 @@ import {
     type UpdateDailyBalanceSuccessResponse,
     type UpdateDailyBalanceValidationErrorResponse,
 } from "../interfaces/UpdateDailyBalanceService.interface";
-import { getAccessToken } from "../utils/auth";
+import { performApiFetch } from "./httpClient";
 
 /**
  * Base URL of the backend API, injected at build time by Vite.
@@ -80,14 +80,6 @@ const isUpdateDailyBalanceSuccessResponse = (
     );
 };
 
-const readResponseBody = async (response: Response): Promise<unknown> => {
-    try {
-        return await response.json();
-    } catch {
-        return null;
-    }
-};
-
 const mapErrorResponse = (
     statusCode: number,
     body: unknown,
@@ -135,21 +127,12 @@ export const updateDailyBalance = async (
     payload: UpdateDailyBalancePayload,
 ): Promise<UpdateDailyBalanceSuccessResponse> => {
     const url = `${API_BASE_URL}${updateDailyBalanceEndpoint(id)}`;
-    const accessToken = getAccessToken();
-
-    let response: Response;
-    try {
-        response = await fetch(url, {
-            method: "PATCH",
-            headers: {
-                "Content-Type": "application/json",
-                ...(accessToken !== null
-                    ? { Authorization: `Bearer ${accessToken}` }
-                    : {}),
-            },
-            body: JSON.stringify(payload),
-        });
-    } catch {
+    const result = await performApiFetch(url, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+    });
+    if (!result.ok) {
         throw new UpdateDailyBalanceApiError(
             "Unable to reach the update daily balance service.",
             {
@@ -159,7 +142,8 @@ export const updateDailyBalance = async (
         );
     }
 
-    const responseBody: unknown = await readResponseBody(response);
+    const response = result.response;
+    const responseBody = result.body;
 
     if (!response.ok) {
         throw mapErrorResponse(response.status, responseBody);

@@ -273,6 +273,7 @@
     "appName": "Daily FI",
     "appSubtitle": "Gestión financiera P2P",
     "loading": "Cargando...",
-    "error": "Ocurrió un error"
+    "error": "Ocurrió un error",
+    "sessionExpired": "Tu sesión ha expirado. Por favor inicia sesión de nuevo."
   }
 }

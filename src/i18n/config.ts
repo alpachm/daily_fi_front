@@ -16,7 +16,7 @@ i18next
   .init({
     resources,
     fallbackLng: FALLBACK_LANGUAGE,
-    debug: import.meta.env.DEV, // se coloca en false para no ver los logs
+    debug: false, // se coloca en false para no ver los logs
     interpolation: {
       escapeValue: false, // React already escapes by default
     },

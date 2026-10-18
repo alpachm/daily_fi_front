@@ -11,7 +11,7 @@ import {
     type ReceiptItem,
     type ReceiptType,
 } from "../interfaces/GetReceiptsPerDayService.interface";
-import { getAccessToken } from "../utils/auth";
+import { performApiFetch } from "./httpClient";
 
 /**
  * Base URL of the backend API, injected at build time by Vite.
@@ -116,14 +116,6 @@ const isSuccessResponse = (
     );
 };
 
-const readResponseBody = async (response: Response): Promise<unknown> => {
-    try {
-        return await response.json();
-    } catch {
-        return null;
-    }
-};
-
 const mapErrorResponse = (
     statusCode: number,
     body: unknown,
@@ -162,19 +154,8 @@ export const getReceiptsPerDay = async (
             ? `&type=${encodeURIComponent(params.type)}`
             : "";
     const url = `${API_BASE_URL}${GET_RECEIPTS_PER_DAY_ENDPOINT}?date=${encodeURIComponent(params.date)}${typeQuery}&page=${page}&limit=${limit}`;
-    const accessToken = getAccessToken();
-
-    let response: Response;
-    try {
-        response = await fetch(url, {
-            method: "GET",
-            headers: {
-                ...(accessToken !== null
-                    ? { Authorization: `Bearer ${accessToken}` }
-                    : {}),
-            },
-        });
-    } catch {
+    const result = await performApiFetch(url, { method: "GET" });
+    if (!result.ok) {
         throw new GetReceiptsPerDayApiError(
             "Unable to reach the get receipts per day service.",
             {
@@ -184,7 +165,8 @@ export const getReceiptsPerDay = async (
         );
     }
 
-    const responseBody: unknown = await readResponseBody(response);
+    const response = result.response;
+    const responseBody = result.body;
 
     if (!response.ok) {
         throw mapErrorResponse(response.status, responseBody);
