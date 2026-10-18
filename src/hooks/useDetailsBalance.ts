@@ -34,14 +34,19 @@ const findBestDay = (records: DailyBalanceItem[]): DailyBalanceItem =>
         current.totalIncome > best.totalIncome ? current : best,
     );
 
-const findWorstExpenseDay = (records: DailyBalanceItem[]): DailyBalanceItem =>
-    records.reduce((worst, current) =>
-        current.totalExpenses > worst.totalExpenses ? current : worst,
-    );
+// A closed day's net outcome: income days report a positive result, expense
+// days report a negative result, and break-even days report zero.
+const resolveDayNetResult = (record: DailyBalanceItem): number => {
+    if (record.totalIncome > 0) return record.totalIncome;
+    if (record.totalExpenses > 0) return -record.totalExpenses;
+    return 0;
+};
 
-const findLowestIncomeDay = (records: DailyBalanceItem[]): DailyBalanceItem =>
-    records.reduce((lowest, current) =>
-        current.totalIncome < lowest.totalIncome ? current : lowest,
+const findWorstDay = (records: DailyBalanceItem[]): DailyBalanceItem =>
+    records.reduce((worst, current) =>
+        resolveDayNetResult(current) < resolveDayNetResult(worst)
+            ? current
+            : worst,
     );
 
 const deriveSummaryMetrics = (
@@ -58,29 +63,17 @@ const deriveSummaryMetrics = (
 
     const bestDayRecord = findBestDay(sorted);
 
-    // Peor Día: highest operational expense. When no record has expenses,
-    // fall back to the day with the lowest income.
-    const worstExpenseDay = findWorstExpenseDay(sorted);
-    const hasAnyExpense = worstExpenseDay.totalExpenses > 0;
-
-    let worstDay: MetricDay;
-    if (hasAnyExpense) {
-        worstDay = {
-            value: -worstExpenseDay.totalExpenses,
-            date: worstExpenseDay.date,
-        };
-    } else {
-        const lowestIncomeDay = findLowestIncomeDay(sorted);
-        worstDay = {
-            value: -lowestIncomeDay.totalIncome,
-            date: lowestIncomeDay.date,
-        };
-    }
+    // Peor Día: the day with the lowest net outcome across the period. It can
+    // be a net loss, a small net profit, or a break-even day.
+    const worstDayRecord = findWorstDay(sorted);
 
     return {
         totalBalance: mostRecent.closingBalance,
         bestDay: { value: bestDayRecord.totalIncome, date: bestDayRecord.date },
-        worstDay,
+        worstDay: {
+            value: resolveDayNetResult(worstDayRecord),
+            date: worstDayRecord.date,
+        },
     };
 };
 
