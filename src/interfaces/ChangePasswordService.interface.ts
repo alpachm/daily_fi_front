@@ -87,4 +87,12 @@ export class ChangePasswordApiError extends Error {
         this.statusCode = options.statusCode ?? null;
         this.fieldErrors = options.fieldErrors ?? [];
     }
+
+    /**
+     * First field-level validation message returned by the backend, or `null`
+     * when the error did not include field errors.
+     */
+    get fieldErrorMessage(): string | null {
+        return this.fieldErrors[0]?.message ?? null;
+    }
 }
