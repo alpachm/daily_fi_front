@@ -14,7 +14,10 @@ import { PasswordField } from "./PasswordField";
 import { useChangePassword } from "../../hooks/useChangePassword";
 import { useLogout } from "../../hooks/useLogout";
 import { ChangePasswordApiError } from "../../interfaces/ChangePasswordService.interface";
-import { getChangePasswordErrorKey } from "../../utils/changePasswordError";
+import {
+    getChangePasswordErrorKey,
+    getChangePasswordFieldErrorMessage,
+} from "../../utils/changePasswordError";
 import { AlertModal } from "../shared/AlertModal";
 import { AutomaticAlertModal } from "../shared/AutomaticAlertModal";
 import "./styles/SecurityCard.css";
@@ -141,7 +144,9 @@ export const SecurityCard = () => {
 
             setAlert({
                 variant: "error",
-                message: t(getChangePasswordErrorKey(error)),
+                message:
+                    getChangePasswordFieldErrorMessage(error) ??
+                    t(getChangePasswordErrorKey(error)),
             });
         }
     };
