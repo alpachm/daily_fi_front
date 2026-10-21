@@ -47,3 +47,23 @@ export const getChangePasswordErrorKey = (
             return "ProfileScreen.securityUpdatePasswordErrorServer";
     }
 };
+
+/**
+ * Returns the specific field-level message when the backend rejected the
+ * request with a 400 validation payload (for example, "New password cannot be
+ * the same as the current password"), or `null` when no field message is
+ * available and the caller should fall back to a localized generic error.
+ */
+export const getChangePasswordFieldErrorMessage = (
+    error: unknown,
+): string | null => {
+    if (!(error instanceof ChangePasswordApiError)) {
+        return null;
+    }
+
+    if (error.statusCode !== 400) {
+        return null;
+    }
+
+    return error.fieldErrorMessage;
+};

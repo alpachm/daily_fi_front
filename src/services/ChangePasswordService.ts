@@ -94,7 +94,8 @@ const mapErrorResponse = (
     body: unknown,
 ): ChangePasswordApiError => {
     if (statusCode === 400 && isValidationErrorResponse(body)) {
-        return new ChangePasswordApiError(body.message, {
+        const validationMessage = body.errors[0]?.message ?? body.message;
+        return new ChangePasswordApiError(validationMessage, {
             kind: "validation",
             statusCode,
             fieldErrors: body.errors,
