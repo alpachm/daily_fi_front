@@ -1,11 +1,22 @@
 // src/components/ProfileScreen/SecurityCard.tsx
-import { useState } from "react";
+import { useCallback, useState } from "react";
 import type { ChangeEvent, FormEvent } from "react";
 import { useTranslation } from "react-i18next";
-import { LogOut, MonitorSmartphone, ShieldCheck, TriangleAlert } from "lucide-react";
+import {
+    Check,
+    LoaderCircle,
+    LogOut,
+    MonitorSmartphone,
+    ShieldCheck,
+    TriangleAlert,
+} from "lucide-react";
 import { PasswordField } from "./PasswordField";
+import { useChangePassword } from "../../hooks/useChangePassword";
 import { useLogout } from "../../hooks/useLogout";
+import { ChangePasswordApiError } from "../../interfaces/ChangePasswordService.interface";
+import { getChangePasswordErrorKey } from "../../utils/changePasswordError";
 import { AlertModal } from "../shared/AlertModal";
+import { AutomaticAlertModal } from "../shared/AutomaticAlertModal";
 import "./styles/SecurityCard.css";
 
 interface PasswordFormData {
@@ -34,6 +45,13 @@ const INITIAL_VISIBILITY: Record<PasswordFieldKey, boolean> = {
     confirmPassword: false,
 };
 
+type SecurityAlertVariant = "success" | "error";
+
+interface SecurityAlert {
+    variant: SecurityAlertVariant;
+    message: string;
+}
+
 export const SecurityCard = () => {
     const { t } = useTranslation("");
     const { isLoading: isLoggingOut, errorMessage: logoutError, logout } =
@@ -42,6 +60,12 @@ export const SecurityCard = () => {
     const [formData, setFormData] = useState<PasswordFormData>(INITIAL_FORM_DATA);
     const [visibleFields, setVisibleFields] =
         useState<Record<PasswordFieldKey, boolean>>(INITIAL_VISIBILITY);
+    const [alert, setAlert] = useState<SecurityAlert | null>(null);
+
+    const {
+        mutateAsync: changePassword,
+        isPending: isUpdatingPassword,
+    } = useChangePassword();
 
     const passwordFields: PasswordFieldDescriptor[] = [
         {
@@ -71,10 +95,55 @@ export const SecurityCard = () => {
         setVisibleFields((previous) => ({ ...previous, [field]: !previous[field] }));
     };
 
-    const handleSubmit = (event: FormEvent<HTMLFormElement>): void => {
+    const handleAlertClose = useCallback((): void => {
+        setAlert(null);
+    }, []);
+
+    const handleSubmit = async (
+        event: FormEvent<HTMLFormElement>,
+    ): Promise<void> => {
         event.preventDefault();
-        // Mock: clear the form. Replace with the real auth/API call when wired.
-        setFormData(INITIAL_FORM_DATA);
+
+        if (formData.newPassword !== formData.confirmPassword) {
+            setAlert({
+                variant: "error",
+                message: t(
+                    "ProfileScreen.securityUpdatePasswordErrorMismatch",
+                ),
+            });
+            return;
+        }
+
+        setAlert(null);
+
+        try {
+            await changePassword({
+                currentPassword: formData.currentPassword,
+                newPassword: formData.newPassword,
+            });
+
+            setFormData(INITIAL_FORM_DATA);
+            setVisibleFields(INITIAL_VISIBILITY);
+
+            setAlert({
+                variant: "success",
+                message: t("ProfileScreen.securityUpdatePasswordSuccess"),
+            });
+        } catch (error: unknown) {
+            // The session-expired flow already clears credentials and redirects
+            // through the global notifier, so do not render a duplicate alert.
+            if (
+                error instanceof ChangePasswordApiError &&
+                error.kind === "unauthorized"
+            ) {
+                return;
+            }
+
+            setAlert({
+                variant: "error",
+                message: t(getChangePasswordErrorKey(error)),
+            });
+        }
     };
 
     const handleConfirmLogout = async (): Promise<void> => {
@@ -111,7 +180,16 @@ export const SecurityCard = () => {
                         <button
                             type="submit"
                             className="security-card__button security-card__button--primary"
+                            disabled={isUpdatingPassword}
+                            aria-busy={isUpdatingPassword}
                         >
+                            {isUpdatingPassword && (
+                                <LoaderCircle
+                                    size={18}
+                                    className="security-card__spinner"
+                                    aria-hidden="true"
+                                />
+                            )}
                             {t("ProfileScreen.securityUpdatePasswordButton")}
                         </button>
                     </div>
@@ -190,6 +268,21 @@ export const SecurityCard = () => {
                 variant="warning"
                 isLoading={isLoggingOut}
             />
+            {alert !== null ? (
+                <AutomaticAlertModal
+                    isOpen
+                    onClose={handleAlertClose}
+                    message={alert.message}
+                    icon={
+                        alert.variant === "success" ? (
+                            <Check size={24} aria-hidden="true" />
+                        ) : (
+                            <TriangleAlert size={24} aria-hidden="true" />
+                        )
+                    }
+                    variant={alert.variant}
+                />
+            ) : null}
         </section>
     );
 };
